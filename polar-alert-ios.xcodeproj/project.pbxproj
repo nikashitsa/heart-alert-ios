@@ -11,6 +11,7 @@
 		830C44282C4C0BDD009327F5 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830C44272C4C0BDD009327F5 /* Settings.swift */; };
 		833F3B322C54EE2700B474E6 /* privacy-policy.md in Resources */ = {isa = PBXBuildFile; fileRef = 833F3B302C54EE2700B474E6 /* privacy-policy.md */; };
 		833F3B332C54EE2700B474E6 /* terms-and-conditions.md in Resources */ = {isa = PBXBuildFile; fileRef = 833F3B312C54EE2700B474E6 /* terms-and-conditions.md */; };
+		833F3B352C54EEDC00B474E6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 833F3B342C54EEDC00B474E6 /* LICENSE */; };
 		834053802C46C2C1009DA8A7 /* RunController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8340537F2C46C2C1009DA8A7 /* RunController.swift */; };
 		83AA28FE2C496A5B0036C105 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83AA28FD2C496A5B0036C105 /* SoundManager.swift */; };
 		83AA29032C4975C00036C105 /* low_beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 83AA29012C4975C00036C105 /* low_beep.wav */; };
@@ -34,6 +35,7 @@
 		830C44272C4C0BDD009327F5 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		833F3B302C54EE2700B474E6 /* privacy-policy.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "privacy-policy.md"; sourceTree = "<group>"; };
 		833F3B312C54EE2700B474E6 /* terms-and-conditions.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "terms-and-conditions.md"; sourceTree = "<group>"; };
+		833F3B342C54EEDC00B474E6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		8340537F2C46C2C1009DA8A7 /* RunController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunController.swift; sourceTree = "<group>"; };
 		83AA28FD2C496A5B0036C105 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 		83AA29012C4975C00036C105 /* low_beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = low_beep.wav; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 		83F1C5A02C3A89830013E04B = {
 			isa = PBXGroup;
 			children = (
+				833F3B342C54EEDC00B474E6 /* LICENSE */,
 				833F3B302C54EE2700B474E6 /* privacy-policy.md */,
 				833F3B312C54EE2700B474E6 /* terms-and-conditions.md */,
 				83F1C5AB2C3A89830013E04B /* polar-alert-ios */,
@@ -194,6 +197,7 @@
 			files = (
 				83F1C5B62C3A89860013E04B /* Assets.xcassets in Resources */,
 				83F1C5B92C3A89860013E04B /* Base in Resources */,
+				833F3B352C54EEDC00B474E6 /* LICENSE in Resources */,
 				83AA29042C4975C00036C105 /* high_beep.wav in Resources */,
 				833F3B332C54EE2700B474E6 /* terms-and-conditions.md in Resources */,
 				83AA29032C4975C00036C105 /* low_beep.wav in Resources */,
