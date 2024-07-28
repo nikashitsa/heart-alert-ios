@@ -13,6 +13,7 @@
 		833F3B332C54EE2700B474E6 /* terms-and-conditions.md in Resources */ = {isa = PBXBuildFile; fileRef = 833F3B312C54EE2700B474E6 /* terms-and-conditions.md */; };
 		833F3B352C54EEDC00B474E6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 833F3B342C54EEDC00B474E6 /* LICENSE */; };
 		834053802C46C2C1009DA8A7 /* RunController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8340537F2C46C2C1009DA8A7 /* RunController.swift */; };
+		8347660E2C56DE4000B80131 /* cover.png in Resources */ = {isa = PBXBuildFile; fileRef = 8347660D2C56DE4000B80131 /* cover.png */; };
 		83AA28FE2C496A5B0036C105 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83AA28FD2C496A5B0036C105 /* SoundManager.swift */; };
 		83AA29032C4975C00036C105 /* low_beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 83AA29012C4975C00036C105 /* low_beep.wav */; };
 		83AA29042C4975C00036C105 /* high_beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 83AA29022C4975C00036C105 /* high_beep.wav */; };
@@ -37,6 +38,8 @@
 		833F3B312C54EE2700B474E6 /* terms-and-conditions.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "terms-and-conditions.md"; sourceTree = "<group>"; };
 		833F3B342C54EEDC00B474E6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		8340537F2C46C2C1009DA8A7 /* RunController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunController.swift; sourceTree = "<group>"; };
+		8347660D2C56DE4000B80131 /* cover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cover.png; sourceTree = "<group>"; };
+		8347660F2C56DE5B00B80131 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		83AA28FD2C496A5B0036C105 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 		83AA29012C4975C00036C105 /* low_beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = low_beep.wav; sourceTree = "<group>"; };
 		83AA29022C4975C00036C105 /* high_beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = high_beep.wav; sourceTree = "<group>"; };
@@ -78,6 +81,8 @@
 		83F1C5A02C3A89830013E04B = {
 			isa = PBXGroup;
 			children = (
+				8347660F2C56DE5B00B80131 /* README.md */,
+				8347660D2C56DE4000B80131 /* cover.png */,
 				833F3B342C54EEDC00B474E6 /* LICENSE */,
 				833F3B302C54EE2700B474E6 /* privacy-policy.md */,
 				833F3B312C54EE2700B474E6 /* terms-and-conditions.md */,
@@ -195,6 +200,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8347660E2C56DE4000B80131 /* cover.png in Resources */,
 				83F1C5B62C3A89860013E04B /* Assets.xcassets in Resources */,
 				83F1C5B92C3A89860013E04B /* Base in Resources */,
 				833F3B352C54EEDC00B474E6 /* LICENSE in Resources */,
