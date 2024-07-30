@@ -20,6 +20,7 @@
 		83AA29082C49A1B00036C105 /* Debouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83AA29072C49A1B00036C105 /* Debouncer.swift */; };
 		83AFF4C62C42563C00B200EE /* PolarBleSdkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83AFF4C52C42563C00B200EE /* PolarBleSdkManager.swift */; };
 		83B36CFC2C441CA100857562 /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B36CFB2C441CA100857562 /* RangeSlider.swift */; };
+		83D88C0F2C59301A003516EC /* Polar_SDK_License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 83D88C0E2C59301A003516EC /* Polar_SDK_License.txt */; };
 		83F1C5AD2C3A89830013E04B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F1C5AC2C3A89830013E04B /* AppDelegate.swift */; };
 		83F1C5AF2C3A89830013E04B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F1C5AE2C3A89830013E04B /* SceneDelegate.swift */; };
 		83F1C5B12C3A89830013E04B /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F1C5B02C3A89830013E04B /* MainController.swift */; };
@@ -46,6 +47,7 @@
 		83AA29072C49A1B00036C105 /* Debouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debouncer.swift; sourceTree = "<group>"; };
 		83AFF4C52C42563C00B200EE /* PolarBleSdkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarBleSdkManager.swift; sourceTree = "<group>"; };
 		83B36CFB2C441CA100857562 /* RangeSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeSlider.swift; sourceTree = "<group>"; };
+		83D88C0E2C59301A003516EC /* Polar_SDK_License.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Polar_SDK_License.txt; sourceTree = "<group>"; };
 		83F1C5A92C3A89830013E04B /* polar-alert-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "polar-alert-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		83F1C5AC2C3A89830013E04B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		83F1C5AE2C3A89830013E04B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 		83F1C5A02C3A89830013E04B = {
 			isa = PBXGroup;
 			children = (
+				83D88C0E2C59301A003516EC /* Polar_SDK_License.txt */,
 				8347660F2C56DE5B00B80131 /* README.md */,
 				8347660D2C56DE4000B80131 /* cover.png */,
 				833F3B342C54EEDC00B474E6 /* LICENSE */,
@@ -206,6 +209,7 @@
 				833F3B352C54EEDC00B474E6 /* LICENSE in Resources */,
 				83AA29042C4975C00036C105 /* high_beep.wav in Resources */,
 				833F3B332C54EE2700B474E6 /* terms-and-conditions.md in Resources */,
+				83D88C0F2C59301A003516EC /* Polar_SDK_License.txt in Resources */,
 				83AA29032C4975C00036C105 /* low_beep.wav in Resources */,
 				83F1C5B42C3A89830013E04B /* Base in Resources */,
 				833F3B322C54EE2700B474E6 /* privacy-policy.md in Resources */,

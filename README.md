@@ -22,4 +22,8 @@
 - [Android](https://github.com/nikashitsa/polar-alert-android)
 - [Web](https://github.com/nikashitsa/polar-h10-alert)
 
+### License
+
+This software is using Polar SDK under [Polar SDK License](Polar_SDK_License.txt).
+
 [Buy me a coffee](https://www.paypal.com/donate/?hosted_button_id=DR69Z26Z8DJVE) ☕️
