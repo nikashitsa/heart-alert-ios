@@ -35,11 +35,11 @@ public struct OfflineRecordingData<DataType> {
     
     public static func parseDataFromOfflineFile(fileData: Data, type: PmdMeasurementType, secret: PmdSecret? = nil, lastTimestamp: UInt64 = 0) throws -> OfflineRecordingData<Any> {
         BleLogger.trace("Start offline file parsing. File size is \(fileData.count) and type \(type), previous file last timestamp: \(lastTimestamp)")
-
+        
         guard !fileData.isEmpty else {
             throw OfflineRecordingError.emptyFile
         }
-
+        
         let (metaData, metaDataLength):(OfflineRecordingMetaData, Int)
         do {
             (metaData, metaDataLength) = try parseMetaData(fileData, secret)
@@ -47,22 +47,23 @@ public struct OfflineRecordingData<DataType> {
             throw OfflineRecordingError.offlineRecordingErrorMetaDataParseFailed(description: "\(error)")
         }
 
-        let payloadDataBytes = fileData.subdata(in: metaDataLength..<fileData.count)
+        var payloadDataBytes: Data = Data()
+        
+        if (metaDataLength < fileData.count) {
+            payloadDataBytes = fileData.subdata(in: metaDataLength..<fileData.count)
+            let parsedData = try parseData(
+                dataBytes: payloadDataBytes,
+                metaData: metaData,
+                builder: try getDataBuilder(type: type),
+                lastTimestamp: lastTimestamp
+            )
 
-        guard !payloadDataBytes.isEmpty else {
-            throw OfflineRecordingError.offlineRecordingNoPayloadData
+            return OfflineRecordingData<Any>(offlineRecordingHeader: metaData.offlineRecordingHeader, startTime: metaData.startTime, recordingSettings: metaData.recordingSettings,  data: parsedData)
         }
-
-        let parsedData = try parseData(
-            dataBytes: payloadDataBytes,
-            metaData: metaData,
-            builder: try getDataBuilder(type: type),
-            lastTimestamp: lastTimestamp
-        )
-
-        return OfflineRecordingData<Any>(offlineRecordingHeader: metaData.offlineRecordingHeader, startTime: metaData.startTime, recordingSettings: metaData.recordingSettings,  data: parsedData)
+        
+        return OfflineRecordingData<Any>(offlineRecordingHeader: metaData.offlineRecordingHeader, startTime: metaData.startTime, recordingSettings: metaData.recordingSettings,  data: EmptyData())
     }
-
+    
     private static func getDataBuilder(type: PmdMeasurementType) throws -> Any {
         switch(type) {
         case .ecg:
@@ -79,45 +80,54 @@ public struct OfflineRecordingData<DataType> {
             return MagData()
         case .offline_hr:
             return OfflineHrData()
+        case .temperature:
+            return TemperatureData()
+        case .skinTemperature:
+            return SkinTemperatureData()
         default:
             throw OfflineRecordingError.offlineRecordingErrorNoParserForData
         }
     }
-
+    
     private static func parseMetaData(_ fileBytes: Data,_  secret: PmdSecret?) throws -> (OfflineRecordingMetaData, Int) {
         var securityOffset = 0
         let offlineRecordingSecurityStrategy = try parseSecurityStrategy(strategyBytes: fileBytes.subdataSafe(in: SECURITY_STRATEGY_INDEX..<SECURITY_STRATEGY_LENGTH))
         securityOffset += SECURITY_STRATEGY_LENGTH
-
+        
         let metaDataBytes = try decryptMetaData(offlineRecordingSecurityStrategy: offlineRecordingSecurityStrategy, metaData: fileBytes.subdataSafe(in: securityOffset..<fileBytes.count), secret: secret)
-
+        
         let offlineRecordingHeader = try parseHeader(headerBytes: metaDataBytes.subdataSafe(in: 0..<OFFLINE_HEADER_LENGTH))
         var metaDataOffset = OFFLINE_HEADER_LENGTH
-
+        
         // guard
         guard offlineRecordingHeader.magic == OFFLINE_HEADER_MAGIC else {
             throw OfflineRecordingError.offlineRecordingHasWrongSignature
         }
-
+        
         let offlineRecordingStartTime = try parseStartTime(startTimeBytes: metaDataBytes.subdataSafe(in: metaDataOffset..<metaDataOffset + DATE_TIME_LENGTH))
         metaDataOffset += DATE_TIME_LENGTH
-
+        
         let (pmdSetting, settingsLength) = try parseSettings(metaDataBytes: metaDataBytes.subdataSafe(in: metaDataOffset..<metaDataBytes.count))
         metaDataOffset += settingsLength
-
+        
         let (payloadSecurity, securityInfoLength) = try parseSecurityInfo(securityInfoBytes: metaDataBytes.subdataSafe(in: metaDataOffset ..< metaDataBytes.count), secret: secret)
         metaDataOffset += securityInfoLength
-
+        
         // padding bytes
         let paddingBytes1Length = parsePaddingBytes(metaDataOffset: metaDataOffset, offlineRecordingSecurityStrategy: offlineRecordingSecurityStrategy)
         metaDataOffset += paddingBytes1Length
 
-        let dataPayloadSize = try parsePacketSize(packetSize: metaDataBytes.subdataSafe(in: metaDataOffset..<(metaDataOffset + PACKET_SIZE_LENGTH)))
-        metaDataOffset += PACKET_SIZE_LENGTH
-
+        var dataPayloadSize: Int
+        if (metaDataOffset >= metaDataBytes.count ) {
+            dataPayloadSize = 0
+        } else {
+            dataPayloadSize = try parsePacketSize(packetSize: metaDataBytes.subdataSafe(in: metaDataOffset..<(metaDataOffset + PACKET_SIZE_LENGTH)))
+            metaDataOffset += PACKET_SIZE_LENGTH
+        }
+        
         let paddingBytes2Length = parsePaddingBytes(metaDataOffset: metaDataOffset, offlineRecordingSecurityStrategy: offlineRecordingSecurityStrategy)
         metaDataOffset += paddingBytes2Length
-
+        
         let metaData = OfflineRecordingMetaData(
             offlineRecordingHeader: offlineRecordingHeader,
             startTime: offlineRecordingStartTime,
@@ -127,17 +137,17 @@ public struct OfflineRecordingData<DataType> {
         )
         return (metaData, securityOffset + metaDataOffset)
     }
-
+    
     private static func parseSecurityStrategy(strategyBytes: Data) throws -> PmdSecret.SecurityStrategy {
         guard strategyBytes.count == 1, let strategyByte = strategyBytes.first else {
             throw OfflineRecordingError.offlineRecordingErrorMetaDataParseFailed(description:  "security strategy parse failed. Strategy bytes size was \(strategyBytes.count)")
         }
         return try PmdSecret.SecurityStrategy.fromByte(strategyByte: strategyByte)
     }
-
+    
     private static func decryptMetaData(offlineRecordingSecurityStrategy: PmdSecret.SecurityStrategy, metaData: Data, secret: PmdSecret?) throws -> Data {
         switch (offlineRecordingSecurityStrategy) {
-
+            
         case .none:
             return metaData
         case .xor:
@@ -145,22 +155,22 @@ public struct OfflineRecordingData<DataType> {
                 throw OfflineRecordingError.offlineRecordingErrorSecretMissing
             }
             return try s.decryptArray(cipherArray: metaData)
-
+            
         case .aes128, .aes256:
             guard let s = secret else {
                 throw OfflineRecordingError.offlineRecordingErrorSecretMissing
             }
-
+            
             guard s.strategy == offlineRecordingSecurityStrategy else {
                 throw OfflineRecordingError.offlineRecordingSecurityStrategyMissMatch(description: "Offline file is encrypted using \(offlineRecordingSecurityStrategy). The key provided is \(s.strategy)")
             }
-
+            
             let endOffset = (metaData.count / 16 * 16)
             let metaDataChunk = try metaData.subdataSafe(in: 0..<endOffset)
             return try s.decryptArray(cipherArray: metaDataChunk)
         }
     }
-
+    
     private static func parseHeader(headerBytes: Data) -> OfflineRecordingHeader {
         var offset = 0
         let step = 4
@@ -172,41 +182,41 @@ public struct OfflineRecordingData<DataType> {
         offset += step
         let eswHash = TypeUtils.convertArrayToUnsignedInt(headerBytes, offset: offset, size: step)
         offset += step
-
+        
         return OfflineRecordingHeader(magic: magic, version: version, free: free, eswHash: eswHash)
     }
-
+    
     private static func parseStartTime(startTimeBytes: Data) throws -> Date {
         let expectedStartTime: String = String(decoding: startTimeBytes, as: UTF8.self)
         let trimmedString = String(expectedStartTime.replacingOccurrences(of: " ", with: "T").dropLast() + "Z")
-
+        
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime]
-
+        
         guard let result = dateFormatter.date(from: trimmedString) else {
             throw OfflineRecordingError.offlineRecordingErrorMetaDataParseFailed(description: "Couldn't parse start time from \(trimmedString)")
         }
         return result
     }
-
+    
     private static func parseSettings(metaDataBytes: Data) throws -> (PmdSetting?, Int) {
         var offset = 0
         let settingsLength = Int(metaDataBytes[offset])
         offset += OFFLINE_SETTINGS_SIZE_FIELD_LENGTH
         let settingBytes = try metaDataBytes.subdataSafe(in:offset..<(offset + settingsLength))
         var pmdSetting: PmdSetting? = nil
-
+        
         if (!settingBytes.isEmpty) {
             pmdSetting  = PmdSetting(settingBytes)
         }
         return (pmdSetting, offset + settingsLength)
     }
-
+    
     private static func parseSecurityInfo(securityInfoBytes: Data, secret: PmdSecret?) throws -> (PmdSecret, Int) {
         var offset = 0
         let infoLength = securityInfoBytes[offset]
         offset += 1
-
+        
         if infoLength == 0 {
             if let s = secret {
                 return (s, offset)
@@ -214,11 +224,11 @@ public struct OfflineRecordingData<DataType> {
                 return try (PmdSecret(strategy : PmdSecret.SecurityStrategy.none, key : Data()), offset)
             }
         }
-
+        
         let strategy = securityInfoBytes[offset]
         offset += 1
         switch(try PmdSecret.SecurityStrategy.fromByte(strategyByte: strategy)) {
-
+            
         case .none:
             return try (PmdSecret(strategy : PmdSecret.SecurityStrategy.none, key : Data()), offset)
         case .xor:
@@ -240,7 +250,7 @@ public struct OfflineRecordingData<DataType> {
             return try (PmdSecret(strategy : PmdSecret.SecurityStrategy.aes256, key :key), offset)
         }
     }
-
+    
     private static func parsePaddingBytes(metaDataOffset: Int, offlineRecordingSecurityStrategy: PmdSecret.SecurityStrategy) -> Int {
         switch (offlineRecordingSecurityStrategy) {
         case .none, .xor:
@@ -249,37 +259,36 @@ public struct OfflineRecordingData<DataType> {
             return (16 - metaDataOffset % 16)
         }
     }
-
+    
     private static func parsePacketSize(packetSize: Data) -> Int {
         return Int(TypeUtils.convertArrayToUnsignedInt(packetSize, offset: 0, size: 2))
     }
-
+    
     private static func parseData(dataBytes: Data, metaData: OfflineRecordingMetaData, builder: Any, lastTimestamp: UInt64 = 0) throws -> Any {
         var previousTimeStamp: UInt64 = lastTimestamp
-
+        
         var packetSize = metaData.dataPayloadSize
         let sampleRate = UInt(metaData.recordingSettings?.settings[PmdSetting.PmdSettingType.sampleRate]?.first ?? 0)
-
+        
         let factor:Float
         if let data = metaData.recordingSettings?.settings[PmdSetting.PmdSettingType.factor]?.first {
             factor = Float(bitPattern: data)
         } else {
             factor = 1.0
         }
-
+        
         var offset = 0
         let decryptedData = try metaData.securityInfo.decryptArray(cipherArray: dataBytes)
-
+        
         repeat {
             let data = try decryptedData.subdataSafe(in:offset..<(packetSize + offset))
             offset += packetSize
             let dataFrame = try PmdDataFrame(data:data,
-                                             { _ in previousTimeStamp }  ,
+                                             { _,_  in previousTimeStamp },
                                              { _ in factor },
                                              { _ in sampleRate })
-
+            
             previousTimeStamp = dataFrame.timeStamp
-
             switch(builder) {
             case is EcgData:
                 let ecgData =  try EcgData.parseDataFromDataFrame(frame: dataFrame)
@@ -302,10 +311,16 @@ public struct OfflineRecordingData<DataType> {
             case is OfflineHrData:
                 let offlineHrData =  try OfflineHrData.parseDataFromDataFrame(frame: dataFrame)
                 (builder as! OfflineHrData).samples.append(contentsOf: offlineHrData.samples)
+            case is TemperatureData:
+                let temperatureData =  try TemperatureData.parseDataFromDataFrame(frame: dataFrame)
+                (builder as! TemperatureData).samples.append(contentsOf: temperatureData.samples)
+            case is SkinTemperatureData:
+                let skinTemperatureData =  try SkinTemperatureData.parseDataFromDataFrame(frame: dataFrame)
+                (builder as! SkinTemperatureData).samples.append(contentsOf: skinTemperatureData.samples)
             default:
                 throw OfflineRecordingError.offlineRecordingErrorSecretMissing
             }
-
+            
             if (offset < decryptedData.count) {
                 packetSize = try parsePacketSize(packetSize: decryptedData.subdataSafe(in:offset..<(offset + PACKET_SIZE_LENGTH)))
                 offset += PACKET_SIZE_LENGTH

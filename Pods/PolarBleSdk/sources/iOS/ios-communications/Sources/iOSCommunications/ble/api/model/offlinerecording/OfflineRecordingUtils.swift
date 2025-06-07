@@ -12,6 +12,8 @@ class OfflineRecordingUtils {
             case "PPG": return .ppg
             case "PPI": return .ppi
             case "HR": return .offline_hr
+            case "TEMP": return .temperature
+            case "SKINTEMP": return .skinTemperature
             default: throw BleGattException.gattDataError(description: "Unknown offline file \(fileName)")
         }
     }
