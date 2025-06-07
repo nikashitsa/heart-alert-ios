@@ -104,7 +104,7 @@ class MainController: UIViewController,
                     pickerView.frame = vc.view.bounds
                     vc.view.addSubview(pickerView)
                 }
-                self.devices.append((value.deviceId, value.name))
+                self.devices.append((value.deviceId.isEmpty ? value.address.uuidString : value.deviceId, value.name))
                 pickerView.reloadAllComponents()
             }
         }
@@ -147,19 +147,6 @@ class MainController: UIViewController,
         print("DISCONNECTED: \(identifier)")
         PolarBleSdkManager.shared.status = "Disconnected"
     }
-
-    func hrFeatureReady(_ identifier: String) {
-        print("HR READY.")
-        if (self.view.window == nil) { return }        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let setupVc = storyboard.instantiateViewController(identifier: "SetupController")
-        setupVc.modalPresentationStyle = .fullScreen
-        setupVc.modalTransitionStyle = .flipHorizontal
-        present(setupVc, animated: true, completion: {
-            self.loadingIndicator.isHidden = true
-            self.connectButton.isHidden = false
-        })
-    }
     
     func ftpFeatureReady(_ identifier: String) {
     
@@ -168,6 +155,19 @@ class MainController: UIViewController,
     
     }
     func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdk.PolarBleSdkFeature) {
-    
+        if feature == .feature_hr {
+            DispatchQueue.main.async {
+                print("HR READY.")
+                if (self.view.window == nil) { return }
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let setupVc = storyboard.instantiateViewController(identifier: "SetupController")
+                setupVc.modalPresentationStyle = .fullScreen
+                setupVc.modalTransitionStyle = .flipHorizontal
+                self.present(setupVc, animated: true, completion: {
+                    self.loadingIndicator.isHidden = true
+                    self.connectButton.isHidden = false
+                })
+            }
+        }
     }
 }

@@ -1,0 +1,12 @@
+diff --git a/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift b/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift
+index e1edc3a..01f08cb 100644
+--- a/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift
++++ b/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift
+@@ -162,6 +162,7 @@ import UIKit
+     }
+     
+     fileprivate func deviceFilter(_ content: BleAdvertisementContent) -> Bool {
++        return content.containsService(BleHrClient.HR_SERVICE)
+         return content.polarDeviceId.count != 0 && content.polarDeviceType != "mobile"
+     }
+     
