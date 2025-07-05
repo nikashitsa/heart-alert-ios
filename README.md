@@ -1,6 +1,6 @@
-# Polar Alert
+# Heart Alert
 
-![cover](https://raw.githubusercontent.com/nikashitsa/polar-alert-ios/master/cover.png)
+![cover](https://raw.githubusercontent.com/nikashitsa/heart-alert-ios/master/cover.png)
 
 ## Usage
 
@@ -11,19 +11,12 @@
 
 ### Supported devices
 
-- Polar H10
-- Polar H9
-- Polar H7
-- Polar OH1
-- Polar Verity Sense
+- Polar H10, H9, H7, OH1, Verity Sense
+- Garmin, Decathlon, Wahoo, CooSpo, Scosche, and more
 
 ### Other platforms
 
 - [Android](https://github.com/nikashitsa/polar-alert-android)
 - [Web](https://github.com/nikashitsa/polar-h10-alert)
-
-### License
-
-This software is using Polar SDK under [Polar SDK License](Polar_SDK_License.txt).
 
 [Buy me a coffee](https://www.paypal.com/donate/?hosted_button_id=DR69Z26Z8DJVE) ☕️

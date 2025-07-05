@@ -6,3 +6,4 @@ use_frameworks!
 target 'polar-alert-ios' do
     pod 'PolarBleSdk', '6.4.0'
 end
+
