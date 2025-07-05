@@ -16,4 +16,10 @@
    <FileRef
       location = "group:cover.png">
    </FileRef>
+   <FileRef
+      location = "group:privacy-policy.md">
+   </FileRef>
+   <FileRef
+      location = "group:terms-and-conditions.md">
+   </FileRef>
 </Workspace>
