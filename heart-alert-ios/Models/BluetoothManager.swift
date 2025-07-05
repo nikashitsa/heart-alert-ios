@@ -17,7 +17,7 @@ class BluetoothManager: ObservableObject {
     @Published var deviceConnectionState: DeviceConnectionState = DeviceConnectionState.disconnected("")
     @Published var deviceName: String = ""
     @Published var deviceAddress: String = ""
-    @Published var deviceSearch: DeviceSearch = DeviceSearch()
+    @Published var foundDevices: [DeviceInfo] = []
     @Published var hrFeature: HrFeature = HrFeature()
     @Published var batteryStatusFeature: BatteryStatusFeature = BatteryStatusFeature()
     
@@ -84,32 +84,19 @@ class BluetoothManager: ObservableObject {
     func stopDevicesSearch() {
         searchDevicesTask?.cancel()
         searchDevicesTask = nil
-        Task { @MainActor in
-            self.deviceSearch.isSearching = DeviceSearchState.success
-        }
+        foundDevices.removeAll()
     }
     
     private func searchDevicesAsync() async {
-        Task { @MainActor in
-            self.deviceSearch.foundDevices.removeAll()
-            self.deviceSearch.isSearching = DeviceSearchState.inProgress
-        }
-        
         do {
             for try await value in api.searchForDevice().values {
                 Task { @MainActor in
-                    self.deviceSearch.foundDevices.append(DeviceInfo(from: value))
+                    self.foundDevices.append(DeviceInfo(from: value))
                 }
-            }
-            Task { @MainActor in
-                self.deviceSearch.isSearching = DeviceSearchState.success
             }
         } catch let err {
             let deviceSearchFailed = "device search failed: \(err)"
             NSLog(deviceSearchFailed)
-            Task { @MainActor in
-                self.deviceSearch.isSearching = DeviceSearchState.failed(error: deviceSearchFailed)
-            }
         }
     }
     

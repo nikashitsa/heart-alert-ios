@@ -11,7 +11,7 @@ struct DevicePickerView: View {
     @State var timeoutTask: Task<Void, Never>? = nil
     
     private var sortedDevices: [DeviceInfo] {
-        bluetoothManager.deviceSearch.foundDevices.sorted { $0.rssi > $1.rssi }
+        bluetoothManager.foundDevices.sorted { $0.rssi > $1.rssi }
     }
     
     var body: some View {
@@ -19,7 +19,7 @@ struct DevicePickerView: View {
             if bluetoothManager.isBluetoothOn {
                 switch state {
                 case .searching:
-                    if sortedDevices.count == 0 {
+                    if sortedDevices.isEmpty {
                         Text("Searching for devices...").setFontStyle(Fonts.textLgBold)
                         VStack {
                             ProgressView()
@@ -27,8 +27,14 @@ struct DevicePickerView: View {
                             .onAppear {
                                 bluetoothManager.startDevicesSearch()
                                 timeoutTask = Task {
-                                    try? await Task.sleep(nanoseconds: 10 * 1_000_000_000) // 10 sec
-                                    if sortedDevices.count == 0 {
+                                    do {
+                                        try await Task.sleep(nanoseconds: 10 * 1_000_000_000) // 10 sec
+                                    } catch {
+                                        if Task.isCancelled {
+                                            return
+                                        }
+                                    }
+                                    if sortedDevices.isEmpty {
                                         bluetoothManager.stopDevicesSearch()
                                         state = .notFound
                                     }
@@ -65,7 +71,6 @@ struct DevicePickerView: View {
                     }.frame(maxHeight: .infinity)
                     Button(action: {
                         state = .searching
-                        bluetoothManager.startDevicesSearch()
                     }) {
                         Text("Try again").setFontStyle(Fonts.textMdBold)
                     }.buttonStyle(PrimaryButton())
@@ -77,9 +82,6 @@ struct DevicePickerView: View {
                         .setFontStyleMultiline(Fonts.textMd)
                 }.frame(maxHeight: .infinity)
             }
-        }
-        .onAppear {
-            bluetoothManager.deviceSearch.foundDevices.removeAll()
         }
         .onDisappear {
             bluetoothManager.stopDevicesSearch()

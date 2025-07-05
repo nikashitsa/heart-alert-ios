@@ -22,4 +22,7 @@
    <FileRef
       location = "group:terms-and-conditions.md">
    </FileRef>
+   <FileRef
+      location = "group:sdk.patch">
+   </FileRef>
 </Workspace>

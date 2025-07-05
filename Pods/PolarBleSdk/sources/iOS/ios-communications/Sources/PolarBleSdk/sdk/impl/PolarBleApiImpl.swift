@@ -162,7 +162,7 @@ import UIKit
     }
     
     fileprivate func deviceFilter(_ content: BleAdvertisementContent) -> Bool {
-        return content.containsService(BleHrClient.HR_SERVICE)
+        return content.containsService(BleHrClient.HR_SERVICE) && content.name != ""
         return content.polarDeviceId.count != 0 && content.polarDeviceType != "mobile"
     }
     
