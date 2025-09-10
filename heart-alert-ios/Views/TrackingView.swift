@@ -17,6 +17,9 @@ struct TrackingView: View {
     let throttleInterval: TimeInterval = 0.69 // sec
     @State private var prevConnectionState: DeviceConnectionState = .connected("")
     
+    @State private var timerDisconnected: Timer? = nil
+    @State private var timerReconnecting: Timer? = nil
+    
     var body: some View {
         ZStack {
             Colors.black.ignoresSafeArea()
@@ -55,6 +58,13 @@ struct TrackingView: View {
                     .onAppear {
                         prevConnectionState = .disconnected("")
                         SoundManager.shared.play(.disconnected)
+                        timerDisconnected = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
+                            SoundManager.shared.play(.disconnected)
+                        }
+                    }
+                    .onDisappear {
+                        timerDisconnected?.invalidate()
+                        timerDisconnected = nil
                     }
             case .connecting:
                 Text("Reconnecting...")
@@ -62,6 +72,13 @@ struct TrackingView: View {
                     .onAppear {
                         prevConnectionState = .disconnected("")
                         SoundManager.shared.play(.reconnecting)
+                        timerReconnecting = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
+                            SoundManager.shared.play(.reconnecting)
+                        }
+                    }
+                    .onDisappear {
+                        timerReconnecting?.invalidate()
+                        timerReconnecting = nil
                     }
             case .connected:
                 if bluetoothManager.hrFeature.isSupported {
