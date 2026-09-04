@@ -54,7 +54,7 @@ struct SettingsView: View {
                                         isPresented: $showBpmMinPicker
                                     ) {
                                         BpmPickerView(
-                                            range: 40...settings.bpmUpperValue,
+                                            range: 30...settings.bpmUpperValue,
                                             title: "Choose min BPM",
                                             selectedBpm: settings.bpmLowerValue
                                         ) { bpm in
