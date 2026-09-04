@@ -24,6 +24,8 @@ struct TrackingView: View {
     // range, or until the initial delay times out, whichever comes first
     @State private var initialDelayPassed = false
     @State private var trackingStartedAt = Date()
+    /// Whether this session ran long enough to count, and to be worth a review prompt
+    @State private var sessionRan = false
 
     private var initialDelayActive: Bool {
         if initialDelayPassed { return false }
@@ -53,7 +55,8 @@ struct TrackingView: View {
                 Button(action: {
                     bluetoothManager.onlineStreamStop(feature: .hr)
                     onCancel()
-                    requestReview()
+                    // Only worth asking after a session that actually ran.
+                    if sessionRan { requestReview() }
                 }) {
                     Text("Stop").setFontStyle(Fonts.textMdBold)
                 }.buttonStyle(PrimaryButton())
@@ -61,6 +64,18 @@ struct TrackingView: View {
             .foregroundColor(Colors.white)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        // Counts the session at the one minute mark rather than on Stop, so quitting
+        // mid-session cannot dodge it. Cancelled when this view goes away, which is what
+        // keeps a shorter session from counting at all.
+        .task {
+            try? await Task.sleep(nanoseconds: UInt64(Settings.sessionMinDuration) * 1_000_000_000)
+            // try? swallows the cancellation, so it has to be checked by hand
+            guard !Task.isCancelled,
+                  Date().timeIntervalSince(trackingStartedAt) >= Settings.sessionMinDuration
+            else { return }
+            sessionRan = true
+            settings.countTrackedSession()
         }
     }
 

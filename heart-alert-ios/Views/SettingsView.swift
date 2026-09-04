@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var showOutOfRangeForPicker = false
     @State private var showInitialDelayPicker = false
     @State private var showAdvanced = false
+    @State private var showPaywall = false
 
     @StateObject private var settings = Settings.shared
 
@@ -233,12 +234,31 @@ struct SettingsView: View {
                 }.scrollBounceBehavior(.basedOnSize, axes: [.vertical])
 
                 Button(action: {
-                    onSuccess()
+                    if settings.canStartSession {
+                        onSuccess()
+                    } else {
+                        showPaywall = true
+                    }
                 }) {
-                    Text("Start").setFontStyle(Fonts.textMdBold)
+                    // A user who never had free sessions to spend, or who has used them all,
+                    // just gets "Start".
+                    let freeLeft = settings.freeSessionsLeft
+                    Text(freeLeft > 0 ? "Start for free (\(freeLeft))" : "Start")
+                        .setFontStyle(Fonts.textMdBold)
                 }
                 .buttonStyle(PrimaryButton())
                 .padding()
+                .sheet(
+                    isPresented: $showPaywall,
+                    onDismiss: {
+                        // Covers a swipe-away after the purchase landed; Continue takes the
+                        // same path.
+                        if settings.canStartSession { onSuccess() }
+                    }
+                ) {
+                    PaywallView()
+                        .presentationDetents([.medium])
+                }
             }.foregroundColor(Colors.white)
         }
     }

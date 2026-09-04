@@ -13,6 +13,12 @@ class Settings: ObservableObject {
     static let initialDelayOptions = [0, initialDelayUntilInRange, 60, 300, 600, 900]
     static let initialDelayLabels = [0: "off", initialDelayUntilInRange: "until in range"]
 
+    /// Tracking sessions a new user gets before the paywall.
+    static let freeSessionLimit = 5
+
+    /// A session only counts, and only earns a review prompt, once it passes this.
+    static let sessionMinDuration: TimeInterval = 60
+
     @Published var bpmLowerValue: Int
     @Published var bpmUpperValue: Int
     @Published var volume: Int
@@ -21,9 +27,28 @@ class Settings: ObservableObject {
     @Published var outOfRangeFor: Int
     @Published var initialDelay: Int
 
+    /// Entitled, whether bought or granted for being an existing user.
+    @Published private(set) var unlimitedAccess: Bool
+    @Published private(set) var trackedSessions: Int
+
+    /// Whether tracking may start: entitled, or still has free sessions left.
+    var canStartSession: Bool {
+        unlimitedAccess || trackedSessions < Settings.freeSessionLimit
+    }
+
+    /// Free sessions still on offer, for the Start button's label. Zero once they are used up
+    /// and also for an entitled user, who should not be told about free sessions at all.
+    var freeSessionsLeft: Int {
+        unlimitedAccess ? 0 : max(0, Settings.freeSessionLimit - trackedSessions)
+    }
+
     private var cancellables = Set<AnyCancellable>()
-    
+
     private init() {
+        // Must stay above the sinks at the bottom of this init: they publish immediately on
+        // subscribe, so a moment later every key exists and the evidence of seniority is gone.
+        Settings.resolveEntitlementIfNeeded()
+
         // Load from UserDefaults
         self.bpmLowerValue = UserDefaults.standard.object(forKey: "bpmLowerValue") as? Int ?? 110
         self.bpmUpperValue = UserDefaults.standard.object(forKey: "bpmUpperValue") as? Int ?? 140
@@ -32,6 +57,8 @@ class Settings: ObservableObject {
         self.alertInterval = UserDefaults.standard.object(forKey: "alertInterval") as? Int ?? 1
         self.outOfRangeFor = UserDefaults.standard.object(forKey: "outOfRangeFor") as? Int ?? 0
         self.initialDelay = UserDefaults.standard.object(forKey: "initialDelay") as? Int ?? 0
+        self.unlimitedAccess = UserDefaults.standard.bool(forKey: "unlimitedAccess")
+        self.trackedSessions = UserDefaults.standard.integer(forKey: "trackedSessions")
 
         SoundManager.shared.start()
         SoundManager.shared.volume = Float(self.volume) / 100
@@ -71,5 +98,41 @@ class Settings: ObservableObject {
         $initialDelay
             .sink { UserDefaults.standard.set($0, forKey: "initialDelay") }
             .store(in: &cancellables)
+
+        $trackedSessions
+            .sink { UserDefaults.standard.set($0, forKey: "trackedSessions") }
+            .store(in: &cancellables)
+    }
+
+    /// Only ever set to true: a grandfathered user has no App Store purchase, so a
+    /// "no purchase found" restore must never revoke it.
+    func grantUnlimitedAccess() {
+        guard !unlimitedAccess else { return }
+        UserDefaults.standard.set(true, forKey: "unlimitedAccess")
+        unlimitedAccess = true
+    }
+
+    /// Counts one completed session. Stops at the free limit, and never counts for an
+    /// entitled user.
+    func countTrackedSession() {
+        guard !unlimitedAccess, trackedSessions < Settings.freeSessionLimit else { return }
+        trackedSessions += 1
+    }
+
+    /// Settings the released 2.0.1 wrote. Their presence means the user was here before the
+    /// paywall. Frozen on purpose: a setting added later is not evidence of seniority.
+    private static let legacyKeys = ["bpmLowerValue", "bpmUpperValue", "volume", "vibrate"]
+
+    /// Grants unlimited access to everyone who was already using the app when the paywall
+    /// shipped. Latched, so a later launch — by which point these keys always exist — cannot
+    /// re-decide. Idempotent, and safe to call from anywhere, but it MUST run before anything
+    /// writes a settings key.
+    static func resolveEntitlementIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: "entitlementResolved") else { return }
+        if legacyKeys.contains(where: { defaults.object(forKey: $0) != nil }) {
+            defaults.set(true, forKey: "unlimitedAccess")
+        }
+        defaults.set(true, forKey: "entitlementResolved")
     }
 }

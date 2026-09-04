@@ -52,6 +52,16 @@ struct PrimaryButton: ButtonStyle {
     }
 }
 
+struct LinkButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity)
+            .foregroundStyle(Colors.white)
+            .clipShape(.capsule)
+    }
+}
+
 enum TrackingState {
     case good
     case low

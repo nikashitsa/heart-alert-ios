@@ -25,4 +25,7 @@
    <FileRef
       location = "group:sdk.patch">
    </FileRef>
+   <FileRef
+      location = "group:Products.storekit">
+   </FileRef>
 </Workspace>
