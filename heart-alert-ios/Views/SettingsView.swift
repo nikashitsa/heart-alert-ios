@@ -4,13 +4,17 @@ struct SettingsView: View {
     var onSuccess: () -> Void = {}
 
     @EnvironmentObject private var bluetoothManager: BluetoothManager
-    
+
     @State private var showDevicePicker = false
     @State private var showBpmMaxPicker = false
     @State private var showBpmMinPicker = false
-    
+    @State private var showIntervalPicker = false
+    @State private var showOutOfRangeForPicker = false
+    @State private var showInitialDelayPicker = false
+    @State private var showAdvanced = false
+
     @StateObject private var settings = Settings.shared
-    
+
     var volumeBinding: Binding<Double> {
         Binding<Double>(
             get: { Double(settings.volume) },
@@ -20,7 +24,7 @@ struct SettingsView: View {
             }
         )
     }
-    
+
     var vibrateBinding: Binding<Bool> {
         Binding<Bool>(
             get: { settings.vibrate },
@@ -29,15 +33,15 @@ struct SettingsView: View {
             }
         )
     }
-    
+
     var body: some View {
         ZStack {
             Colors.black.ignoresSafeArea()
-            VStack {                
+            VStack {
                 ScrollView {
                     VStack (alignment: .leading, spacing: 40) {
                         Text("Settings").setFontStyle(Fonts.textXlBold)
-                        
+
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Heart rate").setFontStyle(Fonts.textLgBold)
                             VStack (spacing: 0) {
@@ -85,7 +89,7 @@ struct SettingsView: View {
                                 }.frame(height: 40)
                             }
                         }
-                        
+
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Alert").setFontStyle(Fonts.textLgBold)
                             VStack (spacing: 4) {
@@ -102,15 +106,100 @@ struct SettingsView: View {
                                 )
                                 .frame(height: 40)
                                 .accentColor(Colors.red)
+                                VStack(spacing: 0) {
+                                    Button(action: {
+                                        withAnimation { showAdvanced.toggle() }
+                                    }) {
+                                        HStack(spacing: 8) {
+                                            Text("Advanced").setFontStyle(Fonts.textMd)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                                .rotationEffect(.degrees(showAdvanced ? 90 : 0))
+                                        }
+                                        .frame(height: 40)
+                                    }
+
+                                    if showAdvanced {
+                                        VStack (spacing: 0) {
+                                            HStack {
+                                                Toggle(isOn: vibrateBinding) {
+                                                    Text("Vibration").setFontStyle(Fonts.textMd)
+                                                }.tint(Colors.red)
+                                            }.frame(height: 40)
+
+                                            HStack {
+                                                Text("Interval").setFontStyle(Fonts.textMd)
+                                                Spacer()
+                                                Button(action: {
+                                                    showIntervalPicker = true
+                                                }) {
+                                                    Text(IntervalPickerView.label(settings.alertInterval)).setFontStyle(Fonts.textMd)
+                                                    Image(systemName: "chevron.right")
+                                                }
+                                                .sheet(
+                                                    isPresented: $showIntervalPicker
+                                                ) {
+                                                    IntervalPickerView(
+                                                        options: Settings.alertIntervalOptions,
+                                                        title: "Choose alert interval",
+                                                        selectedInterval: settings.alertInterval
+                                                    ) { interval in
+                                                        settings.alertInterval = interval
+                                                    }.presentationDetents([.medium])
+                                                }
+                                            }.frame(height: 40)
+
+                                            HStack {
+                                                Text("Out of range for").setFontStyle(Fonts.textMd)
+                                                Spacer()
+                                                Button(action: {
+                                                    showOutOfRangeForPicker = true
+                                                }) {
+                                                    Text(IntervalPickerView.label(settings.outOfRangeFor)).setFontStyle(Fonts.textMd)
+                                                    Image(systemName: "chevron.right")
+                                                }
+                                                .sheet(
+                                                    isPresented: $showOutOfRangeForPicker
+                                                ) {
+                                                    IntervalPickerView(
+                                                        options: Settings.outOfRangeForOptions,
+                                                        title: "Alert after out of range for",
+                                                        selectedInterval: settings.outOfRangeFor
+                                                    ) { seconds in
+                                                        settings.outOfRangeFor = seconds
+                                                    }.presentationDetents([.medium])
+                                                }
+                                            }.frame(height: 40)
+
+                                            HStack {
+                                                Text("Initial delay").setFontStyle(Fonts.textMd)
+                                                Spacer()
+                                                Button(action: {
+                                                    showInitialDelayPicker = true
+                                                }) {
+                                                    Text(IntervalPickerView.label(settings.initialDelay, Settings.initialDelayLabels)).setFontStyle(Fonts.textMd)
+                                                    Image(systemName: "chevron.right")
+                                                }
+                                                .sheet(
+                                                    isPresented: $showInitialDelayPicker
+                                                ) {
+                                                    IntervalPickerView(
+                                                        options: Settings.initialDelayOptions,
+                                                        labels: Settings.initialDelayLabels,
+                                                        title: "Choose initial delay",
+                                                        selectedInterval: settings.initialDelay
+                                                    ) { seconds in
+                                                        settings.initialDelay = seconds
+                                                    }.presentationDetents([.medium])
+                                                }
+                                            }.frame(height: 40)
+                                        }
+                                    }
+                                }
                                 
-                                HStack {
-                                    Toggle(isOn: vibrateBinding) {
-                                        Text("Vibration").setFontStyle(Fonts.textMd)
-                                    }.tint(Colors.red)
-                                }.frame(height: 40)
                             }
                         }
-                        
+
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Connection").setFontStyle(Fonts.textLgBold)
                             VStack (spacing: 0) {
@@ -142,7 +231,7 @@ struct SettingsView: View {
                         }
                     }.padding()
                 }.scrollBounceBehavior(.basedOnSize, axes: [.vertical])
-                
+
                 Button(action: {
                     onSuccess()
                 }) {

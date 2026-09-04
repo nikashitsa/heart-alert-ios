@@ -56,7 +56,17 @@ enum TrackingState {
     case good
     case low
     case high
-    
+
+    static func of(_ bpm: Int, _ bpmMin: Int, _ bpmMax: Int) -> TrackingState {
+        if bpm > bpmMax {
+            return .high
+        }
+        if bpm < bpmMin {
+            return .low
+        }
+        return .good
+    }
+
     var heartBeatDuration: Double {
         switch self {
             case .good:
@@ -76,17 +86,6 @@ enum TrackingState {
                 return "Too low!"
             case .high:
                 return "Too high!"
-        }
-    }
-    
-    var heartBeatColor: Color {
-        switch self {
-        case .good:
-            return Colors.white
-        case .low:
-            return Colors.red
-        case .high:
-            return Colors.red
         }
     }
     
