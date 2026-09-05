@@ -12,7 +12,7 @@ struct PaywallView: View {
         VStack {
             // Read on every update rather than seeded into state: the sheet has to flip to
             // Success the moment the purchase lands, which may be while the user is watching.
-            if settings.unlimitedAccess {
+            if settings.entitled {
                 paywallBody(
                     title: "Success",
                     description: "Unlimited access is now available."

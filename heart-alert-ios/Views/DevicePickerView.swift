@@ -7,6 +7,7 @@ struct DevicePickerView: View {
     
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var bluetoothManager: BluetoothManager
+    @StateObject private var settings = Settings.shared
     
     @State var timeoutTask: Task<Void, Never>? = nil
     
@@ -16,7 +17,9 @@ struct DevicePickerView: View {
     
     var body: some View {
         VStack {
-            if bluetoothManager.isBluetoothOn {
+            // Demo mode must not depend on the radio, but isBluetoothOn itself is left
+            // truthful so the rest of the app is not lied to.
+            if bluetoothManager.isBluetoothOn || settings.demoMode {
                 switch state {
                 case .searching:
                     if sortedDevices.isEmpty {

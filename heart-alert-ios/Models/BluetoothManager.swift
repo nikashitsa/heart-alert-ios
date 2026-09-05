@@ -26,7 +26,13 @@ class BluetoothManager: ObservableObject {
     private var onlineStreamingDisposables: [PolarDeviceDataType: Disposable?] = [:]
     
     private var searchDevicesTask: Task<Void, Never>? = nil
-    
+
+    private var demoSeedTask: Task<Void, Never>? = nil
+    private var demoConnectTask: Task<Void, Never>? = nil
+    private var demoHrTask: Task<Void, Never>? = nil
+
+    private func isDemoAddress(_ address: String) -> Bool { address == DemoDevice.addressString }
+
     init() {
         self.isBluetoothOn = api.isBlePowered
         
@@ -44,6 +50,9 @@ class BluetoothManager: ObservableObject {
     
     func connectToDevice() {
         if case .disconnected(let deviceId) = deviceConnectionState {
+            if isDemoAddress(deviceId) {
+                return demoConnect(deviceId)
+            }
             do {
                 try api.connectToDevice(deviceId)
             } catch let err {
@@ -51,15 +60,64 @@ class BluetoothManager: ObservableObject {
             }
         }
     }
-    
+
     func disconnectFromDevice() {
-        if case .connected(let deviceId) = deviceConnectionState {
-            do {
-                try api.disconnectFromDevice(deviceId)
-            } catch let err {
-                NSLog("Failed to disconnect from \(deviceId). Reason \(err)")
-            }
+        // The real guard only accepts .connected. Demo also accepts .connecting, or a
+        // connection interrupted mid-handshake would sit there forever and hang
+        // DevicePickerView.connect(), which waits for .disconnected before reconnecting.
+        let deviceId: String
+        switch deviceConnectionState {
+        case .connected(let id):
+            deviceId = id
+        case .connecting(let id) where isDemoAddress(id):
+            deviceId = id
+        default:
+            return
         }
+        if isDemoAddress(deviceId) {
+            return demoDisconnect(deviceId)
+        }
+        do {
+            try api.disconnectFromDevice(deviceId)
+        } catch let err {
+            NSLog("Failed to disconnect from \(deviceId). Reason \(err)")
+        }
+    }
+
+    /// - Important: main actor only, and it must publish `.connecting` and `.connected` in
+    ///   separate turns. `DevicePickerView.connect()` consumes this through
+    ///   `$deviceConnectionState.values`, an AsyncPublisher with a demand of one: it replays
+    ///   the current value when it attaches, but anything published while demand is zero is
+    ///   dropped rather than queued. Two writes in one turn would lose `.connected` and hang
+    ///   the picker on "Connecting..." forever — that branch has no timeout.
+    private func demoConnect(_ deviceId: String) {
+        demoConnectTask?.cancel()
+        deviceConnectionState = .connecting(deviceId) // this turn: replayed on attach
+        demoConnectTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            guard !Task.isCancelled, let self else { return }
+            // A disconnect, or a second attempt, during the sleep wins.
+            guard case .connecting(let id) = self.deviceConnectionState, id == deviceId else { return }
+            // Separate publishers, so these cannot steal demand from deviceConnectionState.
+            self.deviceName = DemoDevice.name
+            self.deviceAddress = deviceId
+            self.hrFeature = HrFeature(isSupported: true)
+            self.batteryStatusFeature = BatteryStatusFeature(isSupported: true,
+                                                             batteryLevel: DemoDevice.batteryLevel)
+            self.deviceConnectionState = .connected(deviceId) // next turn: the one delivery
+        }
+    }
+
+    /// Synchronous on purpose: `connect()` attaches its first loop after this returns, so
+    /// `.disconnected` is replayed and nothing has to be delivered at all.
+    private func demoDisconnect(_ deviceId: String) {
+        demoConnectTask?.cancel()
+        demoConnectTask = nil
+        demoHrTask?.cancel()
+        demoHrTask = nil
+        hrFeature = HrFeature()
+        batteryStatusFeature = BatteryStatusFeature()
+        deviceConnectionState = .disconnected(deviceId)
     }
     
     func autoConnect() {
@@ -76,14 +134,31 @@ class BluetoothManager: ObservableObject {
     }
     
     func startDevicesSearch() {
+        // Demo mode offers the fake strap and nothing else: the real scan never starts, so a
+        // real device in the room cannot appear beside it and be picked by mistake.
+        guard !Settings.shared.demoMode else {
+            // Seeded on a delay so it reads as a discovery rather than appearing
+            // pre-populated, and well inside the picker's 10s "not found" timeout.
+            demoSeedTask = Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 600_000_000)
+                guard !Task.isCancelled, let self else { return }
+                // Guard against a double start; nothing here dedupes.
+                guard !self.foundDevices.contains(where: { $0.id == DemoDevice.info.id }) else { return }
+                self.foundDevices.append(DemoDevice.info)
+            }
+            return
+        }
+
         searchDevicesTask = Task {
             await searchDevicesAsync()
         }
     }
-    
+
     func stopDevicesSearch() {
         searchDevicesTask?.cancel()
         searchDevicesTask = nil
+        demoSeedTask?.cancel()
+        demoSeedTask = nil
         foundDevices.removeAll()
     }
     
@@ -101,10 +176,17 @@ class BluetoothManager: ObservableObject {
     }
     
     func onlineStreamStop(feature: PolarBleSdk.PolarDeviceDataType) {
+        if feature == .hr {
+            demoHrTask?.cancel()
+            demoHrTask = nil
+        }
         onlineStreamingDisposables[feature]??.dispose()
     }
-    
+
     func hrStreamStart(_ onBeat: @escaping (UInt8) -> Void) {
+        if case .connected(let deviceId) = deviceConnectionState, isDemoAddress(deviceId) {
+            return demoHrStart(onBeat)
+        }
         if case .connected(let deviceId) = deviceConnectionState {
             onlineStreamingDisposables[.hr] = api.startHrStreaming(deviceId)
                 .do(onDispose: {})
@@ -120,6 +202,37 @@ class BluetoothManager: ObservableObject {
                 }
         } else {
             NSLog("Device is not connected \(deviceConnectionState)")
+        }
+    }
+
+    /// A triangle wave that always crosses both of the user's limits, so every alert fires
+    /// without the reviewer touching anything. Delivered on the main actor to match the real
+    /// stream, which the SDK dispatches on DispatchQueue.main.
+    private func demoHrStart(_ onBeat: @escaping (UInt8) -> Void) {
+        // bpmReadout()'s .onAppear re-fires whenever the connection state blips, so this has
+        // to be idempotent or the sweeps stack up.
+        demoHrTask?.cancel()
+        demoHrTask = Task { @MainActor in
+            let start = Date()
+            let period: TimeInterval = 48 // one full sweep down and back
+
+            while !Task.isCancelled {
+                // Re-read every tick: the reviewer can change the range from Settings.
+                // Reaching past the pickers' own 30...240 bounds is deliberate — TrackingState
+                // compares strictly, so clamping to 30 would never fire "Too low!" for someone
+                // who sets the minimum to 30.
+                let low = Double(max(20, Settings.shared.bpmLowerValue - 20))
+                let high = Double(min(250, Settings.shared.bpmUpperValue + 20))
+
+                // Phase from the wall clock rather than an accumulator, so a restarted stream
+                // or a spell in the background resumes at the right point instead of drifting.
+                let phase = Date().timeIntervalSince(start)
+                    .truncatingRemainder(dividingBy: period) / period
+                let triangle = phase < 0.5 ? phase * 2 : (1 - phase) * 2
+
+                onBeat(UInt8(clamping: Int((low + (high - low) * triangle).rounded())))
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+            }
         }
     }
 }

@@ -31,15 +31,29 @@ class Settings: ObservableObject {
     @Published private(set) var unlimitedAccess: Bool
     @Published private(set) var trackedSessions: Int
 
-    /// Whether tracking may start: entitled, or still has free sessions left.
+    /// Reviewer demo mode, unlocked from ConnectView. In memory only — never persisted, so it
+    /// dies with the process and a real user who trips it loses nothing by relaunching.
+    @Published var demoMode = false
+
+    /// Shadow entitlement for demo mode. Lets the paywall be reached and re-tested without
+    /// ever reading, granting or clearing the real, write-once `unlimitedAccess`.
+    @Published var demoUnlocked = false
+
+    /// The entitlement the UI should believe. Demo mode substitutes its own, so the paywall
+    /// shows on the first Start even on a device that already owns the product.
+    var entitled: Bool { demoMode ? demoUnlocked : unlimitedAccess }
+
+    /// Whether tracking may start: entitled, or still has free sessions left. Demo mode has no
+    /// free sessions, so the reviewer meets the paywall immediately.
     var canStartSession: Bool {
-        unlimitedAccess || trackedSessions < Settings.freeSessionLimit
+        entitled || (!demoMode && trackedSessions < Settings.freeSessionLimit)
     }
 
-    /// Free sessions still on offer, for the Start button's label. Zero once they are used up
-    /// and also for an entitled user, who should not be told about free sessions at all.
+    /// Free sessions still on offer, for the Start button's label. Zero once they are used up,
+    /// for an entitled user who should not be told about free sessions at all, and in demo
+    /// mode — where `canStartSession` grants none, so advertising them would be a lie.
     var freeSessionsLeft: Int {
-        unlimitedAccess ? 0 : max(0, Settings.freeSessionLimit - trackedSessions)
+        (entitled || demoMode) ? 0 : max(0, Settings.freeSessionLimit - trackedSessions)
     }
 
     private var cancellables = Set<AnyCancellable>()
@@ -107,6 +121,9 @@ class Settings: ObservableObject {
     /// Only ever set to true: a grandfathered user has no App Store purchase, so a
     /// "no purchase found" restore must never revoke it.
     func grantUnlimitedAccess() {
+        // Set first: the guard below returns early on a device that already owns the product,
+        // and the demo flow still needs its own flag flipped.
+        if demoMode { demoUnlocked = true }
         guard !unlimitedAccess else { return }
         UserDefaults.standard.set(true, forKey: "unlimitedAccess")
         unlimitedAccess = true
