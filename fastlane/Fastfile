@@ -230,6 +230,7 @@ platform :ios do
       metadata_path: METADATA_DIR,
       screenshots_path: SCREENSHOTS_DIR,
       skip_binary_upload: true,
+      # skip_screenshots: true, # uncomment if you need to upload only metadata
       overwrite_screenshots: true,
       submit_for_review: false,
       precheck_include_in_app_purchases: false,
