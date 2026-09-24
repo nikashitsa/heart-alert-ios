@@ -1,175 +1,181 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "CFBundleDisplayName" : {
-      "comment" : "Bundle display name",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Heart Alert"
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "comment": "Bundle display name",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Heart Alert"
           }
         }
       },
-      "shouldTranslate" : false
+      "shouldTranslate": false
     },
-    "CFBundleName" : {
-      "comment" : "Bundle name",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "heart-alert-ios"
+    "CFBundleName": {
+      "comment": "Bundle name",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "heart-alert-ios"
           }
         }
       }
     },
-    "NSBluetoothAlwaysUsageDescription" : {
-      "comment" : "Bluetooth permission prompt",
-      "extractionState" : "manual",
-      "localizations" : {
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aplikace potřebuje přístup k Bluetooth, aby se mohla připojit k vašemu snímači srdečního tepu."
+    "NSBluetoothAlwaysUsageDescription": {
+      "comment": "Bluetooth permission prompt",
+      "extractionState": "manual",
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplikace potřebuje přístup k Bluetooth, aby se mohla připojit k vašemu snímači srdečního tepu."
           }
         },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die App benötigt Bluetooth-Zugriff, um sich mit deinem Herzfrequenzsensor zu verbinden."
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die App benötigt Bluetooth-Zugriff, um sich mit deinem Herzfrequenzsensor zu verbinden."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La app necesita acceso a Bluetooth para conectarse a tu monitor de frecuencia cardíaca."
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App needs Bluetooth access to connect to your heart rate monitor."
           }
         },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sovellus tarvitsee Bluetooth-yhteyden sykemittariisi yhdistämistä varten."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La app necesita acceso a Bluetooth para conectarse a tu monitor de frecuencia cardíaca."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’app a besoin d’accéder au Bluetooth pour se connecter à votre cardiofréquencemètre."
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sovellus tarvitsee Bluetooth-yhteyden sykemittariisi yhdistämistä varten."
           }
         },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "आपके हृदय गति मॉनिटर से जुड़ने के लिए ऐप को Bluetooth एक्सेस की आवश्यकता है।"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’app a besoin d’accéder au Bluetooth pour se connecter à votre cardiofréquencemètre."
           }
         },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Az alkalmazásnak Bluetooth-hozzáférésre van szüksége a pulzusmérőhöz való csatlakozáshoz."
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "आपके हृदय गति मॉनिटर से जुड़ने के लिए ऐप को Bluetooth एक्सेस की आवश्यकता है।"
           }
         },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aplikasi memerlukan akses Bluetooth untuk terhubung ke monitor detak jantung Anda."
+        "hu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Az alkalmazásnak Bluetooth-hozzáférésre van szüksége a pulzusmérőhöz való csatlakozáshoz."
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’app ha bisogno dell’accesso al Bluetooth per collegarsi al tuo cardiofrequenzimetro."
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplikasi memerlukan akses Bluetooth untuk terhubung ke monitor detak jantung Anda."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "心拍計に接続するために、アプリはBluetoothへのアクセスを必要とします。"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’app ha bisogno dell’accesso al Bluetooth per collegarsi al tuo cardiofrequenzimetro."
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "심박수 측정기에 연결하려면 앱에 Bluetooth 접근 권한이 필요합니다."
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "心拍計に接続するために、アプリはBluetoothへのアクセスを必要とします。"
           }
         },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appen trenger Bluetooth-tilgang for å koble til pulsmåleren din."
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "심박수 측정기에 연결하려면 앱에 Bluetooth 접근 권한이 필요합니다."
           }
         },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De app heeft Bluetooth-toegang nodig om verbinding te maken met je hartslagmeter."
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appen trenger Bluetooth-tilgang for å koble til pulsmåleren din."
           }
         },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aplikacja potrzebuje dostępu do Bluetooth, aby połączyć się z pulsometrem."
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De app heeft Bluetooth-toegang nodig om verbinding te maken met je hartslagmeter."
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O app precisa de acesso ao Bluetooth para se conectar ao seu monitor de frequência cardíaca."
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplikacja potrzebuje dostępu do Bluetooth, aby połączyć się z pulsometrem."
           }
         },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A app precisa de acesso ao Bluetooth para se ligar ao seu monitor de frequência cardíaca."
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O app precisa de acesso ao Bluetooth para se conectar ao seu monitor de frequência cardíaca."
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Приложению нужен доступ к Bluetooth, чтобы подключиться к вашему пульсометру."
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A app precisa de acesso ao Bluetooth para se ligar ao seu monitor de frequência cardíaca."
           }
         },
-        "sl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aplikacija potrebuje dostop do Bluetootha za povezavo z vašim merilnikom srčnega utripa."
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приложению нужен доступ к Bluetooth, чтобы подключиться к вашему пульсометру."
           }
         },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appen behöver Bluetooth-åtkomst för att ansluta till din pulsmätare."
+        "sl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplikacija potrebuje dostop do Bluetootha za povezavo z vašim merilnikom srčnega utripa."
           }
         },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "แอปต้องเข้าถึง Bluetooth เพื่อเชื่อมต่อกับเครื่องวัดอัตราการเต้นของหัวใจของคุณ"
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appen behöver Bluetooth-åtkomst för att ansluta till din pulsmätare."
           }
         },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uygulamanın nabız ölçerinize bağlanması için Bluetooth erişimi gerekiyor."
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แอปต้องเข้าถึง Bluetooth เพื่อเชื่อมต่อกับเครื่องวัดอัตราการเต้นของหัวใจของคุณ"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Застосунку потрібен доступ до Bluetooth, щоб підключитися до вашого пульсометра."
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamanın nabız ölçerinize bağlanması için Bluetooth erişimi gerekiyor."
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App 需要访问蓝牙，以连接你的心率监测器。"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Застосунку потрібен доступ до Bluetooth, щоб підключитися до вашого пульсометра."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App 需要访问蓝牙，以连接你的心率监测器。"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }
