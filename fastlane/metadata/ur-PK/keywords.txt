@@ -1,0 +1,1 @@
+hr monitor,pulse,bpm,zone 2,chest strap,polar,h10,garmin,bluetooth,نبض,ہارٹ ریٹ,دوڑ,سائیکلنگ,کارڈیو

@@ -1,5 +1,6 @@
 import Foundation
 import StoreKit
+import SwiftUI
 
 /// Something the paywall may want to tell the user about.
 enum StoreEvent {
@@ -28,7 +29,7 @@ final class Store: ObservableObject {
     @Published private(set) var busy = false
 
     /// A short line to show under the description, or nil when there is nothing to say.
-    @Published private(set) var notice: String?
+    @Published private(set) var notice: LocalizedStringKey?
 
     var displayPrice: String { product?.displayPrice ?? Store.fallbackPrice }
 
@@ -40,7 +41,7 @@ final class Store: ObservableObject {
         // MainView swaps its children with .id(flow), so a listener owned by a view's .task
         // would be torn down on the first navigation.
         updates = Task.detached(priority: .background) { [weak self] in
-            for await result in Transaction.updates {
+            for await result in StoreKit.Transaction.updates {
                 await self?.handle(result)
             }
         }
@@ -149,7 +150,7 @@ final class Store: ObservableObject {
     /// Grants access for anything the App Store says is already paid for.
     @discardableResult
     func refreshEntitlement() async -> Bool {
-        for await result in Transaction.currentEntitlements {
+        for await result in StoreKit.Transaction.currentEntitlements {
             guard case .verified(let transaction) = result,
                   transaction.productID == Store.productID,
                   transaction.revocationDate == nil else { continue }
@@ -159,7 +160,7 @@ final class Store: ObservableObject {
         return false
     }
 
-    private func handle(_ result: VerificationResult<Transaction>) async {
+    private func handle(_ result: VerificationResult<StoreKit.Transaction>) async {
         guard case .verified(let transaction) = result,
               transaction.productID == Store.productID else { return }
         if transaction.revocationDate == nil {
@@ -208,7 +209,7 @@ final class Store: ObservableObject {
     }
 
     /// What the paywall says about an outcome, or nil when it should stay quiet.
-    private static func text(for event: StoreEvent) -> String? {
+    private static func text(for event: StoreEvent) -> LocalizedStringKey? {
         switch event {
         case .userCancelled:
             return nil

@@ -87,7 +87,7 @@ struct TrackingView: View {
                     .setFontStyle(Fonts.textLg)
                     .task { await playRepeatedly(.disconnected) }
             case .connecting:
-                Text("Reconnecting...")
+                Text("Reconnecting…")
                     .setFontStyle(Fonts.textLg)
                     .task { await playRepeatedly(.reconnecting) }
             case .connected:
@@ -95,7 +95,7 @@ struct TrackingView: View {
                     bpmReadout()
                     alertStatus()
                 } else {
-                    Text("Reconnecting...").setFontStyle(Fonts.textLg)
+                    Text("Reconnecting…").setFontStyle(Fonts.textLg)
                 }
             }
         }
@@ -104,7 +104,7 @@ struct TrackingView: View {
     /// The big BPM number with the beating heart next to it.
     private func bpmReadout() -> some View {
         HStack(alignment: .bottom, spacing: 12) {
-            Text(bpm > -1 ? "\(bpm)" : "--")
+            Text(verbatim: bpm > -1 ? "\(bpm)" : "--")
                 .setFontStyle(Fonts.text2XlBold)
                 .monospacedDigit()
                 .frame(maxHeight: 80)
@@ -230,7 +230,8 @@ struct InitialDelayCountdown: View {
         // faster than once a second, so the displayed second never lags behind
         TimelineView(.periodic(from: since, by: 0.2)) { context in
             let remaining = Int(max(0, duration - context.date.timeIntervalSince(since)))
-            Text(String(format: "Initial delay %02d:%02d", remaining / 60, remaining % 60))
+            let time = String(format: "%02d:%02d", remaining / 60, remaining % 60)
+            Text("Initial delay \(time)")
                 .setFontStyle(Fonts.textLg).monospacedDigit()
         }
     }

@@ -1,0 +1,1 @@
+puls,pulsmätare,bpm,zon 2,pulsband,bröstband,polar,h10,garmin,bluetooth,löpning,cykling,träning

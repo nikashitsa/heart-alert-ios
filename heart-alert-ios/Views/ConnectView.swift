@@ -24,7 +24,7 @@ struct ConnectView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 100.0)
                         .onTapGesture { countDemoTap() }
-                    Text("Heart Alert").setFontStyle(Fonts.textXlBold)
+                    Text(verbatim: "Heart Alert").setFontStyle(Fonts.textXlBold)
                     if settings.demoMode {
                         Text("Demo mode").setFontStyle(Fonts.textMd)
                     }

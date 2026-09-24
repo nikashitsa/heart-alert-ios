@@ -89,7 +89,7 @@ class BluetoothManager: ObservableObject {
     ///   `$deviceConnectionState.values`, an AsyncPublisher with a demand of one: it replays
     ///   the current value when it attaches, but anything published while demand is zero is
     ///   dropped rather than queued. Two writes in one turn would lose `.connected` and hang
-    ///   the picker on "Connecting..." forever — that branch has no timeout.
+    ///   the picker on "Connecting…" forever — that branch has no timeout.
     private func demoConnect(_ deviceId: String) {
         demoConnectTask?.cancel()
         deviceConnectionState = .connecting(deviceId) // this turn: replayed on attach
@@ -106,6 +106,18 @@ class BluetoothManager: ObservableObject {
                                                              batteryLevel: DemoDevice.batteryLevel)
             self.deviceConnectionState = .connected(deviceId) // next turn: the one delivery
         }
+    }
+
+    /// Store screenshots only: the fake strap, already connected under a real strap's name.
+    /// Written in one go, which is safe here because no picker is waiting on the transitions.
+    func screenshotConnect() {
+        let deviceId = DemoDevice.addressString
+        deviceName = ScreenshotScene.deviceName
+        deviceAddress = deviceId
+        hrFeature = HrFeature(isSupported: true)
+        batteryStatusFeature = BatteryStatusFeature(isSupported: true,
+                                                    batteryLevel: ScreenshotScene.batteryLevel)
+        deviceConnectionState = .connected(deviceId)
     }
 
     /// Synchronous on purpose: `connect()` attaches its first loop after this returns, so
@@ -212,6 +224,15 @@ class BluetoothManager: ObservableObject {
         // bpmReadout()'s .onAppear re-fires whenever the connection state blips, so this has
         // to be idempotent or the sweeps stack up.
         demoHrTask?.cancel()
+        if let scene = ScreenshotScene.current {
+            demoHrTask = Task { @MainActor in
+                while !Task.isCancelled {
+                    onBeat(scene.bpm)
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                }
+            }
+            return
+        }
         demoHrTask = Task { @MainActor in
             let start = Date()
             let period: TimeInterval = 48 // one full sweep down and back

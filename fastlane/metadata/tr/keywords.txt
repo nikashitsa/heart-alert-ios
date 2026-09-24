@@ -1,0 +1,1 @@
+bpm,kalp atış hızı,nabız ölçer,zone 2,göğüs bandı,polar,h10,garmin,bluetooth,kardiyo,koşu,bisiklet

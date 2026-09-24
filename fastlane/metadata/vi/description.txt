@@ -1,0 +1,52 @@
+Heart Alert kết nối với thiết bị đo nhịp tim Bluetooth của bạn và phát tiếng ngay khoảnh khắc nhịp tim vượt lên trên hoặc tụt xuống dưới khoảng bạn đặt. Chọn một mức thấp nhất và một mức cao nhất, cất điện thoại đi và tập theo tai.
+
+Không phải nhìn màn hình. Không phải tính vùng. Không cần tài khoản.
+
+CÁCH HOẠT ĐỘNG
+1. Đeo cảm biến nhịp tim Bluetooth hoặc dây đeo ngực.
+2. Đặt BPM thấp nhất và cao nhất.
+3. Nhấn bắt đầu — bạn sẽ nghe cảnh báo khi lên quá cao hoặc xuống quá thấp, và một lần nữa khi trở lại trong khoảng.
+
+TÍNH NĂNG
+– Giới hạn dưới và trên tính theo BPM, tùy bạn chọn
+– Cảnh báo cả nhịp tim cao lẫn nhịp tim thấp
+– Cảnh báo âm thanh tức thì, chỉnh được âm lượng
+– Rung nếu bạn muốn
+– Lặp lại mỗi 1, 3, 5 hoặc 10 giây trong lúc bạn còn ở ngoài khoảng
+– Độ trễ "đã ra ngoài khoảng được", để một cú vọt ngắn hay một nhịp tụt thoáng qua vẫn im lặng
+– Độ trễ ban đầu, để phần khởi động diễn ra yên tĩnh
+– Mức pin của cảm biến chỉ trong một cái liếc
+– Vẫn chạy nền và cả khi khóa màn hình
+– Có sẵn 24 ngôn ngữ, kể cả cảnh báo bằng giọng nói
+– Cài đặt nhanh, không có gì phải đăng ký
+
+DÙNG ĐƯỢC VỚI CẢM BIẾN CỦA BẠN
+Hỗ trợ hầu hết các thiết bị đo nhịp tim Bluetooth Low Energy (BLE) tương thích, dây đeo ngực và băng đeo tay, trong đó có:
+– Polar H10, H9, H7, OH1 và Verity Sense
+– Garmin, Wahoo TICKR, CooSpo, Scosche, Decathlon và nhiều hãng khác
+
+Mọi cảm biến phát tín hiệu nhịp tim Bluetooth LE tiêu chuẩn đều nên hoạt động, dù chỉ riêng Bluetooth không bảo đảm tương thích. Nếu thiết bị của bạn không được nhận, hãy nhắn cho nhà phát triển.
+
+Cần có cảm biến nhịp tim rời. Không hỗ trợ đo bằng camera.
+
+DÀNH CHO
+– Vùng 2 và xây nền tảng ưa khí
+– Chạy bộ, đạp xe và đạp xe trong nhà
+– Cardio, phòng gym và tập theo quãng
+– Sức bền và những buổi giữ nhịp đều
+– Ngày hồi phục nhẹ, mà cả mục đích chính là đừng tăng tốc
+– Bất kỳ ai chỉ muốn một cái báo động nhịp tim, không cần gì thêm
+
+VÌ SAO LÀ BÁO ĐỘNG CHỨ KHÔNG PHẢI MÀN HÌNH?
+Con số trên màn hình chỉ giúp được nếu bạn nhìn vào nó. Một tiếng cảnh báo thì tự lo khoảng mục tiêu giúp bạn: bạn chỉ nghĩ đến nó khi thật sự cần — trên máy chạy bộ, trên đường, hay khi điện thoại nằm trong túi áo.
+
+GIÁ
+5 buổi đầu tiên miễn phí. Theo dõi không giới hạn là một lần mua duy nhất. Không thuê bao, không quảng cáo.
+
+QUYỀN RIÊNG TƯ
+Heart Alert không thu thập bất kỳ dữ liệu nào. Nhịp tim của bạn không bao giờ rời khỏi điện thoại.
+
+CHẠY NỀN
+Heart Alert vẫn theo dõi khi chạy nền và khi khóa màn hình. Đừng đóng ứng dụng trong trình chuyển đổi ứng dụng khi đang tập: iOS sẽ dừng ứng dụng, và các cảnh báo cũng dừng theo.
+
+Heart Alert là công cụ thể thao và tập luyện. Đây không phải thiết bị y tế, không dùng để chẩn đoán, điều trị hay phòng ngừa bệnh, và không nên dựa vào nó để theo dõi khẩn cấp hay theo dõi sức khỏe liên tục. Nếu có thắc mắc về tim mạch hay việc tập luyện, hãy hỏi bác sĩ.

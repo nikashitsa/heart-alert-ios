@@ -1,0 +1,1 @@
+bpm,denyut,nadi,zone 2,monitor,chest strap,polar,h10,garmin,bluetooth,lari,sepeda,kardio,latihan,gym

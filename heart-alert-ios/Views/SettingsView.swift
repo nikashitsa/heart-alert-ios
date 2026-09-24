@@ -41,7 +41,11 @@ struct SettingsView: View {
             VStack {
                 ScrollView {
                     VStack (alignment: .leading, spacing: 40) {
-                        Text("Settings").setFontStyle(Fonts.textXlBold)
+                        HStack {
+                            Text("Settings").setFontStyle(Fonts.textXlBold)
+                            Spacer()
+                            LanguagePickerView(selection: $settings.language)
+                        }
 
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Heart rate").setFontStyle(Fonts.textLgBold)
@@ -243,7 +247,7 @@ struct SettingsView: View {
                     // A user who never had free sessions to spend, or who has used them all,
                     // just gets "Start".
                     let freeLeft = settings.freeSessionsLeft
-                    Text(freeLeft > 0 ? "Start for free (\(freeLeft))" : "Start")
+                    (freeLeft > 0 ? Text("Start for free (\(freeLeft))") : Text("Start"))
                         .setFontStyle(Fonts.textMdBold)
                 }
                 .buttonStyle(PrimaryButton())

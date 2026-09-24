@@ -1,0 +1,1 @@
+bpm,zone 2,pulse,hr monitor,polar,h10,chest strap,bluetooth,cardio,running,cycling,training,garmin

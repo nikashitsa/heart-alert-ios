@@ -1,0 +1,298 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+require "cgi"
+require "json"
+require "frameit"
+
+platform :ios do
+  METADATA_DIR = File.expand_path("metadata", __dir__)
+  # Framed screenshots, where `deliver` uploads them from.
+  SCREENSHOTS_DIR = File.expand_path("screenshots", __dir__)
+  # Raw captures (untracked), plus the tracked template.html and caption .strings files.
+  FRAMING_DIR = File.expand_path("framing", __dir__)
+  SCREENSHOT_TEMPLATE = File.join(FRAMING_DIR, "template.html")
+  API_KEY_PATH = File.expand_path("app_store_connect_api_key.json", __dir__)
+
+  ROOT_DIR = File.expand_path("..", __dir__)
+  BUILD_DIR = File.join(ROOT_DIR, "build")
+  APP_PATH = File.join(BUILD_DIR, "Build/Products/Debug-iphonesimulator/heart-alert-ios.app")
+  BUNDLE_ID = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+
+  # One Simulator per App Store screenshot slot. `size` is what the Simulator captures and
+  # what App Store Connect accepts for the slot; the rest sizes the template's device drawing.
+  SCREENSHOT_DEVICES = {
+    "iphone" => { simulator: "iPhone 17 Pro Max", size: [1320, 2868], scale: 0.92, bezel: 26, radius: 118 },
+    "ipad" => { simulator: "iPad Pro 13-inch (M5)", size: [2064, 2752], scale: 1.15, bezel: 30, radius: 60 }
+  }.freeze
+
+  # File name => the `-screenshot` scene the app opens in (see ScreenshotScene.swift). The
+  # names match the Android screenshots, so the caption .strings files are shared as is.
+  SCREENSHOT_SCENES = {
+    "01_connect" => "connect",
+    "02_settings" => "settings",
+    "03_tracking_too_low" => "tracking_low",
+    "04_tracking_good" => "tracking_good",
+    "05_tracking_too_high" => "tracking_high"
+  }.freeze
+
+  # One per app language (AppLanguage in the app), as App Store locale => app language tag.
+  SCREENSHOT_LOCALES = {
+    "cs" => "cs", "de-DE" => "de", "en-US" => "en", "es-ES" => "es", "fi" => "fi",
+    "fr-FR" => "fr", "hi" => "hi", "hu" => "hu", "id" => "id", "it" => "it", "ja" => "ja",
+    "ko" => "ko", "nl-NL" => "nl", "no" => "nb", "pl" => "pl", "pt-BR" => "pt-BR",
+    "pt-PT" => "pt-PT", "ru" => "ru", "sl-SI" => "sl", "sv" => "sv", "th" => "th",
+    "tr" => "tr", "uk" => "uk", "zh-Hans" => "zh-Hans"
+  }.freeze
+
+  # Regional App Store locales of those languages, which get a copy of the framed screenshots
+  # instead of falling back to the primary locale's. zh-Hant is left out on purpose: it's
+  # Traditional Chinese, and the app only has Simplified.
+  SCREENSHOT_COPIES = {
+    "en-US" => %w[en-AU en-CA en-GB],
+    "es-ES" => %w[es-MX],
+    "fr-FR" => %w[fr-CA]
+  }.freeze
+
+  desc "Validate App Store metadata"
+  lane :validate_metadata do
+    UI.message("Checking: #{METADATA_DIR}")
+    UI.user_error!("Metadata directory does not exist: #{METADATA_DIR}") unless Dir.exist?(METADATA_DIR)
+
+    locales = Dir.children(METADATA_DIR)
+                 .select { |entry| File.directory?(File.join(METADATA_DIR, entry)) }
+                 .sort
+    UI.message("Found #{locales.length} locales")
+
+    limits = {
+      "name.txt" => 30,
+      "subtitle.txt" => 30,
+      "keywords.txt" => 100,
+      "promotional_text.txt" => 170,
+      "description.txt" => 4000,
+      "release_notes.txt" => 4000
+    }
+
+    errors = []
+
+    locales.each do |locale|
+      unless FastlaneCore::Languages::ALL_LANGUAGES.include?(locale)
+        errors << "#{locale}: not an App Store Connect locale"
+        next
+      end
+      limits.each do |filename, max_length|
+        path = File.join(METADATA_DIR, locale, filename)
+        next unless File.file?(path)
+        text = File.read(path, encoding: "UTF-8").strip
+        length = text.length
+        UI.message("#{locale}/#{filename}: #{length}/#{max_length}")
+        if length > max_length
+          errors << "#{locale}/#{filename}: #{length} characters (maximum #{max_length})"
+        end
+      end
+    end
+
+    unless errors.empty?
+      UI.error("Metadata validation failed:")
+      errors.each do |error|
+        UI.error("  #{error}")
+      end
+      UI.user_error!("Fix #{errors.length} metadata error(s) before uploading.")
+    end
+    UI.success("All metadata is within the character limits.")
+  end
+
+  desc "Capture store screenshots in every app language and frame them into fastlane/screenshots"
+  desc "Uses the iPhone 17 Pro Max and iPad Pro 13-inch (M5) Simulators, and Google Chrome for the captions"
+  desc "Options: locales:de-DE,th devices:iphone,ipad"
+  lane :screenshots do |options|
+    locales = locale_option(options)
+    devices = options[:devices]&.split(",") || SCREENSHOT_DEVICES.keys
+
+    sh("xcodebuild", "-workspace", File.join(ROOT_DIR, "heart-alert-ios.xcworkspace"),
+       "-scheme", "heart-alert-ios", "-configuration", "Debug",
+       "-destination", "generic/platform=iOS Simulator",
+       "-derivedDataPath", BUILD_DIR, "-quiet", "build")
+
+    devices.each do |device|
+      config = SCREENSHOT_DEVICES.fetch(device)
+      udid = simulator_udid(config[:simulator])
+      sh("xcrun", "simctl", "boot", udid, log: false, error_callback: ->(_) {}) # already booted is fine
+      sh("xcrun", "simctl", "bootstatus", udid, "-b", log: false)
+      sh("xcrun", "simctl", "install", udid, APP_PATH, log: false)
+      # A fixed clock and full bars, like the Android captures' demo status bar.
+      sh("xcrun", "simctl", "status_bar", udid, "override", "--time", "9:41",
+         "--dataNetwork", "wifi", "--wifiMode", "active", "--wifiBars", "3",
+         "--cellularMode", "active", "--cellularBars", "4", "--operatorName", "",
+         "--batteryState", "charged", "--batteryLevel", "100", log: false)
+      # A fresh boot shows system banners for a while ("Ready for Apple Intelligence" and
+      # the like). Launch once and let them pass before the first capture.
+      sh("xcrun", "simctl", "launch", udid, BUNDLE_ID, "-screenshot", "connect", log: false)
+      sleep(15)
+
+      locales.each do |locale|
+        language = SCREENSHOT_LOCALES.fetch(locale)
+        raw_dir = File.join(FRAMING_DIR, locale, "raw", device)
+        FileUtils.rm_rf(raw_dir)
+        FileUtils.mkdir_p(raw_dir)
+
+        SCREENSHOT_SCENES.each do |name, scene|
+          sh("xcrun", "simctl", "terminate", udid, BUNDLE_ID, log: false, error_callback: ->(_) {})
+          # -language is the app's own setting (read through the UserDefaults argument domain,
+          # so no saved pick can win); -AppleLanguages makes the system agree with it.
+          sh("xcrun", "simctl", "launch", udid, BUNDLE_ID,
+             "-AppleLanguages", "(#{language})", "-language", language, "-screenshot", scene, log: false)
+          # Long enough for the launch, the fake strap's first reading and the alert state.
+          sleep(4)
+          sh("xcrun", "simctl", "io", udid, "screenshot", File.join(raw_dir, "#{name}.png"), log: false)
+        end
+        sh("xcrun", "simctl", "terminate", udid, BUNDLE_ID, log: false, error_callback: ->(_) {})
+        UI.success("#{device} #{locale}: #{SCREENSHOT_SCENES.length} captures")
+      end
+    end
+
+    frame(locales: locales.join(","), devices: devices.join(","))
+  end
+
+  desc "Frame the raw captures in fastlane/framing and add their captions, into fastlane/screenshots"
+  desc "The captions and layout are framing/template.html, rendered by headless Chrome"
+  lane :frame do |options|
+    locales = locale_option(options)
+    devices = options[:devices]&.split(",") || SCREENSHOT_DEVICES.keys
+    chrome = find_chrome
+    template = File.read(SCREENSHOT_TEMPLATE)
+    fallback = captions_for("en-US")
+
+    locales.each do |locale|
+      captions = captions_for(locale)
+      store_dir = File.join(SCREENSHOTS_DIR, locale)
+      FileUtils.mkdir_p(store_dir)
+      count = 0
+
+      devices.each do |device|
+        config = SCREENSHOT_DEVICES.fetch(device)
+        FileUtils.rm_f(Dir[File.join(store_dir, "#{device}_*.png")])
+        raw = Dir[File.join(FRAMING_DIR, locale, "raw", device, "*.png")].sort
+        UI.user_error!("No #{device} screenshots for #{locale}, run `fastlane screenshots` first") if raw.empty?
+
+        raw.each do |path|
+          name = File.basename(path, ".png")
+          text = { keyword: caption(captions, fallback, :keyword, name, locale),
+                   title: caption(captions, fallback, :title, name, locale) }
+          page = File.join(File.dirname(path), "#{name}.html")
+          File.write(page, fill_template(template, locale, text, config, File.basename(path)))
+
+          output = File.join(store_dir, "#{device}_#{name}.png")
+          sh(chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run",
+             "--force-device-scale-factor=1",
+             "--window-size=#{config[:size].join(',')}", "--screenshot=#{output}",
+             "file://#{page}", log: false, error_callback: ->(_) { UI.user_error!("Chrome failed on #{locale}/#{device}/#{name}") })
+          # App Store Connect rejects screenshots with transparency.
+          sh("magick", output, "-alpha", "off", output, log: false)
+          FileUtils.rm_f(page)
+          count += 1
+        end
+      end
+
+      copies = SCREENSHOT_COPIES.fetch(locale, [])
+      copies.each do |copy|
+        copy_dir = File.join(SCREENSHOTS_DIR, copy)
+        FileUtils.rm_rf(copy_dir)
+        FileUtils.mkdir_p(copy_dir)
+        FileUtils.cp(Dir[File.join(store_dir, "*.png")], copy_dir)
+      end
+      UI.success("#{locale}: #{count} screenshots#{copies.empty? ? '' : ", copied to #{copies.join(', ')}"}")
+    end
+  end
+
+  desc "Upload metadata and screenshots to App Store Connect, without a build or review submission"
+  desc "Needs an App Store Connect API key in fastlane/app_store_connect_api_key.json"
+  lane :upload do
+    validate_metadata
+    UI.user_error!("Missing #{API_KEY_PATH}") unless File.exist?(API_KEY_PATH)
+
+    deliver(
+      api_key_path: API_KEY_PATH,
+      metadata_path: METADATA_DIR,
+      screenshots_path: SCREENSHOTS_DIR,
+      skip_binary_upload: true,
+      overwrite_screenshots: true,
+      submit_for_review: false,
+      precheck_include_in_app_purchases: false,
+      force: true
+    )
+  end
+
+  def locale_option(options)
+    locales = options[:locales]&.split(",") || SCREENSHOT_LOCALES.keys
+    unknown = locales - SCREENSHOT_LOCALES.keys
+    UI.user_error!("Not an app language locale: #{unknown.join(', ')}") unless unknown.empty?
+    locales
+  end
+
+  def simulator_udid(name)
+    devices = JSON.parse(sh("xcrun", "simctl", "list", "devices", "available", "-j", log: false))["devices"]
+    device = devices.values.flatten.find { |d| d["name"] == name }
+    UI.user_error!("No available Simulator named \"#{name}\"; create one in Xcode") unless device
+    device["udid"]
+  end
+
+  # { keyword: { "01_connect" => "...", ... }, title: { ... } }, as frameit parses .strings files.
+  def captions_for(locale)
+    %i[keyword title].to_h do |type|
+      path = File.join(FRAMING_DIR, locale, "#{type}.strings")
+      [type, File.exist?(path) ? Frameit::StringsParser.parse(path) : {}]
+    end
+  end
+
+  # Keys are matched against the file name the way frameit does, so "01_connect" covers
+  # "01_connect.png". A missing caption falls back to English rather than leaving a gap.
+  def caption(captions, fallback, type, name, locale)
+    find = ->(strings) { strings.find { |key, _| name.include?(key) }&.last }
+    find.call(captions[type]) || begin
+      UI.important("#{locale}/#{type}.strings has nothing for #{name}, using English")
+      find.call(fallback[type]) || ""
+    end
+  end
+
+  def fill_template(template, locale, text, config, screenshot)
+    width, height = config[:size]
+    values = {
+      "lang" => locale,
+      "width" => width.to_s,
+      "height" => height.to_s,
+      "scale" => config[:scale].to_s,
+      "ratio" => (width.to_f / height).to_s,
+      "bezel" => config[:bezel].to_s,
+      "radius" => config[:radius].to_s,
+      "keyword" => CGI.escapeHTML(text[:keyword]),
+      "title" => CGI.escapeHTML(text[:title]),
+      "screenshot" => screenshot
+    }
+    template.gsub(/\{\{(\w+)\}\}/) { values.fetch(Regexp.last_match(1)) }
+  end
+
+  def find_chrome
+    candidates = [
+      ENV["CHROME"],
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      *%w[google-chrome google-chrome-stable chromium chromium-browser].map { |bin| `command -v #{bin}`.strip }
+    ]
+    candidates.compact.find { |path| !path.empty? && File.executable?(path) } ||
+      UI.user_error!("Google Chrome not found; set CHROME to its executable")
+  end
+end

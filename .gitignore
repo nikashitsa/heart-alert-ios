@@ -31,6 +31,9 @@ playground.xcworkspace
 
 .build/
 
+# Simulator build for the fastlane screenshots lane
+/build/
+
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However
@@ -56,9 +59,6 @@ Carthage/Build/
 # For more information about the recommended setup visit:
 # https://docs.fastlane.tools/best-practices/source-control/#source-control
 
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/**/*.png
-fastlane/test_output
+# fastlane/.gitignore has the rest. The framed screenshots are tracked, like the metadata.
 
 .DS_Store

@@ -1,0 +1,1 @@
+bpm,zone 2,pulsmåler,pulsbælte,brystbælte,bluetooth,kondition,løb,cykling,træning,polar,h10,garmin

@@ -39,6 +39,7 @@ struct Colors {
     static let black = Color("Black")
     static let white = Color("White")
     static let red = Color("Red")
+    static let gray = Color("Gray")
 }
 
 struct PrimaryButton: ButtonStyle {
@@ -88,7 +89,7 @@ enum TrackingState {
         }
     }
     
-    var heartBeatDescription: String {
+    var heartBeatDescription: LocalizedStringKey {
         switch self {
             case .good:
                 return "Good"

@@ -1,0 +1,1 @@
+bpm,zona 2,pulsaciones,frecuencia cardiaca,pulsómetro,banda pectoral,bluetooth,correr,ciclismo,polar

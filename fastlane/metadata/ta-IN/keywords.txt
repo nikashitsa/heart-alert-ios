@@ -1,0 +1,1 @@
+pulse,bpm,zone 2,chest strap,polar,h10,garmin,bluetooth,நாடித்துடிப்பு,ஓட்டம்,சைக்கிள்,கார்டியோ

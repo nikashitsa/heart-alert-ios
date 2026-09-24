@@ -17,6 +17,12 @@
       location = "group:cover.png">
    </FileRef>
    <FileRef
+      location = "group:Gemfile">
+   </FileRef>
+   <FileRef
+      location = "group:Gemfile.lock">
+   </FileRef>
+   <FileRef
       location = "group:privacy-policy.md">
    </FileRef>
    <FileRef

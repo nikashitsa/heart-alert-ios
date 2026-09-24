@@ -1,0 +1,1 @@
+cardio,fréquence,pouls,bpm,zone 2,ceinture,polar,h10,garmin,bluetooth,course,vélo,entraînement

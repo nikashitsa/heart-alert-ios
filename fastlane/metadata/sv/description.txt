@@ -1,0 +1,52 @@
+Heart Alert ansluter till din Bluetooth-pulsmätare och ger ljud i samma stund som pulsen går över eller under det intervall du själv ställer in. Välj ett minimum och ett maximum, lägg undan telefonen och träna på gehör.
+
+Ingen skärm att hålla koll på. Inga zonuträkningar. Inget konto.
+
+SÅ FUNKAR DET
+1. Sätt på dig Bluetooth-pulsmätaren eller bröstbandet.
+2. Ställ in lägsta och högsta puls.
+3. Tryck på start — du får en signal när du går för högt eller för lågt, och en till när du är tillbaka i intervallet.
+
+FUNKTIONER
+– Fritt valda undre och övre gränser i puls
+– Larm vid både hög och låg puls
+– Direkta ljudsignaler med justerbar volym
+– Vibration om du vill
+– Upprepning var 1:a, 3:e, 5:e eller 10:e sekund så länge du är utanför intervallet
+– Fördröjningen "utanför intervallet i", så att en kort topp eller en tillfällig svacka förblir tyst
+– Startfördröjning, så att uppvärmningen får gå i lugn och ro
+– Sensorns batterinivå med en blick
+– Fortsätter i bakgrunden och med skärmen låst
+– Finns på 24 språk, talade larm inräknade
+– Snabb installation, inget att registrera sig för
+
+FUNKAR MED DIN PULSMÄTARE
+Stöder de flesta kompatibla pulsmätare med Bluetooth Low Energy (BLE), bröstband och armband, bland annat:
+– Polar H10, H9, H7, OH1 och Verity Sense
+– Garmin, Wahoo TICKR, CooSpo, Scosche, Decathlon med flera
+
+Alla sensorer som sänder en vanlig Bluetooth LE-pulssignal bör fungera, även om Bluetooth i sig inte garanterar kompatibilitet. Hittas inte din, skriv till utvecklaren.
+
+Det krävs en extern pulssensor. Mätning med kameran stöds inte.
+
+GJORD FÖR
+– Zon 2 och uppbyggnad av aerob grund
+– Löpning, cykling och inomhuscykling
+– Kondition, gym och intervallträning
+– Uthållighet och arbete i jämnt tempo
+– Lugna återhämtningsdagar, där hela poängen är att inte öka takten
+– Alla som vill ha ett pulslarm och inget mer
+
+VARFÖR ETT LARM I STÄLLET FÖR EN DISPLAY?
+En siffra på skärmen hjälper bara om du tittar på den. Ett larm sköter målintervallet åt dig: du tänker på det först när det verkligen behövs — på löpbandet, på vägen eller med telefonen i tröjfickan.
+
+PRIS
+Dina första 5 pass är gratis. Obegränsad mätning är ett engångsköp. Ingen prenumeration och inga annonser.
+
+INTEGRITET
+Heart Alert samlar inte in någon data. Din puls lämnar aldrig telefonen.
+
+ANVÄNDNING I BAKGRUNDEN
+Heart Alert fortsätter mäta i bakgrunden och med skärmen låst. Stäng inte appen i appväxlaren medan du tränar: då stoppar iOS appen, och larmen med den.
+
+Heart Alert är ett verktyg för sport och träning. Det är ingen medicinteknisk produkt, är inte avsett att diagnostisera, behandla, bota eller förebygga sjukdom och bör inte användas för nödövervakning eller kontinuerlig hälsoövervakning. Har du frågor om ditt hjärta eller din träning, prata med en läkare.

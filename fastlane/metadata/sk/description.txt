@@ -1,0 +1,52 @@
+Heart Alert sa pripojí k tvojmu hrudnému pásu Bluetooth a ozve sa vo chvíli, keď tep stúpne nad alebo klesne pod rozsah, ktorý si nastavíš. Zvoľ minimum a maximum, telefón odlož a trénuj podľa sluchu.
+
+Žiadne sledovanie displeja. Žiadne počítanie zón. Žiadny účet.
+
+AKO TO FUNGUJE
+1. Nasaď si snímač tepu Bluetooth alebo hrudný pás.
+2. Nastav minimálne a maximálne BPM.
+3. Stlač štart — ozve sa upozornenie, keď vyjdeš príliš vysoko alebo klesneš príliš nízko, a ďalšie, keď sa vrátiš do rozsahu.
+
+FUNKCIE
+– Voliteľná dolná aj horná hranica v BPM
+– Upozornenie na vysoký aj na nízky tep
+– Okamžité zvukové signály s nastaviteľnou hlasitosťou
+– Voliteľné vibrovanie
+– Opakovanie po 1, 3, 5 alebo 10 sekundách, kým si mimo rozsahu
+– Oneskorenie „mimo rozsahu počas“, aby krátky výkyv alebo chvíľkový pokles zostal potichu
+– Počiatočné oneskorenie, aby bolo pri rozcvičke ticho
+– Stav batérie snímača na prvý pohľad
+– Beží na pozadí aj pri zamknutej obrazovke
+– Dostupná v 24 jazykoch vrátane hlasových upozornení
+– Rýchle nastavenie, nič sa nemusí zakladať
+
+FUNGUJE S TVOJÍM SNÍMAČOM TEPU
+Podporuje väčšinu kompatibilných snímačov tepu Bluetooth Low Energy (BLE), hrudných pásov a náramkov, okrem iného:
+– Polar H10, H9, H7, OH1 a Verity Sense
+– Garmin, Wahoo TICKR, CooSpo, Scosche, Decathlon a ďalšie
+
+Fungovať by mal každý snímač, ktorý vysiela štandardný signál tepu Bluetooth LE, samotné Bluetooth však kompatibilitu nezaručuje. Ak sa tvoj nenájde, napíš vývojárovi.
+
+Je potrebný externý snímač tepu. Meranie fotoaparátom nie je podporované.
+
+HODÍ SA NA
+– Zónu 2 a budovanie aeróbneho základu
+– Beh, cyklistiku a spinning
+– Kardio, posilňovňu a intervalový tréning
+– Vytrvalosť a úsilie v stálom tempe
+– Ľahké regeneračné dni, keď ide práve o to nezrýchliť
+– Každého, kto chce alarm tepu a nič viac
+
+PREČO ALARM NAMIESTO DISPLEJA?
+Číslo na displeji pomôže len vtedy, keď sa naň pozrieš. Upozornenie sa o tvoj rozsah postará samo: myslíš naň len vtedy, keď to naozaj treba — na páse, na ceste alebo s telefónom vo vrecku dresu.
+
+CENA
+Prvých 5 tréningov je zadarmo. Neobmedzené meranie je jednorazový nákup. Žiadne predplatné, žiadne reklamy.
+
+SÚKROMIE
+Heart Alert nezbiera žiadne údaje. Tvoj tep nikdy neopustí telefón.
+
+BEH NA POZADÍ
+Heart Alert meria ďalej na pozadí aj pri zamknutej obrazovke. Počas tréningu ho nezatváraj v prepínači aplikácií: iOS aplikáciu ukončí a s ňou aj upozornenia.
+
+Heart Alert je športová a tréningová pomôcka. Nie je zdravotníckou pomôckou, nie je určený na diagnostiku, liečbu ani prevenciu chorôb a nehodí sa na núdzové ani nepretržité sledovanie zdravia. Ak máš otázky o svojom srdci alebo tréningu, obráť sa na lekára.

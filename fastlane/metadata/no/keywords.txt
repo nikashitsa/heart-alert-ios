@@ -1,0 +1,1 @@
+puls,pulsmåler,bpm,sone 2,pulsbelte,brystbelte,polar,h10,bluetooth,løping,sykling,trening,garmin

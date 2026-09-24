@@ -1,0 +1,52 @@
+Heart Alert se conecta à sua cinta cardíaca Bluetooth e toca no instante em que os batimentos sobem acima ou caem abaixo do intervalo que você definiu. Escolha um mínimo e um máximo, guarde o celular e treine de ouvido.
+
+Sem olhar para a tela. Sem cálculo de zonas. Sem cadastro.
+
+COMO FUNCIONA
+1. Coloque seu sensor cardíaco Bluetooth ou a cinta peitoral.
+2. Defina seus BPM mínimo e máximo.
+3. Toque em iniciar — você recebe um alerta quando sobe demais ou cai demais, e outro quando volta ao intervalo.
+
+RECURSOS
+– Limites mínimo e máximo de BPM à sua escolha
+– Alertas de batimento alto e de batimento baixo
+– Alertas sonoros imediatos, com volume ajustável
+– Vibração opcional
+– Repetição a cada 1, 3, 5 ou 10 segundos enquanto você estiver fora do intervalo
+– Atraso "fora do intervalo por", para que um pico curto ou uma queda passageira fiquem em silêncio
+– Atraso inicial, para manter tudo quieto durante o aquecimento
+– Nível de bateria do sensor num relance
+– Continua em segundo plano e com a tela bloqueada
+– Disponível em 24 idiomas, alertas falados incluídos
+– Configuração rápida, sem cadastro
+
+FUNCIONA COM O SEU SENSOR
+Compatível com a maioria dos monitores de frequência cardíaca Bluetooth Low Energy (BLE), cintas peitorais e braçadeiras, incluindo:
+– Polar H10, H9, H7, OH1 e Verity Sense
+– Garmin, Wahoo TICKR, CooSpo, Scosche, Decathlon e outros
+
+Qualquer sensor que transmita um sinal cardíaco Bluetooth LE padrão deve funcionar, embora o Bluetooth sozinho não garanta a compatibilidade. Se o seu não for detectado, escreva para o desenvolvedor.
+
+É necessário um sensor cardíaco externo. Não há suporte para medição pela câmera.
+
+FEITO PARA
+– Zona 2 e construção de base aeróbica
+– Corrida, ciclismo e bike indoor
+– Cardio, academia e treino intervalado
+– Resistência e esforços em ritmo constante
+– Dias de recuperação leve, em que a ideia é justamente não acelerar
+– Quem quer um alarme cardíaco e mais nada
+
+POR QUE UM ALARME EM VEZ DE UM MOSTRADOR?
+Um número na tela só ajuda se você olhar. Um alerta faz o seu intervalo se resolver sozinho: você só pensa nele quando é realmente necessário, na esteira, na estrada ou com o celular no bolso da camisa.
+
+PREÇO
+Suas 5 primeiras sessões são gratuitas. O monitoramento ilimitado é uma compra única. Sem assinatura e sem anúncios.
+
+PRIVACIDADE
+O Heart Alert não coleta nenhum dado. Sua frequência cardíaca nunca sai do celular.
+
+USO EM SEGUNDO PLANO
+O Heart Alert continua monitorando em segundo plano e com a tela bloqueada. Não feche o app pelo seletor de apps enquanto treina: o iOS encerra o app, e os alertas junto com ele.
+
+O Heart Alert é uma ferramenta de esporte e treino. Não é um dispositivo médico, não se destina a diagnosticar, tratar, curar ou prevenir qualquer doença e não deve ser usado para vigilância de emergência nem para monitoramento contínuo da saúde. Se tiver dúvidas sobre seu coração ou seu treino, converse com um médico.

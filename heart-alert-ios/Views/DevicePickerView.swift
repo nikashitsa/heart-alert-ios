@@ -23,7 +23,7 @@ struct DevicePickerView: View {
                 switch state {
                 case .searching:
                     if sortedDevices.isEmpty {
-                        Text("Searching for devices...").setFontStyle(Fonts.textLgBold)
+                        Text("Searching for devices…").setFontStyle(Fonts.textLgBold)
                         VStack {
                             ProgressView()
                         }.frame(maxHeight: .infinity)
@@ -62,7 +62,7 @@ struct DevicePickerView: View {
                         }.buttonStyle(PrimaryButton())
                     }
                 case .connecting:
-                    Text("Connecting...").setFontStyle(Fonts.textLgBold)
+                    Text("Connecting…").setFontStyle(Fonts.textLgBold)
                     VStack {
                         ProgressView()
                     }.frame(maxHeight: .infinity)

@@ -46,7 +46,7 @@ struct PaywallView: View {
     }
 
     /// Title plus copy, filling the space above the buttons.
-    private func paywallBody(title: String, description: String) -> some View {
+    private func paywallBody(title: LocalizedStringKey, description: LocalizedStringKey) -> some View {
         Group {
             Text(title).setFontStyle(Fonts.textLgBold)
             VStack(spacing: 12) {

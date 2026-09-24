@@ -1,0 +1,1 @@
+pulse,bpm,zone 2,chest strap,polar,h10,garmin,bluetooth,హార్ట్ రేట్,పల్స్,రన్నింగ్,సైక్లింగ్

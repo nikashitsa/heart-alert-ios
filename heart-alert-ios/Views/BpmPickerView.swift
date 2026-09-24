@@ -3,7 +3,7 @@ import PolarBleSdk
 
 struct BpmPickerView: View {
     var range: ClosedRange<Int>
-    var title: String
+    var title: LocalizedStringKey
     @State var selectedBpm: Int
     
     var onConfirm: (Int) -> Void = {_ in }
@@ -14,9 +14,9 @@ struct BpmPickerView: View {
         VStack {
             Text(title).setFontStyle(Fonts.textLgBold)
             VStack {
-                Picker("Devices", selection: $selectedBpm) {
+                Picker("BPM", selection: $selectedBpm) {
                     ForEach(range, id: \.self) { bpm in
-                        Text("\(bpm)")
+                        Text(verbatim: "\(bpm)")
                             .setFontStyle(Fonts.textMd)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)

@@ -1,0 +1,1 @@
+bpm,zona 2,ritmo cardiaco,frecuencia cardiaca,banda de pecho,bluetooth,correr,ciclismo,cardio,polar

@@ -1,0 +1,52 @@
+Heart Alert se conecta a tu sensor de frecuencia cardiaca Bluetooth y suena en cuanto tus pulsaciones suben o bajan del rango que fijaste. Elige un mínimo y un máximo, guarda el celular y entrena de oído.
+
+Sin mirar la pantalla. Sin cálculos de zonas. Sin cuentas.
+
+CÓMO FUNCIONA
+1. Ponte tu sensor de frecuencia cardiaca Bluetooth o tu banda pectoral.
+2. Define tus pulsaciones mínimas y máximas.
+3. Toca iniciar — suena un aviso cuando te pasas por arriba o por abajo, y otro cuando vuelves al rango.
+
+FUNCIONES
+– Límites mínimo y máximo de BPM a tu gusto
+– Avisos de pulsaciones altas y de pulsaciones bajas
+– Avisos sonoros inmediatos, con volumen ajustable
+– Vibración opcional
+– Repetición cada 1, 3, 5 o 10 segundos mientras estás fuera de rango
+– Retardo «fuera de rango durante», para que un pico corto o una bajada pasajera no suenen
+– Retardo inicial, para que el calentamiento transcurra en silencio
+– Nivel de batería del sensor de un vistazo
+– Sigue funcionando en segundo plano y con la pantalla bloqueada
+– Disponible en 24 idiomas, avisos de voz incluidos
+– Configuración rápida, sin registros
+
+COMPATIBLE CON TU SENSOR
+Admite la mayoría de los sensores de frecuencia cardiaca Bluetooth Low Energy (BLE) compatibles, bandas pectorales y brazaletes, entre ellos:
+– Polar H10, H9, H7, OH1 y Verity Sense
+– Garmin, Wahoo TICKR, CooSpo, Scosche, Decathlon y más
+
+Cualquier sensor que emita una señal cardiaca Bluetooth LE estándar debería funcionar, aunque el Bluetooth por sí solo no garantiza la compatibilidad. Si el tuyo no aparece, escríbele al desarrollador.
+
+Hace falta un sensor externo. No se admite la medición con la cámara.
+
+PENSADO PARA
+– Zona 2 y trabajo de base aeróbica
+– Running, ciclismo y ciclismo indoor
+– Cardio, gimnasio y series
+– Fondo y ritmos constantes
+– Días de recuperación suave, donde la gracia está justo en no acelerarse
+– Quien quiera una alarma de pulsaciones y nada más
+
+¿POR QUÉ UNA ALARMA Y NO UNA PANTALLA?
+Un número en la pantalla solo sirve si lo miras. Un aviso hace que tu rango se cuide solo: piensas en él únicamente cuando de verdad hace falta, en la caminadora, en la carretera o con el celular en el bolsillo de la playera.
+
+PRECIO
+Tus primeras 5 sesiones son gratis. El seguimiento ilimitado es un pago único. Sin suscripción y sin anuncios.
+
+PRIVACIDAD
+Heart Alert no recopila ningún dato. Tus pulsaciones nunca salen del celular.
+
+USO EN SEGUNDO PLANO
+Heart Alert sigue midiendo en segundo plano y con la pantalla bloqueada. No la cierres desde el selector de apps mientras entrenas: iOS detiene la app, y con ella los avisos.
+
+Heart Alert es una herramienta de entrenamiento y deporte. No es un dispositivo médico, no sirve para diagnosticar, tratar, curar ni prevenir ninguna enfermedad, y no debe usarse para vigilancia de urgencias ni para monitoreo continuo de la salud. Si tienes dudas sobre tu corazón o tu entrenamiento, consulta a tu médico.

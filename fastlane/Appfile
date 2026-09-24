@@ -1,0 +1,2 @@
+app_identifier("com.nikashitsa.polar-alert-ios") # The bundle id keeps the app's old polar-alert-ios name
+team_id("49Z845J2SJ")

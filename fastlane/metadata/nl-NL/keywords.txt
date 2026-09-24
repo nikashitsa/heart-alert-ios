@@ -1,0 +1,1 @@
+hartslag,hartslagmeter,bpm,zone 2,pols,borstband,polar,h10,bluetooth,hardlopen,fietsen,cardio,garmin

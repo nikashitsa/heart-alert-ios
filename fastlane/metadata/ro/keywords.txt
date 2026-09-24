@@ -1,0 +1,1 @@
+bpm,zona 2,ritm cardiac,pulsometru,centură toracică,polar,h10,garmin,bluetooth,alergare,ciclism

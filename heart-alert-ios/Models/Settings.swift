@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftUI
 
 class Settings: ObservableObject {
     static let shared = Settings()
@@ -11,7 +12,7 @@ class Settings: ObservableObject {
     // Seconds, plus a sentinel: hold alerts until BPM first enters the range
     static let initialDelayUntilInRange = -1
     static let initialDelayOptions = [0, initialDelayUntilInRange, 60, 300, 600, 900]
-    static let initialDelayLabels = [0: "off", initialDelayUntilInRange: "until in range"]
+    static let initialDelayLabels: [Int: LocalizedStringKey] = [0: "off", initialDelayUntilInRange: "until in range"]
 
     /// Tracking sessions a new user gets before the paywall.
     static let freeSessionLimit = 5
@@ -27,6 +28,12 @@ class Settings: ObservableObject {
     @Published var outOfRangeFor: Int
     @Published var initialDelay: Int
 
+    /// The language tag the user picked (see `AppLanguage`), or nil to follow the device.
+    @Published var language: String?
+
+    /// The language the UI is in, whether picked or followed from the device.
+    var appLanguage: AppLanguage { AppLanguage.resolve(saved: language) }
+
     /// Entitled, whether bought or granted for being an existing user.
     @Published private(set) var unlimitedAccess: Bool
     @Published private(set) var trackedSessions: Int
@@ -41,7 +48,8 @@ class Settings: ObservableObject {
 
     /// The entitlement the UI should believe. Demo mode substitutes its own, so the paywall
     /// shows on the first Start even on a device that already owns the product.
-    var entitled: Bool { demoMode ? demoUnlocked : unlimitedAccess }
+    /// Store screenshots show the plain "Start" of an entitled user.
+    var entitled: Bool { ScreenshotScene.current != nil || (demoMode ? demoUnlocked : unlimitedAccess) }
 
     /// Whether tracking may start: entitled, or still has free sessions left. Demo mode has no
     /// free sessions, so the reviewer meets the paywall immediately.
@@ -71,6 +79,7 @@ class Settings: ObservableObject {
         self.alertInterval = UserDefaults.standard.object(forKey: "alertInterval") as? Int ?? 1
         self.outOfRangeFor = UserDefaults.standard.object(forKey: "outOfRangeFor") as? Int ?? 0
         self.initialDelay = UserDefaults.standard.object(forKey: "initialDelay") as? Int ?? 0
+        self.language = AppLanguage.saved
         self.unlimitedAccess = UserDefaults.standard.bool(forKey: "unlimitedAccess")
         self.trackedSessions = UserDefaults.standard.integer(forKey: "trackedSessions")
 
@@ -111,6 +120,17 @@ class Settings: ObservableObject {
 
         $initialDelay
             .sink { UserDefaults.standard.set($0, forKey: "initialDelay") }
+            .store(in: &cancellables)
+
+        // Skips the value replayed on subscribe: MainApp already applied it, and writing it back
+        // would store a pick the user never made.
+        $language
+            .dropFirst()
+            .sink { tag in
+                UserDefaults.standard.set(tag, forKey: AppLanguage.defaultsKey)
+                Bundle.setLanguage(AppLanguage.fromTag(tag))
+                SoundManager.shared.reloadSounds(AppLanguage.resolve(saved: tag))
+            }
             .store(in: &cancellables)
 
         $trackedSessions

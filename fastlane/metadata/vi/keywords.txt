@@ -1,0 +1,1 @@
+bpm,zone 2,đo mạch,đai ngực,polar,h10,garmin,bluetooth,cardio,chạy bộ,đạp xe,tập luyện,thể dục

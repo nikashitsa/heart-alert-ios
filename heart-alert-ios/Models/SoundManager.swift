@@ -1,5 +1,7 @@
 import AVFoundation
 
+/// Spoken sounds have per-language versions in `Sounds/<tag>.lproj/`; the beeps, and the
+/// English voice used as the fallback, sit in `Sounds/` itself.
 enum SoundType: String, CaseIterable {
     case lowBeep = "low_beep"
     case highBeep = "high_beep"
@@ -26,9 +28,7 @@ class SoundManager {
     var volume: Float = 1.0
     
     init() {
-        for type in SoundType.allCases {
-            soundFiles[type] = loadAudioFile(named: type.rawValue)
-        }
+        reloadSounds(AppLanguage.resolve(saved: AppLanguage.saved))
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleInterruption),
@@ -115,8 +115,23 @@ class SoundManager {
         node.play()
     }
     
-    private func loadAudioFile(named name: String) -> AVAudioFile? {
-        guard let url = Bundle.main.url(forResource: name, withExtension: "wav") else {
+    /// Loads every sound in `language`'s voice. Looked up in its lproj explicitly, since the
+    /// automatic lookup follows the device language rather than the in-app pick.
+    func reloadSounds(_ language: AppLanguage) {
+        let localized = Bundle.localized(language)
+        var files: [SoundType: AVAudioFile] = [:]
+        for type in SoundType.allCases {
+            files[type] = loadAudioFile(named: type.rawValue, localized: localized)
+        }
+        soundFiles = files
+    }
+
+    private func loadAudioFile(named name: String, localized: Bundle?) -> AVAudioFile? {
+        // The fallback is the bundle root by path: `Bundle.main.url(forResource:)` would
+        // prefer the device language's lproj over it, even with English picked in the app.
+        let root = Bundle.main.bundleURL.appendingPathComponent("\(name).wav")
+        guard let url = localized?.url(forResource: name, withExtension: "wav")
+                ?? (FileManager.default.fileExists(atPath: root.path) ? root : nil) else {
             print("Failed to find sound file: \(name).wav")
             return nil
         }

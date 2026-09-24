@@ -7,14 +7,21 @@ enum AppFlow {
 }
 
 struct MainView: View {
-    @State private var flow: AppFlow = .connect
-    
+    @State private var flow: AppFlow = ScreenshotScene.current?.flow ?? .connect
+    @StateObject private var settings = Settings.shared
+    @EnvironmentObject private var bluetoothManager: BluetoothManager
+
     var body: some View {
         ZStack {
+            // Keyed on the language too: a new pick redraws the screen in it, the same way
+            // Android recreates the Activity, while `flow` keeps the user where they were.
             currentView()
-                .id(flow)
+                .id("\(flow)-\(settings.appLanguage.tag)")
                 .transition(.opacity)
-        }.animation(.easeInOut(duration: 0.2), value: flow)
+        }
+        .animation(.easeInOut(duration: 0.2), value: flow)
+        .environment(\.locale, settings.appLanguage.locale)
+        .onAppear { ScreenshotScene.current?.apply(to: settings, bluetooth: bluetoothManager) }
     }
     
     @ViewBuilder
@@ -43,6 +50,6 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainView().environmentObject(BluetoothManager())
 }
 

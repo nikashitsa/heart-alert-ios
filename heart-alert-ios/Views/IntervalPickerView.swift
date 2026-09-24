@@ -2,15 +2,15 @@ import SwiftUI
 
 struct IntervalPickerView: View {
     var options: [Int]
-    var labels: [Int: String] = [:]
-    var title: String
+    var labels: [Int: LocalizedStringKey] = [:]
+    var title: LocalizedStringKey
     @State var selectedInterval: Int
 
     var onConfirm: (Int) -> Void = {_ in }
 
     @Environment(\.dismiss) private var dismiss
 
-    static func label(_ seconds: Int, _ labels: [Int: String] = [:]) -> String {
+    static func label(_ seconds: Int, _ labels: [Int: LocalizedStringKey] = [:]) -> LocalizedStringKey {
         if let label = labels[seconds] {
             return label
         }

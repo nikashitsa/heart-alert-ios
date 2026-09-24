@@ -1,0 +1,1 @@
+Kulağınla antrenman yap: nabız aralığını belirle, aralıktan çıktığın anda uyarıyı duy. Artık 24 dilde, kendi dilinde sözlü uyarılarla.
