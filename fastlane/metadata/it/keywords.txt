@@ -1,1 +1,1 @@
-bpm,zona 2,frequenza cardiaca,battiti,fascia toracica,polar,h10,bluetooth,corsa,ciclismo,garmin
+bpm,zona 2,frequenza cardiaca,battiti,fascia toracica,bracciale,polar,h10,bluetooth,corsa,garmin

@@ -1,2 +1,1 @@
-– A Heart Alert mostantól 24 nyelven beszél, a hangos riasztásokkal együtt
-– Az alkalmazás nyelvét a Beállításokban választhatod ki
+Kisebb fejlesztések

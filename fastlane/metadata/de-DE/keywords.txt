@@ -1,1 +1,1 @@
-bpm,zone 2,herzfrequenz,pulsmesser,brustgurt,bluetooth,laufen,radfahren,training,polar,h10,garmin
+bpm,zone 2,herzfrequenz,pulsmesser,brustgurt,armband,bluetooth,laufen,radfahren,polar,h10,garmin

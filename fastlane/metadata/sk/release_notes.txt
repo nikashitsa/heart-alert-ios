@@ -1,2 +1,1 @@
-– Heart Alert teraz hovorí 24 jazykmi, vrátane hlasových upozornení
-– Jazyk aplikácie vyber v Nastaveniach
+Drobné vylepšenia

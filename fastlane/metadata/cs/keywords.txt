@@ -1,1 +1,1 @@
-bpm,zóna 2,tep,tepovka,pulz,hrudní pás,bluetooth,kardio,běh,cyklistika,trénink,polar,h10,garmin
+bpm,zóna 2,tep,tepovka,pulz,hrudní pás,páska na paži,bluetooth,běh,cyklistika,polar,h10,garmin

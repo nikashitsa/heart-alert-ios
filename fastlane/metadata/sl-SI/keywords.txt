@@ -1,1 +1,1 @@
-bpm,cona 2,pulz,merilnik,prsni pas,senzor,polar,h10,garmin,bluetooth,tek,kolesarjenje,kardio,trening
+bpm,cona 2,pulz,merilnik,prsni pas,trak za roko,senzor,polar,h10,garmin,bluetooth,tek,kolesarjenje

@@ -1,1 +1,1 @@
-bpm,zona 2,pols,freqüència cardíaca,banda pectoral,bluetooth,cardio,córrer,ciclisme,polar,h10,garmin
+bpm,zona 2,pols,freqüència cardíaca,banda pectoral,braçal,bluetooth,córrer,ciclisme,polar,h10,garmin
