@@ -55,8 +55,10 @@ struct TrackingView: View {
                 Button(action: {
                     bluetoothManager.onlineStreamStop(feature: .hr)
                     onCancel()
-                    // Only worth asking after a session that actually ran.
-                    if sessionRan { requestReview() }
+                    // Only worth asking after a session that actually ran, and only of
+                    // entitled users (bought, or grandfathered), so free-tier users
+                    // hitting the paywall don't get prompted to rate the app.
+                    if sessionRan && settings.unlimitedAccess { requestReview() }
                 }) {
                     Text("Stop").setFontStyle(Fonts.textMdBold)
                 }.buttonStyle(PrimaryButton())
