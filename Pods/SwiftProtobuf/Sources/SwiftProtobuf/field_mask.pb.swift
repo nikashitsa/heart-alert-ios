@@ -45,7 +45,7 @@
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: ProtobufAPIVersionCheck {
   struct _2: ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -162,24 +162,22 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: ProtobufAPIVersionCheck 
 /// An implementation may provide options to override this default behavior for
 /// repeated and message fields.
 ///
-/// In order to reset a field's value to the default, the field must
-/// be in the mask and set to the default value in the provided resource.
-/// Hence, in order to reset all fields of a resource, provide a default
-/// instance of the resource and set all fields in the mask, or do
-/// not provide a mask as described below.
+/// Note that libraries which implement FieldMask resolution have various
+/// different behaviors in the face of empty masks or the special "*" mask.
+/// When implementing a service you should confirm these cases have the
+/// appropriate behavior in the underlying FieldMask library that you desire,
+/// and you may need to special case those cases in your application code if
+/// the underlying field mask library behavior differs from your intended
+/// service semantics.
 ///
-/// If a field mask is not present on update, the operation applies to
-/// all fields (as if a field mask of all fields has been specified).
-/// Note that in the presence of schema evolution, this may mean that
-/// fields the client does not know and has therefore not filled into
-/// the request will be reset to their default. If this is unwanted
-/// behavior, a specific service may require a client to always specify
-/// a field mask, producing an error if not.
+/// Update methods implementing https://google.aip.dev/134
+/// - MUST support the special value * meaning "full replace"
+/// - MUST treat an omitted field mask as "replace fields which are present".
 ///
-/// As with get operations, the location of the resource which
-/// describes the updated values in the request message depends on the
-/// operation kind. In any case, the effect of the field mask is
-/// required to be honored by the API.
+/// Other methods implementing https://google.aip.dev/157
+/// - SHOULD support the special value "*" to mean "get all".
+/// - MUST treat an omitted field mask to mean "get all", unless otherwise
+/// documented.
 ///
 /// ## Considerations for HTTP REST
 ///
@@ -249,7 +247,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: ProtobufAPIVersionCheck 
 /// The implementation of any API method which has a FieldMask type field in the
 /// request should verify the included field paths, and return an
 /// `INVALID_ARGUMENT` error if any path is unmappable.
-public struct Google_Protobuf_FieldMask: Sendable {
+public nonisolated struct Google_Protobuf_FieldMask: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -264,13 +262,11 @@ public struct Google_Protobuf_FieldMask: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "google.protobuf"
+fileprivate nonisolated let _protobuf_package = "google.protobuf"
 
-extension Google_Protobuf_FieldMask: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_FieldMask: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FieldMask"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "paths"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}paths\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

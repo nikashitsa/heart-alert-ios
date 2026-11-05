@@ -13,7 +13,11 @@
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 private func serializeAnyJSON(
     for message: any Message,
@@ -46,10 +50,13 @@ private func emitVerboseTextForm(visitor: inout TextFormatEncodingVisitor, messa
 private func asJSONObject(body: [UInt8]) -> Data {
     let asciiOpenCurlyBracket = UInt8(ascii: "{")
     let asciiCloseCurlyBracket = UInt8(ascii: "}")
-    var result = [asciiOpenCurlyBracket]
+
+    var result = Data()
+    result.reserveCapacity(body.count + 2)
+    result.append(asciiOpenCurlyBracket)
     result.append(contentsOf: body)
     result.append(asciiCloseCurlyBracket)
-    return Data(result)
+    return result
 }
 
 private func unpack(
@@ -101,7 +108,7 @@ internal class AnyMessageStorage {
         get {
             switch state {
             case .binary(let value):
-                return Data(value)
+                return value
             case .message(let message):
                 do {
                     return try message.serializedBytes(partial: true)
@@ -411,7 +418,7 @@ extension AnyMessageStorage {
     // actually look up the value in their runtime registries, but since we do deferred parsing
     // we can't assume the registry is complete, thus just do this minimal validation check.
     fileprivate func isTypeURLValid() -> Bool {
-        _typeURL.contains("/")
+        _typeURL.contains(where: { $0 == "/" })
     }
 
     // Override the traversal-based JSON encoding

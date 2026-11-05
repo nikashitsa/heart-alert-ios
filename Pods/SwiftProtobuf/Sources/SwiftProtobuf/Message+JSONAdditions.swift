@@ -8,11 +8,15 @@
 //
 // -----------------------------------------------------------------------------
 ///
-/// Extensions to `Message` to support JSON encoding/decoding.
+/// Extensions to ``Message`` to support JSON encoding/decoding.
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 /// JSON encoding and decoding methods for messages.
 extension Message {
@@ -35,12 +39,12 @@ extension Message {
         return String(decoding: data, as: UTF8.self)
     }
 
-    /// Returns a `SwiftProtobufContiguousBytes` containing the UTF-8 JSON serialization of the message.
+    /// Returns a ``SwiftProtobufContiguousBytes`` containing the UTF-8 JSON serialization of the message.
     ///
     /// Unlike binary encoding, presence of required fields is not enforced when
     /// serializing to JSON.
     ///
-    /// - Returns: A `SwiftProtobufContiguousBytes` containing the JSON serialization of the message.
+    /// - Returns: A ``SwiftProtobufContiguousBytes`` containing the JSON serialization of the message.
     /// - Parameters:
     ///   - options: The JSONEncodingOptions to use.
     /// - Throws: ``SwiftProtobufError`` or ``JSONEncodingError`` if encoding fails.
@@ -93,7 +97,7 @@ extension Message {
         }
     }
 
-    /// Creates a new message by decoding the given `SwiftProtobufContiguousBytes`
+    /// Creates a new message by decoding the given ``SwiftProtobufContiguousBytes``
     /// containing a serialized message in JSON format, interpreting the data as UTF-8 encoded
     /// text.
     ///
@@ -108,7 +112,7 @@ extension Message {
         try self.init(jsonUTF8Bytes: jsonUTF8Bytes, extensions: nil, options: options)
     }
 
-    /// Creates a new message by decoding the given `SwiftProtobufContiguousBytes`
+    /// Creates a new message by decoding the given ``SwiftProtobufContiguousBytes``
     /// containing a serialized message in JSON format, interpreting the data as UTF-8 encoded
     /// text.
     ///

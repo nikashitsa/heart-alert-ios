@@ -28,13 +28,17 @@ public struct PolarSensorSetting {
         self.settings = [SettingType : Set<UInt32>]()
     }
     
-    /// constructor with desired settings
+    /// Constructor with validation that all values are > 0
     ///
     /// - Parameter settings: single key value pairs to start stream
-    public init(_ settings: [SettingType : UInt32]) {
-        self.settings = settings.mapValues({ (v) -> Set<UInt32> in
-            return Set(arrayLiteral: v)
-        })
+    /// - Throws: PolarErrors.invalidSensorSettingValue if any value is <= 0
+    public init(_ settings: [SettingType : UInt32]) throws {
+        for (key, value) in settings {
+            if value == 0 {
+                throw PolarErrors.invalidSensorSettingValue(setting: key, value: value)
+            }
+        }
+        self.settings = settings.mapValues { Set([$0]) }
     }
     
     init(_ settings: [SettingType : Set<UInt32>]) {
@@ -47,7 +51,7 @@ public struct PolarSensorSetting {
     func map2PmdSetting() -> PmdSetting {
         return PmdSetting(settings.reduce(into: [:]) { (result, arg1) in
             let (key, value) = arg1
-            result[PmdSetting.PmdSettingType(rawValue: UInt8(key.rawValue)) ?? PmdSetting.PmdSettingType.unknown]=value.first!
+            result[PmdSetting.PmdSettingType(rawValue: UInt8(key.rawValue)) ?? PmdSetting.PmdSettingType.unknown] = value.first ?? 0
         })
     }
     
@@ -55,11 +59,13 @@ public struct PolarSensorSetting {
     ///
     /// - Returns: PolarSensorSetting with max settings
     public func maxSettings() -> PolarSensorSetting {
-        let selected = settings.reduce(into: [:]) { (result, arg1) in
-            let (key, value) = arg1
-            result[key] = value.max() ?? 0
-        } as [SettingType : UInt32]
-        return PolarSensorSetting(selected)
+        var selected = [SettingType: UInt32]()
+        for (key, value) in settings {
+            if let maxVal = value.max(), maxVal > 0 {
+                selected[key] = maxVal
+            }
+        }
+        return (try? PolarSensorSetting(selected)) ?? PolarSensorSetting()
     }
 }
 

@@ -47,10 +47,7 @@ private func ProtoToJSON(name: String) -> String? {
         case "a"..."z", "0"..."9", ".", "(", ")":
             jsonPath.append(c)
         default:
-            // TODO: Change this to `return nil`
-            // once we know everything legal is handled
-            // above.
-            jsonPath.append(c)
+            return nil
         }
     }
     return jsonPath
@@ -69,10 +66,7 @@ private func JSONToProto(name: String) -> String? {
         case "a"..."z", "0"..."9", ".", "(", ")":
             path.append(c)
         default:
-            // TODO: Change to `return nil` once
-            // we know everything legal is being
-            // handled above
-            path.append(c)
+            return nil
         }
     }
     return path
@@ -113,47 +107,6 @@ private func parseJSONFieldNames(names: String) -> [String]? {
     return split
 }
 
-extension Google_Protobuf_FieldMask {
-    /// Creates a new `Google_Protobuf_FieldMask` from the given array of paths.
-    ///
-    /// The paths should match the names used in the .proto file, which may be
-    /// different than the corresponding Swift property names.
-    ///
-    /// - Parameter protoPaths: The paths from which to create the field mask,
-    ///   defined using the .proto names for the fields.
-    public init(protoPaths: [String]) {
-        self.init()
-        paths = protoPaths
-    }
-
-    /// Creates a new `Google_Protobuf_FieldMask` from the given paths.
-    ///
-    /// The paths should match the names used in the .proto file, which may be
-    /// different than the corresponding Swift property names.
-    ///
-    /// - Parameter protoPaths: The paths from which to create the field mask,
-    ///   defined using the .proto names for the fields.
-    public init(protoPaths: String...) {
-        self.init(protoPaths: protoPaths)
-    }
-
-    /// Creates a new `Google_Protobuf_FieldMask` from the given paths.
-    ///
-    /// The paths should match the JSON names of the fields, which may be
-    /// different than the corresponding Swift property names.
-    ///
-    /// - Parameter jsonPaths: The paths from which to create the field mask,
-    ///   defined using the JSON names for the fields.
-    public init?(jsonPaths: String...) {
-        // TODO: This should fail if any of the conversions from JSON fails
-        self.init(protoPaths: jsonPaths.compactMap(JSONToProto))
-    }
-
-    // It would be nice if to have an initializer that accepted Swift property
-    // names, but translating between swift and protobuf/json property
-    // names is not entirely deterministic.
-}
-
 extension Google_Protobuf_FieldMask: _CustomJSONCodable {
     mutating func decodeJSON(from decoder: inout JSONDecoder) throws {
         let s = try decoder.scanner.nextQuotedString()
@@ -179,6 +132,48 @@ extension Google_Protobuf_FieldMask: _CustomJSONCodable {
     }
 }
 
+#if FieldMaskUtilities
+extension Google_Protobuf_FieldMask {
+    /// Creates a new ``Google_Protobuf_FieldMask`` from the given array of paths.
+    ///
+    /// The paths should match the names used in the .proto file, which may be
+    /// different than the corresponding Swift property names.
+    ///
+    /// - Parameter protoPaths: The paths from which to create the field mask,
+    ///   defined using the .proto names for the fields.
+    public init(protoPaths: [String]) {
+        self.init()
+        paths = protoPaths
+    }
+
+    /// Creates a new ``Google_Protobuf_FieldMask`` from the given paths.
+    ///
+    /// The paths should match the names used in the .proto file, which may be
+    /// different than the corresponding Swift property names.
+    ///
+    /// - Parameter protoPaths: The paths from which to create the field mask,
+    ///   defined using the .proto names for the fields.
+    public init(protoPaths: String...) {
+        self.init(protoPaths: protoPaths)
+    }
+
+    /// Creates a new ``Google_Protobuf_FieldMask`` from the given paths.
+    ///
+    /// The paths should match the JSON names of the fields, which may be
+    /// different than the corresponding Swift property names.
+    ///
+    /// - Parameter jsonPaths: The paths from which to create the field mask,
+    ///   defined using the JSON names for the fields.
+    public init?(jsonPaths: String...) {
+        // TODO: This should fail if any of the conversions from JSON fails
+        self.init(protoPaths: jsonPaths.compactMap(JSONToProto))
+    }
+
+    // It would be nice if to have an initializer that accepted Swift property
+    // names, but translating between swift and protobuf/json property
+    // names is not entirely deterministic.
+}
+
 extension Google_Protobuf_FieldMask {
 
     /// Initiates a field mask with all fields of the message type.
@@ -198,7 +193,7 @@ extension Google_Protobuf_FieldMask {
     ///   - messageType: Message type to get all paths from.
     ///   - fieldNumbers: Field numbers of paths to be included.
     /// - Returns: Field mask that include paths of corresponding field numbers.
-    /// - Throws: `FieldMaskError.invalidFieldNumber` if the field number
+    /// - Throws: ``FieldMaskError/invalidFieldNumber`` if the field number
     ///  is not on the message
     public init<M: Message & _ProtoNameProviding>(
         fieldNumbers: [Int],
@@ -365,3 +360,5 @@ extension Message where Self: _ProtoNameProviding {
         Self._protobuf_nameMap.names.map(\.description)
     }
 }
+
+#endif

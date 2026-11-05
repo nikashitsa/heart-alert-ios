@@ -23,7 +23,7 @@ extension AsyncSequence where Element == UInt8 {
     ///   - messageType: The type of message to read.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any extensions in
     ///    messages encoded by this sequence, or in messages nested within these messages.
-    ///   - partial: If `false` (the default),  after decoding a message, ``Message/isInitialized-6abgi`
+    ///   - partial: If `false` (the default),  after decoding a message, ``Message/isInitialized-6abgi``
     ///     will be checked to ensure all fields are present.
     ///   - options: The ``BinaryDecodingOptions`` to use.
     /// - Returns: An asynchronous sequence of messages read from the `AsyncSequence` of bytes.
@@ -63,7 +63,7 @@ public struct AsyncMessageSequence<
     /// is a varint encoding the message size followed by a message of exactly that size.
     ///
     /// - Parameters:
-    ///   - baseSequence: The `AsyncSequence` to read messages from.
+    ///   - base: The `AsyncSequence` to read messages from.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any extensions in
     ///    messages encoded by this sequence, or in messages nested within these messages.
     ///   - partial: If `false` (the default), after decoding a message, ``Message/isInitialized-6abgi``

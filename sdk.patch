@@ -1,12 +1,23 @@
 diff --git a/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift b/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift
-index e1edc3a..01f08cb 100644
 --- a/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift
 +++ b/Pods/PolarBleSdk/sources/iOS/ios-communications/Sources/PolarBleSdk/sdk/impl/PolarBleApiImpl.swift
-@@ -162,6 +162,7 @@ import UIKit
+@@ -269,6 +269,7 @@
      }
      
      fileprivate func deviceFilter(_ content: BleAdvertisementContent) -> Bool {
 +        return content.containsService(BleHrClient.HR_SERVICE) && content.name != ""
          return content.polarDeviceId.count != 0 && content.polarDeviceType != "mobile"
      }
-     
+ 
+@@ -1078,8 +1079,9 @@
+                             let name = sess.advertisementContent.name
+                             guard requiredDeviceNamePrefix == nil || requiredDeviceNamePrefix == "" || name.containsCaseInsensitive(requiredDeviceNamePrefix!) else { return }
+                             let deviceId = sess.advertisementContent.polarDeviceIdUntouched
+-                            guard !seenDeviceIds.contains(deviceId) else { return }
+-                            seenDeviceIds.insert(deviceId)
++                            let seenKey = deviceId.isEmpty ? sess.address.uuidString : deviceId
++                            guard !seenDeviceIds.contains(seenKey) else { return }
++                            seenDeviceIds.insert(seenKey)
+                             let hasSAGRFCFileSystem = BlePolarDeviceCapabilitiesUtility.fileSystemType(
+                                 sess.advertisementContent.polarDeviceType) == .polarFileSystemV2
+                             continuation.yield((deviceId,

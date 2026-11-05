@@ -14,7 +14,26 @@ public enum BlePsFtpException: Error {
     /// Indicating some fatal protocol layer error, typically when streams are not in sync.
     /// File transfer should recover after this error
     case protocolError
-    
+
+    public var errorName: String {
+        switch self {
+        case .undefinedError:
+            return "UndefinedError"
+        case .operationTimeout:
+            return "OperationTimeout"
+        case .operationCanceled:
+            return "OperationCanceled"
+        case .protocolError:
+            return "ProtocolError"
+        case .responseError(let errorCode):
+            if let protoError = Communications_PbPFtpError(rawValue: errorCode) {
+                return "ResponseError.\(protoError)"
+            } else {
+                return "ResponseError.unknown(\(errorCode))"
+            }
+        }
+    }
+
     public var _domain: String {
         switch self {
         case .undefinedError:
@@ -294,9 +313,9 @@ public class BlePsFtpUtility {
         } else {
             if (packet.count > RFC76_HEADER_SIZE) {
                 header.payload = packet.subdata(in: 1..<(packet.count))
-            } else if (packet.count == RFC76_HEADER_SIZE && header.status == 1) {
-                // header status 1 indicates the last packet in response from the device.
-                BleLogger.trace("Received response from device has header only, no payload.")
+            } else if (packet.count == RFC76_HEADER_SIZE && (header.status == RFC76_STATUS_LAST || header.status == RFC76_STATUS_MORE)) {
+                // header only packet with no payload is valid for LAST and MORE status, device may signal end of data with an empty MORE chunk before the final LAST frame.
+                BleLogger.trace("Received response from device has header only, no payload. Status: \(header.status)")
             }
             else {
                 throw BlePsFtpUtility.RFC76FrameProcessError.frameHasNoPayload
@@ -304,3 +323,5 @@ public class BlePsFtpUtility {
         }
     }
 }
+
+public extension BlePsFtpException { var localizedDescription: String { return "The operation couldn't be completed. (PolarBleSdk.BleGattException.\(self)" } }

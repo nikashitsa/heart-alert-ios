@@ -47,13 +47,12 @@ class AtomicList<T> {
     }
     
     func pop() throws -> T {
-        var item: T
         lock.lock()
+        defer { lock.unlock() }
         guard let item = items.first else {
             throw AtomicListException.emptyQueueSignal
         }
         items.removeFirst()
-        lock.unlock()
         return item
     }
     
@@ -97,49 +96,59 @@ class AtomicList<T> {
         lock.unlock()
         return ret
     }
-    
-    func poll( _ secs: TimeInterval, canceled: BlockOperation, cancelError: Error ) throws -> T {
-        if !canceled.isCancelled {
-            if( size() != 0 ){
-                return try pop()
-            }else{
-                lock.lock()
-                if lock.wait(until: Date (timeIntervalSinceNow: secs)) {
-                    lock.unlock()
-                    if canceled.isCancelled {
-                        throw cancelError
-                    } else if( size() != 0 ){
-                        return try pop()
-                    } else {
-                        throw AtomicListException.emptyQueueSignal
-                    }
-                } else {
-                    lock.unlock()
-                    throw AtomicListException.waitTimeout
-                }
-            }
-        } else {
-            throw cancelError
-        }
+
+    /// Atomically removes all items from the list and returns them.
+    /// This guarantees no item can be appended between the snapshot and the clear.
+    func drain() -> [T] {
+        lock.lock()
+        let snapshot = items
+        items.removeAll()
+        lock.unlock()
+        return snapshot
     }
     
-    func poll( _ secs: TimeInterval ) throws -> T {
-        if( size() != 0 ){
-            return try pop()
-        }else{
-            lock.lock()
-            if lock.wait(until: Date (timeIntervalSinceNow: secs)) {
-                lock.unlock()
-                if( size() != 0 ){
-                    return try pop()
-                }else{
-                    throw AtomicListException.emptyQueueSignal
-                }
-            } else {
-                lock.unlock()
+    /// Removes and returns the first item. Caller must already hold `lock`.
+    private func popLocked() throws -> T {
+        guard let item = items.first else {
+            throw AtomicListException.emptyQueueSignal
+        }
+        items.removeFirst()
+        return item
+    }
+
+    /// `lock` is held continuously across the check-and-wait, per the
+    /// standard condition-variable pattern ("check the predicate in a loop while holding the
+    /// lock"), so no push can be missed between the check and the wait.
+    func poll( _ secs: TimeInterval, canceled: BlockOperation, cancelError: Error ) throws -> T {
+        lock.lock()
+        defer { lock.unlock() }
+
+        let deadline = Date(timeIntervalSinceNow: secs)
+        while items.isEmpty {
+            if canceled.isCancelled {
+                throw cancelError
+            }
+            guard lock.wait(until: deadline) else {
                 throw AtomicListException.waitTimeout
             }
         }
+        if canceled.isCancelled {
+            throw cancelError
+        }
+        return try popLocked()
+    }
+    
+    func poll( _ secs: TimeInterval ) throws -> T {
+        lock.lock()
+        defer { lock.unlock() }
+
+        let deadline = Date(timeIntervalSinceNow: secs)
+        while items.isEmpty {
+            guard lock.wait(until: deadline) else {
+                throw AtomicListException.waitTimeout
+            }
+        }
+        return try popLocked()
     }
     
     func poll() throws -> T {
@@ -151,34 +160,28 @@ class AtomicList<T> {
     }
     
     func pollUntilSignaled() throws -> T {
-        if(size() != 0){
-            return try pop()
-        } else {
-            self.lock.lock()
-            self.lock.wait()
-            self.lock.unlock()
-            return try poll()
+        lock.lock()
+        defer { lock.unlock() }
+
+        while items.isEmpty {
+            lock.wait()
         }
+        return try popLocked()
     }
     
     func pollUntilSignaled(canceled: BlockOperation, cancelError: Error) throws -> T {
-        if !canceled.isCancelled {
-            if(size() != 0){
-                return try pop()
-            } else {
-                self.lock.lock()
-                self.lock.wait()
-                self.lock.unlock()
-                if canceled.isCancelled {
-                    throw cancelError
-                } else if( size() != 0 ){
-                    return try pop()
-                } else {
-                    throw AtomicListException.emptyQueueSignal
-                }
+        lock.lock()
+        defer { lock.unlock() }
+
+        while items.isEmpty {
+            if canceled.isCancelled {
+                throw cancelError
             }
-        } else {
+            lock.wait()
+        }
+        if canceled.isCancelled {
             throw cancelError
         }
+        return try popLocked()
     }
 }

@@ -33,9 +33,9 @@ public struct OfflineRecordingData<DataType> {
     let recordingSettings: PmdSetting?
     let data: DataType
     
-    public static func parseDataFromOfflineFile(fileData: Data, type: PmdMeasurementType, secret: PmdSecret? = nil, lastTimestamp: UInt64 = 0) throws -> OfflineRecordingData<Any> {
-        BleLogger.trace("Start offline file parsing. File size is \(fileData.count) and type \(type), previous file last timestamp: \(lastTimestamp)")
-        
+    public static func parseDataFromOfflineFile(fileData: Data, type: PmdMeasurementType, secret: PmdSecret? = nil, lastTimestamp: UInt64 = 0, hintDerivedMethods: Set<Int>? = nil) throws -> OfflineRecordingData<Any> {
+        BleLogger.trace("Start offline file parsing. File size is \(fileData.count) and type \(type), previous file last timestamp: \(lastTimestamp), hintDerivedMethods: \(String(describing: hintDerivedMethods))")
+
         guard !fileData.isEmpty else {
             throw OfflineRecordingError.emptyFile
         }
@@ -51,17 +51,26 @@ public struct OfflineRecordingData<DataType> {
         
         if (metaDataLength < fileData.count) {
             payloadDataBytes = fileData.subdata(in: metaDataLength..<fileData.count)
+            let builder: Any
+            switch type {
+            case .acc:
+                builder = buildAccDataBuilder(settings: metaData.recordingSettings, hintDerivedMethods: hintDerivedMethods)
+            case .derivedMeasurement:
+                builder = buildDerivedDataBuilder(settings: metaData.recordingSettings, hintDerivedMethods: hintDerivedMethods)
+            default:
+                builder = try getDataBuilder(type: type)
+            }
             let parsedData = try parseData(
                 dataBytes: payloadDataBytes,
                 metaData: metaData,
-                builder: try getDataBuilder(type: type),
+                builder: builder,
                 lastTimestamp: lastTimestamp
             )
 
-            return OfflineRecordingData<Any>(offlineRecordingHeader: metaData.offlineRecordingHeader, startTime: metaData.startTime, recordingSettings: metaData.recordingSettings,  data: parsedData)
+            return OfflineRecordingData<Any>(offlineRecordingHeader: metaData.offlineRecordingHeader, startTime: metaData.startTime, recordingSettings: metaData.recordingSettings, data: parsedData)
         }
         
-        return OfflineRecordingData<Any>(offlineRecordingHeader: metaData.offlineRecordingHeader, startTime: metaData.startTime, recordingSettings: metaData.recordingSettings,  data: EmptyData())
+        return OfflineRecordingData<Any>(offlineRecordingHeader: metaData.offlineRecordingHeader, startTime: metaData.startTime, recordingSettings: metaData.recordingSettings, data: EmptyData())
     }
     
     private static func getDataBuilder(type: PmdMeasurementType) throws -> Any {
@@ -88,7 +97,30 @@ public struct OfflineRecordingData<DataType> {
             throw OfflineRecordingError.offlineRecordingErrorNoParserForData
         }
     }
-    
+
+    private static func buildAccDataBuilder(settings: PmdSetting?, hintDerivedMethods: Set<Int>?) -> Any {
+        let methodIds = resolveDerivedMethodIds(settings: settings, hint: hintDerivedMethods, fallbackToAllIfNoSettings: true)
+        return methodIds.isEmpty ? AccData() : DerivedAccData(activeMethods: methodIds)
+    }
+
+    private static func buildDerivedDataBuilder(settings: PmdSetting?, hintDerivedMethods: Set<Int>?) -> DerivedAccData {
+        let methodIds = resolveDerivedMethodIds(settings: settings, hint: hintDerivedMethods, fallbackToAllIfNoSettings: false)
+        return DerivedAccData(activeMethods: methodIds)
+    }
+
+    private static func resolveDerivedMethodIds(settings: PmdSetting?, hint: Set<Int>?, fallbackToAllIfNoSettings: Bool) -> Set<Int> {
+        if let methodSet = settings?.settings[.derivedMeasurementMethod], !methodSet.isEmpty {
+            return Set(methodSet.map { Int($0) })
+        }
+        if let h = hint { return h }
+        if fallbackToAllIfNoSettings && settings == nil {
+            let fallback = Set(0..<10)
+            BleLogger.trace("resolveDerivedMethodIds: settings absent and no hint; assuming derived recording, using fallback \(fallback)")
+            return fallback
+        }
+        return []
+    }
+
     private static func parseMetaData(_ fileBytes: Data,_  secret: PmdSecret?) throws -> (OfflineRecordingMetaData, Int) {
         var securityOffset = 0
         let offlineRecordingSecurityStrategy = try parseSecurityStrategy(strategyBytes: fileBytes.subdataSafe(in: SECURITY_STRATEGY_INDEX..<SECURITY_STRATEGY_LENGTH))
@@ -207,7 +239,7 @@ public struct OfflineRecordingData<DataType> {
         var pmdSetting: PmdSetting? = nil
         
         if (!settingBytes.isEmpty) {
-            pmdSetting  = PmdSetting(settingBytes)
+            pmdSetting  = try PmdSetting(settingBytes)
         }
         return (pmdSetting, offset + settingsLength)
     }
@@ -289,36 +321,43 @@ public struct OfflineRecordingData<DataType> {
                                              { _ in sampleRate })
             
             previousTimeStamp = dataFrame.timeStamp
-            switch(builder) {
-            case is EcgData:
-                let ecgData =  try EcgData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! EcgData).samples.append(contentsOf: ecgData.samples)
-            case is AccData:
-                let accData =  try AccData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! AccData).samples.append(contentsOf: accData.samples)
-            case is GyrData:
-                let gyrData =  try GyrData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! GyrData).samples.append(contentsOf: gyrData.samples)
-            case is MagData:
-                let magData =  try MagData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! MagData).samples.append(contentsOf: magData.samples)
-            case is PpgData:
-                let ppgData =  try PpgData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! PpgData).samples.append(contentsOf: ppgData.samples)
-            case is PpiData:
-                let ppiData =  try PpiData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! PpiData).samples.append(contentsOf: ppiData.samples)
-            case is OfflineHrData:
-                let offlineHrData =  try OfflineHrData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! OfflineHrData).samples.append(contentsOf: offlineHrData.samples)
-            case is TemperatureData:
-                let temperatureData =  try TemperatureData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! TemperatureData).samples.append(contentsOf: temperatureData.samples)
-            case is SkinTemperatureData:
-                let skinTemperatureData =  try SkinTemperatureData.parseDataFromDataFrame(frame: dataFrame)
-                (builder as! SkinTemperatureData).samples.append(contentsOf: skinTemperatureData.samples)
-            default:
-                throw OfflineRecordingError.offlineRecordingErrorSecretMissing
+            do {
+                switch(builder) {
+                case is EcgData:
+                    let ecgData =  try EcgData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! EcgData).samples.append(contentsOf: ecgData.samples)
+                case is DerivedAccData:
+                    let derivedData = try DerivedAccData.parseDataFromDataFrame(frame: dataFrame, activeMethods: (builder as! DerivedAccData).activeMethods)
+                    (builder as! DerivedAccData).derivedSamples.append(contentsOf: derivedData.derivedSamples)
+                case is AccData:
+                    let accData =  try AccData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! AccData).samples.append(contentsOf: accData.samples)
+                case is GyrData:
+                    let gyrData =  try GyrData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! GyrData).samples.append(contentsOf: gyrData.samples)
+                case is MagData:
+                    let magData =  try MagData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! MagData).samples.append(contentsOf: magData.samples)
+                case is PpgData:
+                    let ppgData =  try PpgData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! PpgData).samples.append(contentsOf: ppgData.samples)
+                case is PpiData:
+                    let ppiData =  try PpiData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! PpiData).samples.append(contentsOf: ppiData.samples)
+                case is OfflineHrData:
+                    let offlineHrData =  try OfflineHrData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! OfflineHrData).samples.append(contentsOf: offlineHrData.samples)
+                case is TemperatureData:
+                    let temperatureData =  try TemperatureData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! TemperatureData).samples.append(contentsOf: temperatureData.samples)
+                case is SkinTemperatureData:
+                    let skinTemperatureData =  try SkinTemperatureData.parseDataFromDataFrame(frame: dataFrame)
+                    (builder as! SkinTemperatureData).samples.append(contentsOf: skinTemperatureData.samples)
+                default:
+                    throw OfflineRecordingError.offlineRecordingErrorSecretMissing
+                }
+            } catch {
+                BleLogger.error("Failed to parse data frame with \(dataFrame.timeStamp). Error: \(error). Continuing with next frames.")
             }
             
             if (offset < decryptedData.count) {

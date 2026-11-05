@@ -1,19 +1,20 @@
-
 import Foundation
 import CoreBluetooth
-import RxSwift
 
-public class BleBasClient: BleGattClientBase {
+public class BleBasClient: BleGattClientBase, @unchecked Sendable {
     public static let BATTERY_SERVICE = CBUUID(string: "180F")
     private static let BATTERY_LEVEL_CHARACTERISTIC = CBUUID(string: "2A19")
     public static let BATTERY_STATUS_CHARACTERISTIC = CBUUID(string: "2BED")
     private static let UNDEFINED_BATTERY_PERCENTAGE = -1
-    
+
     var cachedBatteryPercentage = AtomicInteger(initialValue: UNDEFINED_BATTERY_PERCENTAGE)
-    var observers = AtomicList<RxObserver<Int>>()
 
     var cachedChargeState = ChargeState.unknown
-    var chargeStateObservers = AtomicList<RxObserver<ChargeState>>()
+    var cachedPowerSourcesState = PowerSourcesState(batteryPresent: .unknown, wiredExternalPowerConnected: .unknown, wirelessExternalPowerConnected: .unknown)
+
+    private let batteryStreams = StreamContinuationList<Int>()
+    private let chargeStreams = StreamContinuationList<ChargeState>()
+    private let powerSourceStreams = StreamContinuationList<PowerSourcesState>()
 
     public enum ChargeState {
         case unknown
@@ -22,11 +23,34 @@ public class BleBasClient: BleGattClientBase {
         case dischargingInactive
     }
 
-    public init(gattServiceTransmitter: BleAttributeTransportProtocol){
+    public enum PowerSourceState {
+        case notConnected
+        case connected
+        case unknown
+        case reservedForFutureUse
+    }
+
+    public enum BatteryPresentState {
+        case notPresent
+        case present
+        case unknown
+    }
+
+    public struct PowerSourcesState {
+        public let batteryPresent: BatteryPresentState
+        public let wiredExternalPowerConnected: PowerSourceState
+        public let wirelessExternalPowerConnected: PowerSourceState
+        public init(batteryPresent: BatteryPresentState, wiredExternalPowerConnected: PowerSourceState, wirelessExternalPowerConnected: PowerSourceState) {
+            self.batteryPresent = batteryPresent
+            self.wiredExternalPowerConnected = wiredExternalPowerConnected
+            self.wirelessExternalPowerConnected = wirelessExternalPowerConnected
+        }
+    }
+
+    public init(gattServiceTransmitter: BleAttributeTransportProtocol) {
         super.init(serviceUuid: BleBasClient.BATTERY_SERVICE, gattServiceTransmitter: gattServiceTransmitter)
         automaticEnableNotificationsOnConnect(chr: BleBasClient.BATTERY_LEVEL_CHARACTERISTIC)
         addCharacteristicRead(BleBasClient.BATTERY_LEVEL_CHARACTERISTIC)
-
         automaticEnableNotificationsOnConnect(chr: BleBasClient.BATTERY_STATUS_CHARACTERISTIC)
         addCharacteristicRead(BleBasClient.BATTERY_STATUS_CHARACTERISTIC)
     }
@@ -34,13 +58,13 @@ public class BleBasClient: BleGattClientBase {
     override public func disconnected() {
         super.disconnected()
         cachedBatteryPercentage.set(BleBasClient.UNDEFINED_BATTERY_PERCENTAGE)
-        RxUtils.postErrorAndClearList(observers, error: BleGattException.gattDisconnected)
-
+        batteryStreams.finish(throwing: BleGattException.gattDisconnected)
         cachedChargeState = .unknown
-        RxUtils.postErrorAndClearList(chargeStateObservers, error: BleGattException.gattDisconnected)
+        chargeStreams.finish(throwing: BleGattException.gattDisconnected)
+        powerSourceStreams.finish(throwing: BleGattException.gattDisconnected)
     }
 
-    override public func processServiceData(_ chr: CBUUID , data: Data , err: Int ){
+    override public func processServiceData(_ chr: CBUUID, data: Data, err: Int) {
         var trace = "BleBasClient process data. chr: \(chr.uuidString)"
         if err == 0 {
             if chr == BleBasClient.BATTERY_LEVEL_CHARACTERISTIC {
@@ -48,13 +72,17 @@ public class BleBasClient: BleGattClientBase {
                 (data as NSData).getBytes(&level, length: MemoryLayout<UInt8>.size)
                 trace.append(" battery percentage: \(level)")
                 BleLogger.trace(trace)
+                guard isValidBatteryPercentage(Int(level)) else { return }
                 cachedBatteryPercentage.set(Int(level))
-                RxUtils.emitNext(observers) { observer in observer.obs.onNext(Int(level)) }
+                batteryStreams.yield(Int(level))
             } else if chr == BleBasClient.BATTERY_STATUS_CHARACTERISTIC {
                 cachedChargeState = parseChargeState(from: data)
                 trace.append(" charge state: \(cachedChargeState)")
+                cachedPowerSourcesState = parsePowerSourcesState(from: data)
+                trace.append(" power sources state: \(cachedPowerSourcesState)")
                 BleLogger.trace(trace)
-                RxUtils.emitNext(chargeStateObservers) { observer in observer.obs.onNext(cachedChargeState) }
+                chargeStreams.yield(cachedChargeState)
+                powerSourceStreams.yield(cachedPowerSourcesState)
             }
         } else {
             trace.append(" err: \(err)")
@@ -65,63 +93,98 @@ public class BleBasClient: BleGattClientBase {
     private func parseChargeState(from data: Data) -> ChargeState {
         let dataHex = data.map { String(format: "%02X", $0) }.joined(separator: " ")
         BleLogger.trace("Parsing charge state from data: \(dataHex)")
-        guard data.count > 0 else {
-            BleLogger.error("Charge state: data is empty?")
-            BleLogger.trace("Charge state: Unknown")
+        guard data.count >= 2 else {
+            BleLogger.error("Battery status data too short for charge state: \(data.count) bytes")
             return .unknown
         }
         let chargeStateValue = (data[1] & 0x60) >> 5
-
         switch chargeStateValue {
-        case 1:
-            BleLogger.trace("Charge state: Charging")
-            return .charging
-        case 2:
-            BleLogger.trace("Charge state: Discharging Active")
-            return .dischargingActive
-        case 3:
-            BleLogger.trace("Charge state: Discharging Inactive")
-            return .dischargingInactive
-        default:
-            BleLogger.trace("Charge state: Unknown (value: \(chargeStateValue))")
-            return .unknown
+        case 1: return .charging
+        case 2: return .dischargingActive
+        case 3: return .dischargingInactive
+        default: return .unknown
         }
     }
 
-    // apis
+    private func parsePowerSourcesState(from data: Data) -> PowerSourcesState {
+        guard data.count >= 2 else {
+            BleLogger.error("Battery status data too short for power sources state: \(data.count) bytes")
+            return PowerSourcesState(batteryPresent: .unknown, wiredExternalPowerConnected: .unknown, wirelessExternalPowerConnected: .unknown)
+        }
+        let batteryPresent: BatteryPresentState = (data[1] & 0x01) == 1 ? .present : .notPresent
+        let wiredValue = (data[1] & 0x06) >> 1
+        let wired: PowerSourceState = wiredValue == 0 ? .notConnected : (wiredValue == 1 ? .connected : (wiredValue == 3 ? .reservedForFutureUse : .unknown))
+        let wirelessValue = (data[1] & 0x18) >> 3
+        let wireless: PowerSourceState = wirelessValue == 0 ? .notConnected : (wirelessValue == 1 ? .connected : (wirelessValue == 3 ? .reservedForFutureUse : .unknown))
+        return PowerSourcesState(batteryPresent: batteryPresent, wiredExternalPowerConnected: wired, wirelessExternalPowerConnected: wireless)
+    }
+
     public func readLevel() throws {
         try self.gattServiceTransmitter?.readValue(self, serviceUuid: BleBasClient.BATTERY_SERVICE, characteristicUuid: BleBasClient.BATTERY_LEVEL_CHARACTERISTIC)
     }
-    
-    /// Get observable for monitoring battery status updates on connected device. If battery level is already cached then the cached value is emitted immidiately.
-    ///
-    /// - Parameter checkConnection: If `true`, verifies the initial connection before starting monitoring. If the device is not connected, error is emitted immediately.
-    ///   If `false`, monitoring starts without checking the connection, and errors are only emitted if the device disconnects after subscription.
-    /// - Returns: Observable stream of battery status.
-    ///   - `onNext`, on every battery status update received from connected device. The value is the device battery level as a percentage from 0% to 100%.
-    ///   - `onError`, if `checkConnection` is `true` and the device is not initially connected, the error is emitted immediately.
-    ///     If `checkConnection` is `false`, error is only emitted if the BLE connection is lost after subscribing.
-    public func monitorBatteryStatus(_ checkConnection: Bool) -> Observable<Int> {
-        return RxUtils.monitor(observers, transport: gattServiceTransmitter, checkConnection: checkConnection)
-            .startWith(self.cachedBatteryPercentage.get())
-            .filter { value in self.isValidBatteryPercentage(value) }
+
+    /// AsyncThrowingStream for monitoring battery status updates.
+    public func monitorBatteryStatus(_ checkConnection: Bool) -> AsyncThrowingStream<Int, Error> {
+        let stream = batteryStreams.makeStream(transport: gattServiceTransmitter, checkConnection: checkConnection)
+        // prepend cached value if valid
+        let cached = cachedBatteryPercentage.get()
+        if isValidBatteryPercentage(cached) {
+            return AsyncThrowingStream { continuation in
+                continuation.yield(cached)
+                Task {
+                    do {
+                        for try await value in stream {
+                            continuation.yield(value)
+                        }
+                        continuation.finish()
+                    } catch {
+                        continuation.finish(throwing: error)
+                    }
+                }
+            }
+        }
+        return stream
     }
 
-    /// Get observable for monitoring charging status updates on connected device. If charging status is already cached then the cached value is emitted immediately.
-    ///
-    /// - Parameter checkConnection: If `true`, verifies the initial connection before starting monitoring. If the device is not connected, error is emitted immediately.
-    ///   If `false`, monitoring starts without checking the connection, and errors are only emitted if the device disconnects after subscription.
-    /// - Returns: Observable stream of battery status.
-    ///   - `onNext`, on every charging status received from connected device.
-    ///   - `onError`, if `checkConnection` is `true` and the device is not initially connected, the error is emitted immediately.
-    ///     If `checkConnection` is `false`, error is only emitted if the BLE connection is lost after subscribing.
-    public func monitorChargingStatus(_ checkConnection: Bool) -> Observable<ChargeState> {
-        return RxUtils.monitor(chargeStateObservers, transport: gattServiceTransmitter, checkConnection: checkConnection)
-            .startWith(self.cachedChargeState)
+    /// AsyncThrowingStream for monitoring charging status updates.
+    public func monitorChargingStatus(_ checkConnection: Bool) -> AsyncThrowingStream<ChargeState, Error> {
+        let stream = chargeStreams.makeStream(transport: gattServiceTransmitter, checkConnection: checkConnection)
+        let cached = cachedChargeState
+        return AsyncThrowingStream { continuation in
+            continuation.yield(cached)
+            Task {
+                do {
+                    for try await value in stream { continuation.yield(value) }
+                    continuation.finish()
+                } catch { continuation.finish(throwing: error) }
+            }
+        }
+    }
+
+    /// AsyncThrowingStream for monitoring power sources status updates.
+    public func monitorPowerSourcesState(_ checkConnection: Bool) -> AsyncThrowingStream<PowerSourcesState, Error> {
+        let stream = powerSourceStreams.makeStream(transport: gattServiceTransmitter, checkConnection: checkConnection)
+        let cached = cachedPowerSourcesState
+        return AsyncThrowingStream { continuation in
+            continuation.yield(cached)
+            Task {
+                do {
+                    for try await value in stream { continuation.yield(value) }
+                    continuation.finish()
+                } catch { continuation.finish(throwing: error) }
+            }
+        }
     }
 
     private func isValidBatteryPercentage(_ batteryPercentage: Int) -> Bool {
-        let batteryPercentageRange = 0...100
-        return batteryPercentageRange.contains(batteryPercentage)
+        return (0...100).contains(batteryPercentage)
+    }
+
+    public func getBatteryLevel() -> Int {
+        return cachedBatteryPercentage.get()
+    }
+
+    public func getChargeState() -> ChargeState {
+        return cachedChargeState
     }
 }

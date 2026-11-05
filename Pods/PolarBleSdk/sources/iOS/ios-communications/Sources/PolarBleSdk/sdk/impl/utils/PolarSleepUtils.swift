@@ -1,65 +1,109 @@
 //  Copyright © 2024 Polar. All rights reserved.
 
 import Foundation
-import RxSwift
 
 private let ARABICA_USER_ROOT_FOLDER = "/U/0/"
 private let SLEEP_DIRECTORY = "SLEEP/"
 private let SLEEP_PROTO = "SLEEPRES.BPB"
+private let NRST_DIRECTORY = "NSTRESUL/"
+private let NRST_PROTO = "NSTRCONT.BPB"
 private let dateFormat: DateFormatter = {
     let formatter = DateFormatter()
-    formatter.dateFormat = "yyyyMMdd"
+    formatter.dateFormat = "yyyyMMdd±hh:mm"
     formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone.current
     return formatter
 }()
 private let TAG = "PolarSleepUtils"
 
 internal class PolarSleepUtils {
 
-    /// Read sleep for a given date.
-    static func readSleepFromDayDirectory(client: BlePsFtpClient, date: Date) -> Single<PolarSleepData.PolarSleepAnalysisResult> {
-        BleLogger.trace(TAG, "readsleepFromDayDirectory: \(date)")
-        return Single<PolarSleepData.PolarSleepAnalysisResult>.create { emitter in
-            let sleepDataFilePath = "\(ARABICA_USER_ROOT_FOLDER)\(dateFormat.string(from: date))/\(SLEEP_DIRECTORY)\(SLEEP_PROTO)"
-            let operation = Protocol_PbPFtpOperation.with {
-                $0.command = .get
-                $0.path = sleepDataFilePath
-            }
-            let disposable = client.request(try! operation.serializedData()).subscribe(
-                onSuccess: { response in
-                    do {
-                        let proto = try Data_PbSleepAnalysisResult(serializedData: Data(response))
-                        let result = PolarSleepData.PolarSleepAnalysisResult.init(
-                            sleepStartTime: try PolarTimeUtils.pbLocalDateTimeToDate(pbLocalDateTime: proto.sleepStartTime),
-                            sleepEndTime: try PolarTimeUtils.pbLocalDateTimeToDate(pbLocalDateTime: proto.sleepEndTime),
-                            lastModified: proto.hasLastModified ? try PolarTimeUtils.pbSystemDateTimeToDate(pbSystemDateTime: proto.lastModified) : nil,
-                            sleepGoalMinutes: proto.sleepGoalMinutes,
-                            sleepWakePhases: PolarSleepData.fromPbSleepwakePhasesListProto(pbSleepwakePhasesList: proto.sleepwakePhases),
-                            snoozeTime: try PolarSleepData.convertSnoozeTimeListToLocalTime(snoozeTimeList: proto.snoozeTime),
-                            alarmTime: proto.hasAlarmTime ? try PolarTimeUtils.pbLocalDateTimeToDate(pbLocalDateTime: proto.alarmTime) : nil,
-                            sleepStartOffsetSeconds: proto.sleepStartOffsetSeconds,
-                            sleepEndOffsetSeconds: proto.sleepStartOffsetSeconds,
-                            userSleepRating: proto.hasUserSleepRating ? PolarSleepData.SleepRating(rawValue: proto.userSleepRating.rawValue) : nil,
-                            deviceId: proto.hasRecordingDevice ? proto.recordingDevice.deviceID : nil,
-                            batteryRanOut: proto.hasBatteryRanOut ? proto.batteryRanOut : nil,
-                            sleepCycles: PolarSleepData.fromPbSleepCyclesList(pbSleepCyclesList: proto.sleepCycles),
-                            sleepResultDate: try? PolarPlainDate.init(date: PolarTimeUtils.pbDateToDate(pbDate: proto.sleepResultDate)).description,
-                            originalSleepRange: try PolarSleepData.fromPbOriginalSleepRange(pbOriginalSleepRange: proto.originalSleepRange)
-                        )
-                        emitter(.success(result))
-                    } catch {
-                        BleLogger.error("readsleepFromDayDirectory() failed for path: \(sleepDataFilePath), error: \(error). No sleep data?")
-                        emitter(.failure(error))
-                    }
-                },
-                onFailure: { error in
-                    BleLogger.trace("readsleepFromDayDirectory() failed for path: \(sleepDataFilePath), error: \(error). No sleep data?")
-                    emitter(.success(PolarSleepData.PolarSleepAnalysisResult(sleepStartTime: nil, sleepEndTime: nil, lastModified: nil,sleepGoalMinutes: nil, sleepWakePhases: nil, snoozeTime: nil,alarmTime: nil, sleepStartOffsetSeconds: nil, sleepEndOffsetSeconds: nil,userSleepRating: nil, deviceId: nil, batteryRanOut: nil,sleepCycles: nil, sleepResultDate: nil, originalSleepRange: nil)))
-                }
-            )
-            return Disposables.create {
-                disposable.dispose()
+    /// Reads a date's sleep data, retrying on transient failures with exponential backoff.
+    static func readSleepFromDayDirectory(
+        client: BlePsFtpClient,
+        date: Date,
+        maxAttempts: Int = 3,
+        baseRetryDelayMs: UInt64 = 500
+    ) async throws -> PolarSleepData.PolarSleepAnalysisResult {
+        var lastError: Error!
+        for attempt in 1...max(maxAttempts, 1) {
+            do {
+                var result = try await readSleepData(client: client, date: date)
+                result = try await readSleepSkinTemperatureResult(client: client, date: date, sleepAnalysisResult: result)
+                return result
+            } catch {
+                lastError = error
+                guard attempt < maxAttempts else { break }
+                let delayMs = baseRetryDelayMs << (attempt - 1) // 1x, 2x, 4x, ... of the base delay
+                BleLogger.error(TAG, "readSleepFromDayDirectory failed for date \(date) on attempt \(attempt)/\(maxAttempts), retrying in \(delayMs)ms: \(error)")
+                try? await Task.sleep(nanoseconds: delayMs * 1_000_000)
             }
         }
+        throw lastError
+    }
+
+    static func readSleepData(client: BlePsFtpClient, date: Date) async throws -> PolarSleepData.PolarSleepAnalysisResult {
+        let dateString = dateFormat.string(from: date).components(separatedBy: "±").first ?? ""
+        BleLogger.trace(TAG, "readSleepFromDayDirectory: \(dateString)")
+        let sleepDataFilePath = "\(ARABICA_USER_ROOT_FOLDER)\(dateString)/\(SLEEP_DIRECTORY)\(SLEEP_PROTO)"
+        let operation = Protocol_PbPFtpOperation.with { $0.command = .get; $0.path = sleepDataFilePath }
+        do {
+            let response = try await client.request(try operation.serializedBytes())
+            let proto = try Data_PbSleepAnalysisResult(serializedBytes: Data(response))
+            return PolarSleepData.PolarSleepAnalysisResult(
+                sleepStartTime: try PolarTimeUtils.pbLocalDateTimeToDate(pbLocalDateTime: proto.sleepStartTime),
+                sleepEndTime: try PolarTimeUtils.pbLocalDateTimeToDate(pbLocalDateTime: proto.sleepEndTime),
+                lastModified: proto.hasLastModified ? try PolarTimeUtils.pbSystemDateTimeToDate(pbSystemDateTime: proto.lastModified) : nil,
+                sleepGoalMinutes: proto.sleepGoalMinutes,
+                sleepWakePhases: PolarSleepData.fromPbSleepwakePhasesListProto(pbSleepwakePhasesList: proto.sleepwakePhases),
+                snoozeTime: try PolarSleepData.convertSnoozeTimeListToLocalTime(snoozeTimeList: proto.snoozeTime),
+                alarmTime: proto.hasAlarmTime ? try PolarTimeUtils.pbLocalDateTimeToDate(pbLocalDateTime: proto.alarmTime) : nil,
+                sleepStartOffsetSeconds: proto.sleepStartOffsetSeconds,
+                sleepEndOffsetSeconds: proto.sleepStartOffsetSeconds,
+                userSleepRating: proto.hasUserSleepRating ? PolarSleepData.SleepRating(rawValue: proto.userSleepRating.rawValue) : nil,
+                deviceId: proto.hasRecordingDevice ? proto.recordingDevice.deviceID : nil,
+                batteryRanOut: proto.hasBatteryRanOut ? proto.batteryRanOut : nil,
+                sleepCycles: PolarSleepData.fromPbSleepCyclesList(pbSleepCyclesList: proto.sleepCycles),
+                sleepResultDate: try PolarTimeUtils.pbDateToDateComponents(pbDate: proto.sleepResultDate),
+                originalSleepRange: try PolarSleepData.fromPbOriginalSleepRange(pbOriginalSleepRange: proto.originalSleepRange)
+            )
+        } catch {
+            if let psFtpError = error as? BlePsFtpException,
+               case .responseError(let errorCode) = psFtpError,
+               errorCode == Protocol_PbPFtpError.noSuchFileOrDirectory.rawValue {
+                BleLogger.trace(TAG, "readSleepData() no sleep file at: \(sleepDataFilePath)")
+                return PolarSleepData.PolarSleepAnalysisResult(
+                    sleepStartTime: nil, sleepEndTime: nil, lastModified: nil, sleepGoalMinutes: nil,
+                    sleepWakePhases: nil, snoozeTime: nil, alarmTime: nil, sleepStartOffsetSeconds: nil,
+                    sleepEndOffsetSeconds: nil, userSleepRating: nil, deviceId: nil, batteryRanOut: nil,
+                    sleepCycles: nil, sleepResultDate: nil, originalSleepRange: nil
+                )
+            }
+            BleLogger.error(TAG, "readSleepData() failed for path: \(sleepDataFilePath), error: \(error)")
+            throw error
+        }
+    }
+
+    static func readSleepSkinTemperatureResult(client: BlePsFtpClient, date: Date, sleepAnalysisResult: PolarSleepData.PolarSleepAnalysisResult) async throws -> PolarSleepData.PolarSleepAnalysisResult {
+        let dateString = dateFormat.string(from: date).components(separatedBy: "±").first ?? ""
+        BleLogger.trace(TAG, "readSleepSkinTemperature: \(dateString)")
+        var result = sleepAnalysisResult
+        let filePath = "\(ARABICA_USER_ROOT_FOLDER)\(dateString)/\(NRST_DIRECTORY)\(NRST_PROTO)"
+        let operation = Protocol_PbPFtpOperation.with { $0.command = .get; $0.path = filePath }
+        do {
+            let response = try await client.request(try operation.serializedBytes())
+            let proto = try Data_PbSleepSkinTemperatureResult(serializedBytes: Data(response))
+            result.sleepSkinTemperatureResult = try PolarSleepData.fromPbSleepTemperatureResult(pbSleepTemperatureResult: proto)
+        } catch {
+            if let psFtpError = error as? BlePsFtpException,
+               case .responseError(let errorCode) = psFtpError,
+               errorCode == Protocol_PbPFtpError.noSuchFileOrDirectory.rawValue {
+                BleLogger.trace(TAG, "readSleepSkinTemperature() no temperature file at: \(filePath)")
+            } else {
+                BleLogger.error(TAG, "readSleepSkinTemperature() failed for path: \(filePath), error: \(error)")
+                throw error
+            }
+        }
+        return result
     }
 }

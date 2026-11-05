@@ -25,64 +25,64 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 /// - The entry is directory if the name ends to directory delimiter, i.e. '/' character. F.ex. "directory/" or "directory.ext/".
 /// - Otherwise the entry is considered to be a file. F.ex. "file" or "file.ext".
 /// - See PbPFtpDirectory below for response to a directory listing operation.
-public struct Protocol_PbPFtpEntry {
+struct Protocol_PbPFtpEntry {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Name of the file or directory. Ending directory delimiter designates directory entry.
-  public var name: String {
+  var name: String {
     get {return _storage._name ?? String()}
     set {_uniqueStorage()._name = newValue}
   }
   /// Returns true if `name` has been explicitly set.
-  public var hasName: Bool {return _storage._name != nil}
+  var hasName: Bool {return _storage._name != nil}
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
-  public mutating func clearName() {_uniqueStorage()._name = nil}
+  mutating func clearName() {_uniqueStorage()._name = nil}
 
   /// Size of the file in bytes, or 0 for directory entry.
-  public var size: UInt64 {
+  var size: UInt64 {
     get {return _storage._size ?? 0}
     set {_uniqueStorage()._size = newValue}
   }
   /// Returns true if `size` has been explicitly set.
-  public var hasSize: Bool {return _storage._size != nil}
+  var hasSize: Bool {return _storage._size != nil}
   /// Clears the value of `size`. Subsequent reads from it will return its default value.
-  public mutating func clearSize() {_uniqueStorage()._size = nil}
+  mutating func clearSize() {_uniqueStorage()._size = nil}
 
   /// If present, entry's creation date/time. I.e. instant of the first write.
-  public var created: PbSystemDateTime {
+  var created: PbSystemDateTime {
     get {return _storage._created ?? PbSystemDateTime()}
     set {_uniqueStorage()._created = newValue}
   }
   /// Returns true if `created` has been explicitly set.
-  public var hasCreated: Bool {return _storage._created != nil}
+  var hasCreated: Bool {return _storage._created != nil}
   /// Clears the value of `created`. Subsequent reads from it will return its default value.
-  public mutating func clearCreated() {_uniqueStorage()._created = nil}
+  mutating func clearCreated() {_uniqueStorage()._created = nil}
 
   /// If present, entry's last modified date/time.  I.e. instant of the last write.
-  public var modified: PbSystemDateTime {
+  var modified: PbSystemDateTime {
     get {return _storage._modified ?? PbSystemDateTime()}
     set {_uniqueStorage()._modified = newValue}
   }
   /// Returns true if `modified` has been explicitly set.
-  public var hasModified: Bool {return _storage._modified != nil}
+  var hasModified: Bool {return _storage._modified != nil}
   /// Clears the value of `modified`. Subsequent reads from it will return its default value.
-  public mutating func clearModified() {_uniqueStorage()._modified = nil}
+  mutating func clearModified() {_uniqueStorage()._modified = nil}
 
   /// If present, entry's last touched date/time. I.e. instant of the last read or write.
-  public var touched: PbSystemDateTime {
+  var touched: PbSystemDateTime {
     get {return _storage._touched ?? PbSystemDateTime()}
     set {_uniqueStorage()._touched = newValue}
   }
   /// Returns true if `touched` has been explicitly set.
-  public var hasTouched: Bool {return _storage._touched != nil}
+  var hasTouched: Bool {return _storage._touched != nil}
   /// Clears the value of `touched`. Subsequent reads from it will return its default value.
-  public mutating func clearTouched() {_uniqueStorage()._touched = nil}
+  mutating func clearTouched() {_uniqueStorage()._touched = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
@@ -90,83 +90,83 @@ public struct Protocol_PbPFtpEntry {
 ///
 /// Response to GET directory list operation.
 /// The PbPFtpDirectory message is to be transmitted in the response data (SAGRFC56).
-public struct Protocol_PbPFtpDirectory {
+struct Protocol_PbPFtpDirectory {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// List of unique entries in a directory.
-  public var entries: [Protocol_PbPFtpEntry] = []
+  var entries: [Protocol_PbPFtpEntry] = []
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 }
 
 ///
 /// Response data to IDENTIFY_DEVICE query in pftp_request.proto.
-public struct Protocol_PbPFtpIdentifyDeviceResult {
+struct Protocol_PbPFtpIdentifyDeviceResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Device's id (SAGRFC19).
-  public var deviceID: String {
+  var deviceID: String {
     get {return _deviceID ?? String()}
     set {_deviceID = newValue}
   }
   /// Returns true if `deviceID` has been explicitly set.
-  public var hasDeviceID: Bool {return self._deviceID != nil}
+  var hasDeviceID: Bool {return self._deviceID != nil}
   /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
-  public mutating func clearDeviceID() {self._deviceID = nil}
+  mutating func clearDeviceID() {self._deviceID = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _deviceID: String? = nil
 }
 
 ///
 /// Response data to GET_SYSTEM_TIME query in pftp_request.proto.
-public struct Protocol_PbPFtpGetSystemTimeResult {
+struct Protocol_PbPFtpGetSystemTimeResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// UTC date.
-  public var date: PbDate {
+  var date: PbDate {
     get {return _date ?? PbDate()}
     set {_date = newValue}
   }
   /// Returns true if `date` has been explicitly set.
-  public var hasDate: Bool {return self._date != nil}
+  var hasDate: Bool {return self._date != nil}
   /// Clears the value of `date`. Subsequent reads from it will return its default value.
-  public mutating func clearDate() {self._date = nil}
+  mutating func clearDate() {self._date = nil}
 
   /// UTC time.
-  public var time: PbTime {
+  var time: PbTime {
     get {return _time ?? PbTime()}
     set {_time = newValue}
   }
   /// Returns true if `time` has been explicitly set.
-  public var hasTime: Bool {return self._time != nil}
+  var hasTime: Bool {return self._time != nil}
   /// Clears the value of `time`. Subsequent reads from it will return its default value.
-  public mutating func clearTime() {self._time = nil}
+  mutating func clearTime() {self._time = nil}
 
   /// True, if the date and time can be trusted.
-  public var trusted: Bool {
+  var trusted: Bool {
     get {return _trusted ?? false}
     set {_trusted = newValue}
   }
   /// Returns true if `trusted` has been explicitly set.
-  public var hasTrusted: Bool {return self._trusted != nil}
+  var hasTrusted: Bool {return self._trusted != nil}
   /// Clears the value of `trusted`. Subsequent reads from it will return its default value.
-  public mutating func clearTrusted() {self._trusted = nil}
+  mutating func clearTrusted() {self._trusted = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _date: PbDate? = nil
   fileprivate var _time: PbTime? = nil
@@ -175,44 +175,44 @@ public struct Protocol_PbPFtpGetSystemTimeResult {
 
 ///
 /// Response data to GET_LOCAL_TIME query in pftp_request.proto.
-public struct Protocol_PbPFtpGetLocalTimeResult {
+struct Protocol_PbPFtpGetLocalTimeResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Local date.
-  public var date: PbDate {
+  var date: PbDate {
     get {return _date ?? PbDate()}
     set {_date = newValue}
   }
   /// Returns true if `date` has been explicitly set.
-  public var hasDate: Bool {return self._date != nil}
+  var hasDate: Bool {return self._date != nil}
   /// Clears the value of `date`. Subsequent reads from it will return its default value.
-  public mutating func clearDate() {self._date = nil}
+  mutating func clearDate() {self._date = nil}
 
   /// Local time.
-  public var time: PbTime {
+  var time: PbTime {
     get {return _time ?? PbTime()}
     set {_time = newValue}
   }
   /// Returns true if `time` has been explicitly set.
-  public var hasTime: Bool {return self._time != nil}
+  var hasTime: Bool {return self._time != nil}
   /// Clears the value of `time`. Subsequent reads from it will return its default value.
-  public mutating func clearTime() {self._time = nil}
+  mutating func clearTime() {self._time = nil}
 
   /// If present, timezone offset in 1 minute precision (-12h = -720min to +12h = +720min).
-  public var tzOffset: Int32 {
+  var tzOffset: Int32 {
     get {return _tzOffset ?? 0}
     set {_tzOffset = newValue}
   }
   /// Returns true if `tzOffset` has been explicitly set.
-  public var hasTzOffset: Bool {return self._tzOffset != nil}
+  var hasTzOffset: Bool {return self._tzOffset != nil}
   /// Clears the value of `tzOffset`. Subsequent reads from it will return its default value.
-  public mutating func clearTzOffset() {self._tzOffset = nil}
+  mutating func clearTzOffset() {self._tzOffset = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _date: PbDate? = nil
   fileprivate var _time: PbTime? = nil
@@ -221,44 +221,44 @@ public struct Protocol_PbPFtpGetLocalTimeResult {
 
 ///
 /// Response data to GET_DISK_SPACE and CLEANUP_DISK_SPACE queries in pftp_request.proto.
-public struct Protocol_PbPFtpDiskSpaceResult {
+struct Protocol_PbPFtpDiskSpaceResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Filesystem fragment size. Smallest allocatable filesystem unit.
-  public var fragmentSize: UInt32 {
+  var fragmentSize: UInt32 {
     get {return _fragmentSize ?? 0}
     set {_fragmentSize = newValue}
   }
   /// Returns true if `fragmentSize` has been explicitly set.
-  public var hasFragmentSize: Bool {return self._fragmentSize != nil}
+  var hasFragmentSize: Bool {return self._fragmentSize != nil}
   /// Clears the value of `fragmentSize`. Subsequent reads from it will return its default value.
-  public mutating func clearFragmentSize() {self._fragmentSize = nil}
+  mutating func clearFragmentSize() {self._fragmentSize = nil}
 
   /// Total size of the filesystem in fragments.
-  public var totalFragments: UInt64 {
+  var totalFragments: UInt64 {
     get {return _totalFragments ?? 0}
     set {_totalFragments = newValue}
   }
   /// Returns true if `totalFragments` has been explicitly set.
-  public var hasTotalFragments: Bool {return self._totalFragments != nil}
+  var hasTotalFragments: Bool {return self._totalFragments != nil}
   /// Clears the value of `totalFragments`. Subsequent reads from it will return its default value.
-  public mutating func clearTotalFragments() {self._totalFragments = nil}
+  mutating func clearTotalFragments() {self._totalFragments = nil}
 
   /// Amount of available fragments.
-  public var freeFragments: UInt64 {
+  var freeFragments: UInt64 {
     get {return _freeFragments ?? 0}
     set {_freeFragments = newValue}
   }
   /// Returns true if `freeFragments` has been explicitly set.
-  public var hasFreeFragments: Bool {return self._freeFragments != nil}
+  var hasFreeFragments: Bool {return self._freeFragments != nil}
   /// Clears the value of `freeFragments`. Subsequent reads from it will return its default value.
-  public mutating func clearFreeFragments() {self._freeFragments = nil}
+  mutating func clearFreeFragments() {self._freeFragments = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _fragmentSize: UInt32? = nil
   fileprivate var _totalFragments: UInt64? = nil
@@ -267,31 +267,31 @@ public struct Protocol_PbPFtpDiskSpaceResult {
 
 ///
 /// Response data to GENERATE_CHALLENGE_TOKEN query in pftp_request.proto.
-public struct Protocol_PbPFtpGenerateChallengeTokenResult {
+struct Protocol_PbPFtpGenerateChallengeTokenResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Generated challenge token. Exactly 16 bytes.
-  public var token: Data {
+  var token: Data {
     get {return _token ?? Data()}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
-  public var hasToken: Bool {return self._token != nil}
+  var hasToken: Bool {return self._token != nil}
   /// Clears the value of `token`. Subsequent reads from it will return its default value.
-  public mutating func clearToken() {self._token = nil}
+  mutating func clearToken() {self._token = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _token: Data? = nil
 }
 
 ///
 /// Response data to GENERATE_ASYMMETRIC_KEYS query in pftp_request.proto.
-public struct Protocol_PbPFtpGenerateAsymmetricKeysResult {
+struct Protocol_PbPFtpGenerateAsymmetricKeysResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -299,45 +299,45 @@ public struct Protocol_PbPFtpGenerateAsymmetricKeysResult {
   ///Generated public key, can only be created once.
   ///For Bugatti/Macan first byte is 0x01, Remaining 33 bytes contain sec256k1 public key in compressed format.
   ///same data is also saved to file /SYS/KEYS/PUBLIC
-  public var publicKey: Data {
+  var publicKey: Data {
     get {return _publicKey ?? Data()}
     set {_publicKey = newValue}
   }
   /// Returns true if `publicKey` has been explicitly set.
-  public var hasPublicKey: Bool {return self._publicKey != nil}
+  var hasPublicKey: Bool {return self._publicKey != nil}
   /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
-  public mutating func clearPublicKey() {self._publicKey = nil}
+  mutating func clearPublicKey() {self._publicKey = nil}
 
   ///asymmetric_key_format defines the format of the public_key
-  public var asymmetricKeyFormat: Protocol_PbPFtpGenerateAsymmetricKeysResult.PbAsymmetricKeyFormat {
+  var asymmetricKeyFormat: Protocol_PbPFtpGenerateAsymmetricKeysResult.PbAsymmetricKeyFormat {
     get {return _asymmetricKeyFormat ?? .sec256KlCompressed}
     set {_asymmetricKeyFormat = newValue}
   }
   /// Returns true if `asymmetricKeyFormat` has been explicitly set.
-  public var hasAsymmetricKeyFormat: Bool {return self._asymmetricKeyFormat != nil}
+  var hasAsymmetricKeyFormat: Bool {return self._asymmetricKeyFormat != nil}
   /// Clears the value of `asymmetricKeyFormat`. Subsequent reads from it will return its default value.
-  public mutating func clearAsymmetricKeyFormat() {self._asymmetricKeyFormat = nil}
+  mutating func clearAsymmetricKeyFormat() {self._asymmetricKeyFormat = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum PbAsymmetricKeyFormat: SwiftProtobuf.Enum {
-    public typealias RawValue = Int
+  enum PbAsymmetricKeyFormat: SwiftProtobuf.Enum {
+    typealias RawValue = Int
 
     ///For Bugatti/Macan first byte is 0x01, Remaining 33 bytes contain sec256k1 public key in compressed format.
     case sec256KlCompressed // = 0
 
-    public init() {
+    init() {
       self = .sec256KlCompressed
     }
 
-    public init?(rawValue: Int) {
+    init?(rawValue: Int) {
       switch rawValue {
       case 0: self = .sec256KlCompressed
       default: return nil
       }
     }
 
-    public var rawValue: Int {
+    var rawValue: Int {
       switch self {
       case .sec256KlCompressed: return 0
       }
@@ -345,7 +345,7 @@ public struct Protocol_PbPFtpGenerateAsymmetricKeysResult {
 
   }
 
-  public init() {}
+  init() {}
 
   fileprivate var _publicKey: Data? = nil
   fileprivate var _asymmetricKeyFormat: Protocol_PbPFtpGenerateAsymmetricKeysResult.PbAsymmetricKeyFormat? = nil
@@ -362,34 +362,34 @@ extension Protocol_PbPFtpGenerateAsymmetricKeysResult.PbAsymmetricKeyFormat: Cas
 ///
 /// Response data to GET_BATTERY_STATUS query in pftp_request.proto and used as
 /// parameters in BATTERY_STATUS notification defined in pftp_notification.proto.
-public struct Protocol_PbPFtpBatteryStatusResult {
+struct Protocol_PbPFtpBatteryStatusResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Battery status in percentage
-  /// Range [0-100%] 
-  public var batteryStatus: UInt32 {
+  /// Range [0-100%]
+  var batteryStatus: UInt32 {
     get {return _batteryStatus ?? 0}
     set {_batteryStatus = newValue}
   }
   /// Returns true if `batteryStatus` has been explicitly set.
-  public var hasBatteryStatus: Bool {return self._batteryStatus != nil}
+  var hasBatteryStatus: Bool {return self._batteryStatus != nil}
   /// Clears the value of `batteryStatus`. Subsequent reads from it will return its default value.
-  public mutating func clearBatteryStatus() {self._batteryStatus = nil}
+  mutating func clearBatteryStatus() {self._batteryStatus = nil}
 
-  public var charging: Bool {
+  var charging: Bool {
     get {return _charging ?? false}
     set {_charging = newValue}
   }
   /// Returns true if `charging` has been explicitly set.
-  public var hasCharging: Bool {return self._charging != nil}
+  var hasCharging: Bool {return self._charging != nil}
   /// Clears the value of `charging`. Subsequent reads from it will return its default value.
-  public mutating func clearCharging() {self._charging = nil}
+  mutating func clearCharging() {self._charging = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _batteryStatus: UInt32? = nil
   fileprivate var _charging: Bool? = nil
@@ -397,115 +397,659 @@ public struct Protocol_PbPFtpBatteryStatusResult {
 
 ///
 /// Response data to GET_INACTIVITY_PRE_ALERT query in pftp_request.proto.
-public struct Protocol_PbPFtpGetInactivityPreAlertResult {
+struct Protocol_PbPFtpGetInactivityPreAlertResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// True, if inactivity pre-alert has triggered. False after pre-alert's time window has expired.
-  public var inactivityPreAlertOn: Bool {
+  var inactivityPreAlertOn: Bool {
     get {return _inactivityPreAlertOn ?? false}
     set {_inactivityPreAlertOn = newValue}
   }
   /// Returns true if `inactivityPreAlertOn` has been explicitly set.
-  public var hasInactivityPreAlertOn: Bool {return self._inactivityPreAlertOn != nil}
+  var hasInactivityPreAlertOn: Bool {return self._inactivityPreAlertOn != nil}
   /// Clears the value of `inactivityPreAlertOn`. Subsequent reads from it will return its default value.
-  public mutating func clearInactivityPreAlertOn() {self._inactivityPreAlertOn = nil}
+  mutating func clearInactivityPreAlertOn() {self._inactivityPreAlertOn = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _inactivityPreAlertOn: Bool? = nil
 }
 
-/// 
+///
 /// Response data to REQUEST_RECORDING_STATUS query in pftp_request.proto.
-public struct Protocol_PbRequestRecordingStatusResult {
+struct Protocol_PbRequestRecordingStatusResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var recordingOn: Bool {
+  var recordingOn: Bool {
     get {return _recordingOn ?? false}
     set {_recordingOn = newValue}
   }
   /// Returns true if `recordingOn` has been explicitly set.
-  public var hasRecordingOn: Bool {return self._recordingOn != nil}
+  var hasRecordingOn: Bool {return self._recordingOn != nil}
   /// Clears the value of `recordingOn`. Subsequent reads from it will return its default value.
-  public mutating func clearRecordingOn() {self._recordingOn = nil}
+  mutating func clearRecordingOn() {self._recordingOn = nil}
 
-  public var sampleDataIdentifier: String {
+  var sampleDataIdentifier: String {
     get {return _sampleDataIdentifier ?? String()}
     set {_sampleDataIdentifier = newValue}
   }
   /// Returns true if `sampleDataIdentifier` has been explicitly set.
-  public var hasSampleDataIdentifier: Bool {return self._sampleDataIdentifier != nil}
+  var hasSampleDataIdentifier: Bool {return self._sampleDataIdentifier != nil}
   /// Clears the value of `sampleDataIdentifier`. Subsequent reads from it will return its default value.
-  public mutating func clearSampleDataIdentifier() {self._sampleDataIdentifier = nil}
+  mutating func clearSampleDataIdentifier() {self._sampleDataIdentifier = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _recordingOn: Bool? = nil
   fileprivate var _sampleDataIdentifier: String? = nil
 }
 
-/// 
+///
 /// Response data to GET_DISPLAY_STATUS query in pftp_request.proto.
-public struct Protocol_PbRequestDisplayStatus {
+struct Protocol_PbRequestDisplayStatus {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var displayOn: Bool {
+  var displayOn: Bool {
     get {return _displayOn ?? false}
     set {_displayOn = newValue}
   }
   /// Returns true if `displayOn` has been explicitly set.
-  public var hasDisplayOn: Bool {return self._displayOn != nil}
+  var hasDisplayOn: Bool {return self._displayOn != nil}
   /// Clears the value of `displayOn`. Subsequent reads from it will return its default value.
-  public mutating func clearDisplayOn() {self._displayOn = nil}
+  mutating func clearDisplayOn() {self._displayOn = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _displayOn: Bool? = nil
 }
 
 ///
 /// Response data to GET_VISUAL_ELEMENTS query in pftp_request.proto.
-public struct Protocol_PbPFtpGetVisualElementsResult {
+struct Protocol_PbPFtpGetVisualElementsResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Path to visual elements data file.
-  public var visualDataPath: String {
+  var visualDataPath: String {
     get {return _visualDataPath ?? String()}
     set {_visualDataPath = newValue}
   }
   /// Returns true if `visualDataPath` has been explicitly set.
-  public var hasVisualDataPath: Bool {return self._visualDataPath != nil}
+  var hasVisualDataPath: Bool {return self._visualDataPath != nil}
   /// Clears the value of `visualDataPath`. Subsequent reads from it will return its default value.
-  public mutating func clearVisualDataPath() {self._visualDataPath = nil}
+  mutating func clearVisualDataPath() {self._visualDataPath = nil}
 
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
+  var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
+  init() {}
 
   fileprivate var _visualDataPath: String? = nil
 }
+
+///
+/// Response data to GET_FREE_JAVA_HEAP_MEMORY query in pftp_request.proto.
+struct Protocol_PbPftpGetFreeJavaHeapMemoryResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Free java heap memory as bytes
+  var freeJavaHeapMemory: UInt64 {
+    get {return _freeJavaHeapMemory ?? 0}
+    set {_freeJavaHeapMemory = newValue}
+  }
+  /// Returns true if `freeJavaHeapMemory` has been explicitly set.
+  var hasFreeJavaHeapMemory: Bool {return self._freeJavaHeapMemory != nil}
+  /// Clears the value of `freeJavaHeapMemory`. Subsequent reads from it will return its default value.
+  mutating func clearFreeJavaHeapMemory() {self._freeJavaHeapMemory = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _freeJavaHeapMemory: UInt64? = nil
+}
+
+///
+/// Response data to START_EXERCISE query in pftp_request.proto.
+struct Protocol_PbPftpStartExerciseResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var result: Protocol_PbPftpStartExerciseResult.PbStartExerciseResult {
+    get {return _result ?? .resultOther}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  mutating func clearResult() {self._result = nil}
+
+  var startTime: PbLocalDateTime {
+    get {return _startTime ?? PbLocalDateTime()}
+    set {_startTime = newValue}
+  }
+  /// Returns true if `startTime` has been explicitly set.
+  var hasStartTime: Bool {return self._startTime != nil}
+  /// Clears the value of `startTime`. Subsequent reads from it will return its default value.
+  mutating func clearStartTime() {self._startTime = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum PbStartExerciseResult: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case resultOther // = 0
+    case resultSuccess // = 1
+    case resultExeOngoing // = 2
+    case resultLowBattery // = 3
+    case resultSdkMode // = 4
+    case resultUnknownSport // = 5
+
+    init() {
+      self = .resultOther
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .resultOther
+      case 1: self = .resultSuccess
+      case 2: self = .resultExeOngoing
+      case 3: self = .resultLowBattery
+      case 4: self = .resultSdkMode
+      case 5: self = .resultUnknownSport
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .resultOther: return 0
+      case .resultSuccess: return 1
+      case .resultExeOngoing: return 2
+      case .resultLowBattery: return 3
+      case .resultSdkMode: return 4
+      case .resultUnknownSport: return 5
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _result: Protocol_PbPftpStartExerciseResult.PbStartExerciseResult? = nil
+  fileprivate var _startTime: PbLocalDateTime? = nil
+}
+
+#if swift(>=4.2)
+
+extension Protocol_PbPftpStartExerciseResult.PbStartExerciseResult: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
+///
+/// Response data to STOP_EXERCISE query in pftp_request.proto.
+struct Protocol_PbPftpStopExerciseResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var result: Protocol_PbPftpStopExerciseResult.PbStopExerciseResult {
+    get {return _result ?? .resultOther}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  mutating func clearResult() {self._result = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum PbStopExerciseResult: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case resultOther // = 0
+    case resultSuccess // = 1
+    case resultExeNotRunning // = 2
+
+    init() {
+      self = .resultOther
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .resultOther
+      case 1: self = .resultSuccess
+      case 2: self = .resultExeNotRunning
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .resultOther: return 0
+      case .resultSuccess: return 1
+      case .resultExeNotRunning: return 2
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _result: Protocol_PbPftpStopExerciseResult.PbStopExerciseResult? = nil
+}
+
+#if swift(>=4.2)
+
+extension Protocol_PbPftpStopExerciseResult.PbStopExerciseResult: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
+///
+/// Response data to PAUSE_EXERCISE query in pftp_request.proto.
+struct Protocol_PbPftpPauseExerciseResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var result: Protocol_PbPftpPauseExerciseResult.PbPauseExerciseResult {
+    get {return _result ?? .resultOther}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  mutating func clearResult() {self._result = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum PbPauseExerciseResult: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case resultOther // = 0
+    case resultSuccess // = 1
+    case resultExeNotRunning // = 2
+    case resultAlreadyPaused // = 3
+    case resultPauseNotAvailable // = 4
+
+    init() {
+      self = .resultOther
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .resultOther
+      case 1: self = .resultSuccess
+      case 2: self = .resultExeNotRunning
+      case 3: self = .resultAlreadyPaused
+      case 4: self = .resultPauseNotAvailable
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .resultOther: return 0
+      case .resultSuccess: return 1
+      case .resultExeNotRunning: return 2
+      case .resultAlreadyPaused: return 3
+      case .resultPauseNotAvailable: return 4
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _result: Protocol_PbPftpPauseExerciseResult.PbPauseExerciseResult? = nil
+}
+
+#if swift(>=4.2)
+
+extension Protocol_PbPftpPauseExerciseResult.PbPauseExerciseResult: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
+///
+/// Response data to RESUME_EXERCISE query in pftp_request.proto.
+struct Protocol_PbPftpResumeExerciseResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var result: Protocol_PbPftpResumeExerciseResult.PbResumeExerciseResult {
+    get {return _result ?? .resultOther}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  mutating func clearResult() {self._result = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum PbResumeExerciseResult: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case resultOther // = 0
+    case resultSuccess // = 1
+    case resultExeNotRunning // = 2
+    case resultNotPaused // = 3
+
+    init() {
+      self = .resultOther
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .resultOther
+      case 1: self = .resultSuccess
+      case 2: self = .resultExeNotRunning
+      case 3: self = .resultNotPaused
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .resultOther: return 0
+      case .resultSuccess: return 1
+      case .resultExeNotRunning: return 2
+      case .resultNotPaused: return 3
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _result: Protocol_PbPftpResumeExerciseResult.PbResumeExerciseResult? = nil
+}
+
+#if swift(>=4.2)
+
+extension Protocol_PbPftpResumeExerciseResult.PbResumeExerciseResult: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
+///
+/// Response data to GET_EXERCISE_STATUS query in pftp_request.proto.
+struct Protocol_PbPftpGetExerciseStatusResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var exerciseState: Protocol_PbPftpGetExerciseStatusResult.PbExerciseState {
+    get {return _exerciseState ?? .exerciseStateOther}
+    set {_exerciseState = newValue}
+  }
+  /// Returns true if `exerciseState` has been explicitly set.
+  var hasExerciseState: Bool {return self._exerciseState != nil}
+  /// Clears the value of `exerciseState`. Subsequent reads from it will return its default value.
+  mutating func clearExerciseState() {self._exerciseState = nil}
+
+  var exerciseType: Protocol_PbPftpGetExerciseStatusResult.PbExerciseType {
+    get {return _exerciseType ?? .exerciseTypeOther}
+    set {_exerciseType = newValue}
+  }
+  /// Returns true if `exerciseType` has been explicitly set.
+  var hasExerciseType: Bool {return self._exerciseType != nil}
+  /// Clears the value of `exerciseType`. Subsequent reads from it will return its default value.
+  mutating func clearExerciseType() {self._exerciseType = nil}
+
+  var sportIdentifier: PbSportIdentifier {
+    get {return _sportIdentifier ?? PbSportIdentifier()}
+    set {_sportIdentifier = newValue}
+  }
+  /// Returns true if `sportIdentifier` has been explicitly set.
+  var hasSportIdentifier: Bool {return self._sportIdentifier != nil}
+  /// Clears the value of `sportIdentifier`. Subsequent reads from it will return its default value.
+  mutating func clearSportIdentifier() {self._sportIdentifier = nil}
+
+  var startTime: PbLocalDateTime {
+    get {return _startTime ?? PbLocalDateTime()}
+    set {_startTime = newValue}
+  }
+  /// Returns true if `startTime` has been explicitly set.
+  var hasStartTime: Bool {return self._startTime != nil}
+  /// Clears the value of `startTime`. Subsequent reads from it will return its default value.
+  mutating func clearStartTime() {self._startTime = nil}
+
+  var dmDirectoryPath: String {
+    get {return _dmDirectoryPath ?? String()}
+    set {_dmDirectoryPath = newValue}
+  }
+  /// Returns true if `dmDirectoryPath` has been explicitly set.
+  var hasDmDirectoryPath: Bool {return self._dmDirectoryPath != nil}
+  /// Clears the value of `dmDirectoryPath`. Subsequent reads from it will return its default value.
+  mutating func clearDmDirectoryPath() {self._dmDirectoryPath = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum PbExerciseState: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case exerciseStateOther // = 0
+    case exerciseStateRunning // = 1
+    case exerciseStatePaused // = 2
+    case exerciseStateOff // = 3
+
+    init() {
+      self = .exerciseStateOther
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .exerciseStateOther
+      case 1: self = .exerciseStateRunning
+      case 2: self = .exerciseStatePaused
+      case 3: self = .exerciseStateOff
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .exerciseStateOther: return 0
+      case .exerciseStateRunning: return 1
+      case .exerciseStatePaused: return 2
+      case .exerciseStateOff: return 3
+      }
+    }
+
+  }
+
+  enum PbExerciseType: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case exerciseTypeOther // = 0
+    case exerciseTypeNormal // = 1
+    case exerciseTypeRemote // = 2
+    case exerciseTypeAutomatic // = 3
+    case exerciseTypeDataMerge // = 4
+
+    init() {
+      self = .exerciseTypeOther
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .exerciseTypeOther
+      case 1: self = .exerciseTypeNormal
+      case 2: self = .exerciseTypeRemote
+      case 3: self = .exerciseTypeAutomatic
+      case 4: self = .exerciseTypeDataMerge
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .exerciseTypeOther: return 0
+      case .exerciseTypeNormal: return 1
+      case .exerciseTypeRemote: return 2
+      case .exerciseTypeAutomatic: return 3
+      case .exerciseTypeDataMerge: return 4
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _exerciseState: Protocol_PbPftpGetExerciseStatusResult.PbExerciseState? = nil
+  fileprivate var _exerciseType: Protocol_PbPftpGetExerciseStatusResult.PbExerciseType? = nil
+  fileprivate var _sportIdentifier: PbSportIdentifier? = nil
+  fileprivate var _startTime: PbLocalDateTime? = nil
+  fileprivate var _dmDirectoryPath: String? = nil
+}
+
+#if swift(>=4.2)
+
+extension Protocol_PbPftpGetExerciseStatusResult.PbExerciseState: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension Protocol_PbPftpGetExerciseStatusResult.PbExerciseType: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
+///
+/// Response data to START_DM_EXERCISE query in pftp_request.proto.
+struct Protocol_PbPftpStartDmExerciseResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var result: Protocol_PbPftpStartDmExerciseResult.PbStartDmExerciseResult {
+    get {return _result ?? .resultOther}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  mutating func clearResult() {self._result = nil}
+
+  var dmDirectoryPath: String {
+    get {return _dmDirectoryPath ?? String()}
+    set {_dmDirectoryPath = newValue}
+  }
+  /// Returns true if `dmDirectoryPath` has been explicitly set.
+  var hasDmDirectoryPath: Bool {return self._dmDirectoryPath != nil}
+  /// Clears the value of `dmDirectoryPath`. Subsequent reads from it will return its default value.
+  mutating func clearDmDirectoryPath() {self._dmDirectoryPath = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum PbStartDmExerciseResult: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case resultOther // = 0
+    case resultSuccess // = 1
+    case resultExeOngoing // = 2
+    case resultLowBattery // = 3
+    case resultSdkMode // = 4
+    case resultUnknownSport // = 5
+
+    init() {
+      self = .resultOther
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .resultOther
+      case 1: self = .resultSuccess
+      case 2: self = .resultExeOngoing
+      case 3: self = .resultLowBattery
+      case 4: self = .resultSdkMode
+      case 5: self = .resultUnknownSport
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .resultOther: return 0
+      case .resultSuccess: return 1
+      case .resultExeOngoing: return 2
+      case .resultLowBattery: return 3
+      case .resultSdkMode: return 4
+      case .resultUnknownSport: return 5
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _result: Protocol_PbPftpStartDmExerciseResult.PbStartDmExerciseResult? = nil
+  fileprivate var _dmDirectoryPath: String? = nil
+}
+
+#if swift(>=4.2)
+
+extension Protocol_PbPftpStartDmExerciseResult.PbStartDmExerciseResult: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension Protocol_PbPFtpEntry: @unchecked Sendable {}
+extension Protocol_PbPFtpDirectory: @unchecked Sendable {}
+extension Protocol_PbPFtpIdentifyDeviceResult: @unchecked Sendable {}
+extension Protocol_PbPFtpGetSystemTimeResult: @unchecked Sendable {}
+extension Protocol_PbPFtpGetLocalTimeResult: @unchecked Sendable {}
+extension Protocol_PbPFtpDiskSpaceResult: @unchecked Sendable {}
+extension Protocol_PbPFtpGenerateChallengeTokenResult: @unchecked Sendable {}
+extension Protocol_PbPFtpGenerateAsymmetricKeysResult: @unchecked Sendable {}
+extension Protocol_PbPFtpGenerateAsymmetricKeysResult.PbAsymmetricKeyFormat: @unchecked Sendable {}
+extension Protocol_PbPFtpBatteryStatusResult: @unchecked Sendable {}
+extension Protocol_PbPFtpGetInactivityPreAlertResult: @unchecked Sendable {}
+extension Protocol_PbRequestRecordingStatusResult: @unchecked Sendable {}
+extension Protocol_PbRequestDisplayStatus: @unchecked Sendable {}
+extension Protocol_PbPFtpGetVisualElementsResult: @unchecked Sendable {}
+extension Protocol_PbPftpGetFreeJavaHeapMemoryResult: @unchecked Sendable {}
+extension Protocol_PbPftpStartExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpStartExerciseResult.PbStartExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpStopExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpStopExerciseResult.PbStopExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpPauseExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpPauseExerciseResult.PbPauseExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpResumeExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpResumeExerciseResult.PbResumeExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpGetExerciseStatusResult: @unchecked Sendable {}
+extension Protocol_PbPftpGetExerciseStatusResult.PbExerciseState: @unchecked Sendable {}
+extension Protocol_PbPftpGetExerciseStatusResult.PbExerciseType: @unchecked Sendable {}
+extension Protocol_PbPftpStartDmExerciseResult: @unchecked Sendable {}
+extension Protocol_PbPftpStartDmExerciseResult.PbStartDmExerciseResult: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "protocol"
 
 extension Protocol_PbPFtpEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpEntry"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpEntry"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "name"),
     2: .same(proto: "size"),
     3: .same(proto: "created"),
@@ -551,7 +1095,7 @@ extension Protocol_PbPFtpEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     }
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     _ = _uniqueStorage()
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
@@ -570,7 +1114,7 @@ extension Protocol_PbPFtpEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every if/case branch local when no optimizations
@@ -595,7 +1139,7 @@ extension Protocol_PbPFtpEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpEntry, rhs: Protocol_PbPFtpEntry) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpEntry, rhs: Protocol_PbPFtpEntry) -> Bool {
     if lhs._storage !== rhs._storage {
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
@@ -615,8 +1159,8 @@ extension Protocol_PbPFtpEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 }
 
 extension Protocol_PbPFtpDirectory: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpDirectory"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpDirectory"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "entries"),
   ]
 
@@ -625,7 +1169,7 @@ extension Protocol_PbPFtpDirectory: SwiftProtobuf.Message, SwiftProtobuf._Messag
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -637,14 +1181,14 @@ extension Protocol_PbPFtpDirectory: SwiftProtobuf.Message, SwiftProtobuf._Messag
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.entries.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.entries, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpDirectory, rhs: Protocol_PbPFtpDirectory) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpDirectory, rhs: Protocol_PbPFtpDirectory) -> Bool {
     if lhs.entries != rhs.entries {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -652,8 +1196,8 @@ extension Protocol_PbPFtpDirectory: SwiftProtobuf.Message, SwiftProtobuf._Messag
 }
 
 extension Protocol_PbPFtpIdentifyDeviceResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpIdentifyDeviceResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpIdentifyDeviceResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "device_id"),
   ]
 
@@ -662,7 +1206,7 @@ extension Protocol_PbPFtpIdentifyDeviceResult: SwiftProtobuf.Message, SwiftProto
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -674,7 +1218,7 @@ extension Protocol_PbPFtpIdentifyDeviceResult: SwiftProtobuf.Message, SwiftProto
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -685,7 +1229,7 @@ extension Protocol_PbPFtpIdentifyDeviceResult: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpIdentifyDeviceResult, rhs: Protocol_PbPFtpIdentifyDeviceResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpIdentifyDeviceResult, rhs: Protocol_PbPFtpIdentifyDeviceResult) -> Bool {
     if lhs._deviceID != rhs._deviceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -693,8 +1237,8 @@ extension Protocol_PbPFtpIdentifyDeviceResult: SwiftProtobuf.Message, SwiftProto
 }
 
 extension Protocol_PbPFtpGetSystemTimeResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpGetSystemTimeResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpGetSystemTimeResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "date"),
     2: .same(proto: "time"),
     3: .same(proto: "trusted"),
@@ -709,7 +1253,7 @@ extension Protocol_PbPFtpGetSystemTimeResult: SwiftProtobuf.Message, SwiftProtob
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -723,7 +1267,7 @@ extension Protocol_PbPFtpGetSystemTimeResult: SwiftProtobuf.Message, SwiftProtob
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -740,7 +1284,7 @@ extension Protocol_PbPFtpGetSystemTimeResult: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpGetSystemTimeResult, rhs: Protocol_PbPFtpGetSystemTimeResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpGetSystemTimeResult, rhs: Protocol_PbPFtpGetSystemTimeResult) -> Bool {
     if lhs._date != rhs._date {return false}
     if lhs._time != rhs._time {return false}
     if lhs._trusted != rhs._trusted {return false}
@@ -750,8 +1294,8 @@ extension Protocol_PbPFtpGetSystemTimeResult: SwiftProtobuf.Message, SwiftProtob
 }
 
 extension Protocol_PbPFtpGetLocalTimeResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpGetLocalTimeResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpGetLocalTimeResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "date"),
     2: .same(proto: "time"),
     3: .standard(proto: "tz_offset"),
@@ -765,7 +1309,7 @@ extension Protocol_PbPFtpGetLocalTimeResult: SwiftProtobuf.Message, SwiftProtobu
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -779,7 +1323,7 @@ extension Protocol_PbPFtpGetLocalTimeResult: SwiftProtobuf.Message, SwiftProtobu
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -796,7 +1340,7 @@ extension Protocol_PbPFtpGetLocalTimeResult: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpGetLocalTimeResult, rhs: Protocol_PbPFtpGetLocalTimeResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpGetLocalTimeResult, rhs: Protocol_PbPFtpGetLocalTimeResult) -> Bool {
     if lhs._date != rhs._date {return false}
     if lhs._time != rhs._time {return false}
     if lhs._tzOffset != rhs._tzOffset {return false}
@@ -806,8 +1350,8 @@ extension Protocol_PbPFtpGetLocalTimeResult: SwiftProtobuf.Message, SwiftProtobu
 }
 
 extension Protocol_PbPFtpDiskSpaceResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpDiskSpaceResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpDiskSpaceResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "fragment_size"),
     2: .standard(proto: "total_fragments"),
     3: .standard(proto: "free_fragments"),
@@ -820,7 +1364,7 @@ extension Protocol_PbPFtpDiskSpaceResult: SwiftProtobuf.Message, SwiftProtobuf._
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -834,7 +1378,7 @@ extension Protocol_PbPFtpDiskSpaceResult: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -851,7 +1395,7 @@ extension Protocol_PbPFtpDiskSpaceResult: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpDiskSpaceResult, rhs: Protocol_PbPFtpDiskSpaceResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpDiskSpaceResult, rhs: Protocol_PbPFtpDiskSpaceResult) -> Bool {
     if lhs._fragmentSize != rhs._fragmentSize {return false}
     if lhs._totalFragments != rhs._totalFragments {return false}
     if lhs._freeFragments != rhs._freeFragments {return false}
@@ -861,8 +1405,8 @@ extension Protocol_PbPFtpDiskSpaceResult: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension Protocol_PbPFtpGenerateChallengeTokenResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpGenerateChallengeTokenResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpGenerateChallengeTokenResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "token"),
   ]
 
@@ -871,7 +1415,7 @@ extension Protocol_PbPFtpGenerateChallengeTokenResult: SwiftProtobuf.Message, Sw
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -883,7 +1427,7 @@ extension Protocol_PbPFtpGenerateChallengeTokenResult: SwiftProtobuf.Message, Sw
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -894,7 +1438,7 @@ extension Protocol_PbPFtpGenerateChallengeTokenResult: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpGenerateChallengeTokenResult, rhs: Protocol_PbPFtpGenerateChallengeTokenResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpGenerateChallengeTokenResult, rhs: Protocol_PbPFtpGenerateChallengeTokenResult) -> Bool {
     if lhs._token != rhs._token {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -902,13 +1446,13 @@ extension Protocol_PbPFtpGenerateChallengeTokenResult: SwiftProtobuf.Message, Sw
 }
 
 extension Protocol_PbPFtpGenerateAsymmetricKeysResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpGenerateAsymmetricKeysResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpGenerateAsymmetricKeysResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "public_key"),
     2: .standard(proto: "asymmetric_key_format"),
   ]
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -921,7 +1465,7 @@ extension Protocol_PbPFtpGenerateAsymmetricKeysResult: SwiftProtobuf.Message, Sw
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -935,7 +1479,7 @@ extension Protocol_PbPFtpGenerateAsymmetricKeysResult: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpGenerateAsymmetricKeysResult, rhs: Protocol_PbPFtpGenerateAsymmetricKeysResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpGenerateAsymmetricKeysResult, rhs: Protocol_PbPFtpGenerateAsymmetricKeysResult) -> Bool {
     if lhs._publicKey != rhs._publicKey {return false}
     if lhs._asymmetricKeyFormat != rhs._asymmetricKeyFormat {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -944,14 +1488,14 @@ extension Protocol_PbPFtpGenerateAsymmetricKeysResult: SwiftProtobuf.Message, Sw
 }
 
 extension Protocol_PbPFtpGenerateAsymmetricKeysResult.PbAsymmetricKeyFormat: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "SEC256KL_COMPRESSED"),
   ]
 }
 
 extension Protocol_PbPFtpBatteryStatusResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpBatteryStatusResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpBatteryStatusResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "battery_status"),
     2: .same(proto: "charging"),
   ]
@@ -961,7 +1505,7 @@ extension Protocol_PbPFtpBatteryStatusResult: SwiftProtobuf.Message, SwiftProtob
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -974,7 +1518,7 @@ extension Protocol_PbPFtpBatteryStatusResult: SwiftProtobuf.Message, SwiftProtob
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -988,7 +1532,7 @@ extension Protocol_PbPFtpBatteryStatusResult: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpBatteryStatusResult, rhs: Protocol_PbPFtpBatteryStatusResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpBatteryStatusResult, rhs: Protocol_PbPFtpBatteryStatusResult) -> Bool {
     if lhs._batteryStatus != rhs._batteryStatus {return false}
     if lhs._charging != rhs._charging {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -997,8 +1541,8 @@ extension Protocol_PbPFtpBatteryStatusResult: SwiftProtobuf.Message, SwiftProtob
 }
 
 extension Protocol_PbPFtpGetInactivityPreAlertResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpGetInactivityPreAlertResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpGetInactivityPreAlertResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "inactivity_pre_alert_on"),
   ]
 
@@ -1007,7 +1551,7 @@ extension Protocol_PbPFtpGetInactivityPreAlertResult: SwiftProtobuf.Message, Swi
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1019,7 +1563,7 @@ extension Protocol_PbPFtpGetInactivityPreAlertResult: SwiftProtobuf.Message, Swi
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1030,7 +1574,7 @@ extension Protocol_PbPFtpGetInactivityPreAlertResult: SwiftProtobuf.Message, Swi
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpGetInactivityPreAlertResult, rhs: Protocol_PbPFtpGetInactivityPreAlertResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpGetInactivityPreAlertResult, rhs: Protocol_PbPFtpGetInactivityPreAlertResult) -> Bool {
     if lhs._inactivityPreAlertOn != rhs._inactivityPreAlertOn {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1038,8 +1582,8 @@ extension Protocol_PbPFtpGetInactivityPreAlertResult: SwiftProtobuf.Message, Swi
 }
 
 extension Protocol_PbRequestRecordingStatusResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbRequestRecordingStatusResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbRequestRecordingStatusResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "recording_on"),
     2: .standard(proto: "sample_data_identifier"),
   ]
@@ -1049,7 +1593,7 @@ extension Protocol_PbRequestRecordingStatusResult: SwiftProtobuf.Message, SwiftP
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1062,7 +1606,7 @@ extension Protocol_PbRequestRecordingStatusResult: SwiftProtobuf.Message, SwiftP
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1076,7 +1620,7 @@ extension Protocol_PbRequestRecordingStatusResult: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbRequestRecordingStatusResult, rhs: Protocol_PbRequestRecordingStatusResult) -> Bool {
+  static func ==(lhs: Protocol_PbRequestRecordingStatusResult, rhs: Protocol_PbRequestRecordingStatusResult) -> Bool {
     if lhs._recordingOn != rhs._recordingOn {return false}
     if lhs._sampleDataIdentifier != rhs._sampleDataIdentifier {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1085,8 +1629,8 @@ extension Protocol_PbRequestRecordingStatusResult: SwiftProtobuf.Message, SwiftP
 }
 
 extension Protocol_PbRequestDisplayStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbRequestDisplayStatus"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbRequestDisplayStatus"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "display_on"),
   ]
 
@@ -1095,7 +1639,7 @@ extension Protocol_PbRequestDisplayStatus: SwiftProtobuf.Message, SwiftProtobuf.
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1107,7 +1651,7 @@ extension Protocol_PbRequestDisplayStatus: SwiftProtobuf.Message, SwiftProtobuf.
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1118,7 +1662,7 @@ extension Protocol_PbRequestDisplayStatus: SwiftProtobuf.Message, SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbRequestDisplayStatus, rhs: Protocol_PbRequestDisplayStatus) -> Bool {
+  static func ==(lhs: Protocol_PbRequestDisplayStatus, rhs: Protocol_PbRequestDisplayStatus) -> Bool {
     if lhs._displayOn != rhs._displayOn {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1126,8 +1670,8 @@ extension Protocol_PbRequestDisplayStatus: SwiftProtobuf.Message, SwiftProtobuf.
 }
 
 extension Protocol_PbPFtpGetVisualElementsResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PbPFtpGetVisualElementsResult"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  static let protoMessageName: String = _protobuf_package + ".PbPFtpGetVisualElementsResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "visual_data_path"),
   ]
 
@@ -1136,7 +1680,7 @@ extension Protocol_PbPFtpGetVisualElementsResult: SwiftProtobuf.Message, SwiftPr
     return true
   }
 
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1148,7 +1692,7 @@ extension Protocol_PbPFtpGetVisualElementsResult: SwiftProtobuf.Message, SwiftPr
     }
   }
 
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1159,9 +1703,403 @@ extension Protocol_PbPFtpGetVisualElementsResult: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Protocol_PbPFtpGetVisualElementsResult, rhs: Protocol_PbPFtpGetVisualElementsResult) -> Bool {
+  static func ==(lhs: Protocol_PbPFtpGetVisualElementsResult, rhs: Protocol_PbPFtpGetVisualElementsResult) -> Bool {
     if lhs._visualDataPath != rhs._visualDataPath {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension Protocol_PbPftpGetFreeJavaHeapMemoryResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PbPftpGetFreeJavaHeapMemoryResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "free_java_heap_memory"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._freeJavaHeapMemory == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._freeJavaHeapMemory) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._freeJavaHeapMemory {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Protocol_PbPftpGetFreeJavaHeapMemoryResult, rhs: Protocol_PbPftpGetFreeJavaHeapMemoryResult) -> Bool {
+    if lhs._freeJavaHeapMemory != rhs._freeJavaHeapMemory {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Protocol_PbPftpStartExerciseResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PbPftpStartExerciseResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "result"),
+    2: .standard(proto: "start_time"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._result == nil {return false}
+    if let v = self._startTime, !v.isInitialized {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._result) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._startTime) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._result {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._startTime {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Protocol_PbPftpStartExerciseResult, rhs: Protocol_PbPftpStartExerciseResult) -> Bool {
+    if lhs._result != rhs._result {return false}
+    if lhs._startTime != rhs._startTime {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Protocol_PbPftpStartExerciseResult.PbStartExerciseResult: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "RESULT_OTHER"),
+    1: .same(proto: "RESULT_SUCCESS"),
+    2: .same(proto: "RESULT_EXE_ONGOING"),
+    3: .same(proto: "RESULT_LOW_BATTERY"),
+    4: .same(proto: "RESULT_SDK_MODE"),
+    5: .same(proto: "RESULT_UNKNOWN_SPORT"),
+  ]
+}
+
+extension Protocol_PbPftpStopExerciseResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PbPftpStopExerciseResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "result"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._result == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._result) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._result {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Protocol_PbPftpStopExerciseResult, rhs: Protocol_PbPftpStopExerciseResult) -> Bool {
+    if lhs._result != rhs._result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Protocol_PbPftpStopExerciseResult.PbStopExerciseResult: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "RESULT_OTHER"),
+    1: .same(proto: "RESULT_SUCCESS"),
+    2: .same(proto: "RESULT_EXE_NOT_RUNNING"),
+  ]
+}
+
+extension Protocol_PbPftpPauseExerciseResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PbPftpPauseExerciseResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "result"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._result == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._result) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._result {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Protocol_PbPftpPauseExerciseResult, rhs: Protocol_PbPftpPauseExerciseResult) -> Bool {
+    if lhs._result != rhs._result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Protocol_PbPftpPauseExerciseResult.PbPauseExerciseResult: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "RESULT_OTHER"),
+    1: .same(proto: "RESULT_SUCCESS"),
+    2: .same(proto: "RESULT_EXE_NOT_RUNNING"),
+    3: .same(proto: "RESULT_ALREADY_PAUSED"),
+    4: .same(proto: "RESULT_PAUSE_NOT_AVAILABLE"),
+  ]
+}
+
+extension Protocol_PbPftpResumeExerciseResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PbPftpResumeExerciseResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "result"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._result == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._result) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._result {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Protocol_PbPftpResumeExerciseResult, rhs: Protocol_PbPftpResumeExerciseResult) -> Bool {
+    if lhs._result != rhs._result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Protocol_PbPftpResumeExerciseResult.PbResumeExerciseResult: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "RESULT_OTHER"),
+    1: .same(proto: "RESULT_SUCCESS"),
+    2: .same(proto: "RESULT_EXE_NOT_RUNNING"),
+    3: .same(proto: "RESULT_NOT_PAUSED"),
+  ]
+}
+
+extension Protocol_PbPftpGetExerciseStatusResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PbPftpGetExerciseStatusResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "exercise_state"),
+    2: .standard(proto: "exercise_type"),
+    3: .standard(proto: "sport_identifier"),
+    4: .standard(proto: "start_time"),
+    5: .standard(proto: "dm_directory_path"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._exerciseState == nil {return false}
+    if let v = self._sportIdentifier, !v.isInitialized {return false}
+    if let v = self._startTime, !v.isInitialized {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._exerciseState) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self._exerciseType) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._sportIdentifier) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._startTime) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._dmDirectoryPath) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._exerciseState {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._exerciseType {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._sportIdentifier {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._startTime {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._dmDirectoryPath {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Protocol_PbPftpGetExerciseStatusResult, rhs: Protocol_PbPftpGetExerciseStatusResult) -> Bool {
+    if lhs._exerciseState != rhs._exerciseState {return false}
+    if lhs._exerciseType != rhs._exerciseType {return false}
+    if lhs._sportIdentifier != rhs._sportIdentifier {return false}
+    if lhs._startTime != rhs._startTime {return false}
+    if lhs._dmDirectoryPath != rhs._dmDirectoryPath {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Protocol_PbPftpGetExerciseStatusResult.PbExerciseState: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "EXERCISE_STATE_OTHER"),
+    1: .same(proto: "EXERCISE_STATE_RUNNING"),
+    2: .same(proto: "EXERCISE_STATE_PAUSED"),
+    3: .same(proto: "EXERCISE_STATE_OFF"),
+  ]
+}
+
+extension Protocol_PbPftpGetExerciseStatusResult.PbExerciseType: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "EXERCISE_TYPE_OTHER"),
+    1: .same(proto: "EXERCISE_TYPE_NORMAL"),
+    2: .same(proto: "EXERCISE_TYPE_REMOTE"),
+    3: .same(proto: "EXERCISE_TYPE_AUTOMATIC"),
+    4: .same(proto: "EXERCISE_TYPE_DATA_MERGE"),
+  ]
+}
+
+extension Protocol_PbPftpStartDmExerciseResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PbPftpStartDmExerciseResult"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "result"),
+    2: .standard(proto: "dm_directory_path"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._result == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._result) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._dmDirectoryPath) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._result {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._dmDirectoryPath {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Protocol_PbPftpStartDmExerciseResult, rhs: Protocol_PbPftpStartDmExerciseResult) -> Bool {
+    if lhs._result != rhs._result {return false}
+    if lhs._dmDirectoryPath != rhs._dmDirectoryPath {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Protocol_PbPftpStartDmExerciseResult.PbStartDmExerciseResult: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "RESULT_OTHER"),
+    1: .same(proto: "RESULT_SUCCESS"),
+    2: .same(proto: "RESULT_EXE_ONGOING"),
+    3: .same(proto: "RESULT_LOW_BATTERY"),
+    4: .same(proto: "RESULT_SDK_MODE"),
+    5: .same(proto: "RESULT_UNKNOWN_SPORT"),
+  ]
 }

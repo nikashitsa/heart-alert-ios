@@ -1,108 +1,161 @@
-
 import Foundation
-import RxSwift
 import CoreBluetooth
+public enum BleDisconnectReason: Equatable {
+    case insufficientEncryption
+    case encryptionTimedOut
+    case pairingInformationRemoved
+    case uuidNotAllowed
+    case unknown
+}
+
+/// Device-control command that a pending expected disconnect is following.
+public enum BleDeviceCommand: Equatable {
+    case restart
+    case factoryReset
+    case warehouseSleep
+    case hibernate
+    case turnOff
+}
 
 @objc open class BleDeviceSession: NSObject {
-    
-    public enum DeviceSessionState{
-        case
-        /// Disconnected state
-        sessionClosed,
-        /// Connection attempting/connecting at the moment
-        sessionOpening,
-        /// Device is disconnected, but is waiting for advertisement head for reconnection, or power on event
-        sessionOpenPark,
-        /// Device is connected
-        sessionOpen,
-        /// Disconnecting at the moment
-        sessionClosing
-        
+
+    public enum DeviceSessionState {
+        case sessionClosed, sessionOpening, sessionOpenPark, sessionOpen, sessionClosing
+
         public func description() -> String {
             switch self {
-            case .sessionClosed:
-                return "sessionClosed"
-            case .sessionOpening:
-                return "sessionOpening"
-            case .sessionOpenPark:
-                return "sessionOpenPark"
-            case .sessionOpen:
-                return "sessionOpen"
-            case .sessionClosing:
-                return "sessionClosing"
+            case .sessionClosed:  return "sessionClosed"
+            case .sessionOpening: return "sessionOpening"
+            case .sessionOpenPark: return "sessionOpenPark"
+            case .sessionOpen:    return "sessionOpen"
+            case .sessionClosing: return "sessionClosing"
             }
         }
     }
-    
+
+    // Put initial value that is well below actual BLE sensitivity.
+    public var rssi: Int = -120
+
     public enum ConnectionType {
         /// connection attempt is directly requested after disconnection
         case directConnection
-        /// connection attempt is requested after first advertisement head, precondition is that device is connectable prior to connection attempt
+        /// connection attempt is requested after first advertisement head
         case connectFromAdvertisementHead
     }
-    
-    // apis to access
-    public let address:UUID
+
+    public let address: UUID
     public let advertisementContent: BleAdvertisementContent
     public var state = DeviceSessionState.sessionClosed
+    public var error: Error? = nil
     public var previousState = DeviceSessionState.sessionClosed
+
+    /// The error CoreBluetooth reported for the most recent failed connection attempt
+    /// or unexpected disconnect, if any. Cleared on a successful connect.
+    ///
+    /// This is written from the CoreBluetooth delegate queue and may be read from
+    /// unrelated threads (e.g. diagnostics on a connect timeout), so access is
+    /// guarded by a lock. Without synchronization a reader's retain of the stored
+    /// `Error` can race a concurrent writer releasing the previous value, crashing
+    /// in `objc_retain` on a freed object.
+    private let lastConnectionErrorLock = NSLock()
+    private var _lastConnectionError: Error?
+    public internal(set) var lastConnectionError: Error? {
+        get {
+            lastConnectionErrorLock.lock()
+            defer { lastConnectionErrorLock.unlock() }
+            return _lastConnectionError
+        }
+        set {
+            lastConnectionErrorLock.lock()
+            defer { lastConnectionErrorLock.unlock() }
+            _lastConnectionError = newValue
+        }
+    }
 
     /// by default connect only from adv head
     public var connectionType = ConnectionType.connectFromAdvertisementHead
-    var gattClients=[BleGattClientBase]()
-    
-    public init(_ addr: UUID, advertisementContent: BleAdvertisementContent?=nil){
+    var gattClients = [BleGattClientBase]()
+    public private(set) var hasEstablishedConnection = false
+    public private(set) var securityRecoveryAttempts = 0
+    public private(set) var securityRecoveryExhausted = false
+
+    // Device-control command (restart, factory reset, warehouse sleep, hibernate, turn off)
+    // whose success path was already reached; the disconnect that follows is expected.
+    public private(set) var pendingDeviceCommand: BleDeviceCommand? = nil
+    private var deviceCommandDisconnectDeadline: Date? = nil
+
+    /// Call right after a device-control command's success path to mark the disconnect that
+    /// is expected to follow as non-actionable. A still-valid pending mark is kept as-is rather
+    /// than overwritten, since once accepted the device is already on its way out and a second
+    /// command issued moments later is unlikely to be the real cause.
+    public func markExpectedDeviceCommandDisconnect(_ command: BleDeviceCommand, validFor: TimeInterval = 60) {
+        guard expectedDeviceCommandIfStillValid() == nil else { return }
+        pendingDeviceCommand = command
+        deviceCommandDisconnectDeadline = Date().addingTimeInterval(validFor)
+    }
+
+    public func expectedDeviceCommandIfStillValid() -> BleDeviceCommand? {
+        guard let command = pendingDeviceCommand, let deadline = deviceCommandDisconnectDeadline, Date() <= deadline else {
+            return nil
+        }
+        return command
+    }
+
+    public func clearExpectedDeviceCommandDisconnect() {
+        pendingDeviceCommand = nil
+        deviceCommandDisconnectDeadline = nil
+    }
+
+    public func markConnectionEstablished() {
+        hasEstablishedConnection = true
+        securityRecoveryAttempts = 0
+        securityRecoveryExhausted = false
+        clearExpectedDeviceCommandDisconnect()
+    }
+
+    @discardableResult
+    public func recordSecurityRecoveryAttempt(maxAttempts: Int = 3) -> Bool {
+        securityRecoveryAttempts += 1
+        securityRecoveryExhausted = securityRecoveryAttempts >= maxAttempts
+        return securityRecoveryExhausted
+    }
+
+    public init(_ addr: UUID, advertisementContent: BleAdvertisementContent? = nil) {
         self.advertisementContent = advertisementContent ?? BleAdvertisementContent()
-        self.address=addr
+        self.address = addr
     }
-    
-    /// helper to return BleGattClientBase instane based on service uuid
-    ///
-    /// - Parameter serviceUuid: service uuid to look for
-    /// - Returns: instance of client implementation
+
+    /// helper to return BleGattClientBase instance based on service uuid
     public func fetchGattClient(_ serviceUuid: CBUUID) -> BleGattClientBase? {
-        return gattClients.first(where: { (client: BleGattClientBase) -> Bool in
-            client.serviceBelongsToClient(serviceUuid)
-        })
+        return gattClients.first(where: { $0.serviceBelongsToClient(serviceUuid) })
     }
-    
-    /// helper to check is the advertisement type connectable
-    ///
-    /// - Returns: Bool
+
     public func isConnectable() -> Bool {
         fatalError("not implemented")
     }
-    
-    /// Helper observable to asynchronously wait all services discovered
-    ///
-    /// - Parameter checkConnection: check current connection
-    /// - Returns: Observable<CBUUID>
-    public func monitorServicesDiscovered(_ checkConnection: Bool) -> Observable<CBUUID> {
+
+    public func retryServiceDiscovery() {
         fatalError("not implemented")
     }
-    
-    /// Helper observable to asynchronously wait all services discovered
+
+    /// Monitor services discovered on the device.
     ///
     /// - Parameter checkConnection: check current connection
-    /// - Returns: Observable<CBUUID>
-    /*public func monitorServicesDiscovered(_ checkConnection: Bool) -> Single<[CBUUID]> {
-        return monitorServicesDiscovered(true)
-            .toArray()
-    }*/
-    
-    /// Helper observable to asynchronously wait all available/desired clients to be ready for use
-    ///
-    /// - Returns: Observable
-    public func clientsReady() -> Observable<Never> {
-        // improvement change to completable
-        return monitorServicesDiscovered(true)
-            .concatMap { (uid) -> Observable<Never> in
-                if let client = self.fetchGattClient(uid) {
-                    return client.clientReady(true).asObservable()
-                } else {
-                    // if client not found produce empty
-                    return Observable.empty()
-                }
-            }
+    /// - Returns: AsyncThrowingStream emitting discovered service UUIDs, completing when all services are ready, or throwing on error
+    public func monitorServicesDiscovered(_ checkConnection: Bool) -> AsyncThrowingStream<CBUUID, Error> {
+        fatalError("not implemented")
+    }
+
+    public var disconnectedDueRemovedPairing: Bool {
+        // A forgotten bond can surface either as an explicit peer-removed
+        // error or as an ATT request that can no longer be encrypted.
+        switch self.error?.bleDisconnectReason {
+        case .pairingInformationRemoved:
+            return true
+        case .insufficientEncryption:
+            return hasEstablishedConnection || securityRecoveryExhausted
+        default:
+            return false
+        }
     }
 }

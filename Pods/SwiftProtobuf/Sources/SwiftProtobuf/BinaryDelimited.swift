@@ -12,7 +12,7 @@
 ///
 // -----------------------------------------------------------------------------
 
-#if !os(WASI)
+#if !os(WASI) && BinaryDelimitedStreams
 import Foundation
 #endif
 
@@ -31,7 +31,7 @@ public enum BinaryDelimited {
         case truncated
     }
 
-    #if !os(WASI)
+    #if !os(WASI) && BinaryDelimitedStreams
     /// Serialize a single size-delimited message to the given stream. Delimited
     /// format allows a single file or stream to contain multiple messages,
     /// whereas normally writing multiple non-delimited messages to the same
@@ -40,12 +40,12 @@ public enum BinaryDelimited {
     ///
     /// - Parameters:
     ///   - message: The message to be written.
-    ///   - to: The `OutputStream` to write the message to.  The stream is
+    ///   - stream: The `OutputStream` to write the message to.  The stream is
     ///     is assumed to be ready to be written to.
     ///   - partial: If `false` (the default), this method will check
     ///     ``Message/isInitialized-6abgi`` before encoding to verify that all required
     ///     fields are present. If any are missing, this method throws
-    ///     ``BinaryDelimited/Error/missingRequiredFields``.
+    ///     ``BinaryEncodingError/missingRequiredFields``.
     /// - Throws: ``BinaryDelimited/Error`` if encoding fails or some writing errors occur; or the
     /// underlying `OutputStream.streamError` for a stream error.
     public static func serialize(
@@ -92,7 +92,7 @@ public enum BinaryDelimited {
     ///
     /// - Parameters:
     ///   - messageType: The type of message to read.
-    ///   - from: The `InputStream` to read the data from.  The stream is assumed
+    ///   - stream: The `InputStream` to read the data from.  The stream is assumed
     ///     to be ready to read from.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
@@ -134,8 +134,8 @@ public enum BinaryDelimited {
     ///   occurred.
     ///
     /// - Parameters:
-    ///   - mergingTo: The message to merge the data into.
-    ///   - from: The `InputStream` to read the data from.  The stream is assumed
+    ///   - message: The message to merge the data into.
+    ///   - stream: The `InputStream` to read the data from.  The stream is assumed
     ///     to be ready to read from.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
@@ -143,7 +143,7 @@ public enum BinaryDelimited {
     ///   - partial: If `false` (the default), this method will check
     ///     ``Message/isInitialized-6abgi`` after decoding to verify that all required
     ///     fields are present. If any are missing, this method throws
-    ///     ``BinaryDelimited/Error/missingRequiredFields``.
+    ///     ``BinaryDecodingError/missingRequiredFields``.
     ///   - options: The BinaryDecodingOptions to use.
     /// - Throws: ``BinaryDelimited/Error`` or ``SwiftProtobufError`` if decoding fails,
     /// and for some reading errors; or the underlying `InputStream.streamError` for a stream error.
@@ -212,7 +212,7 @@ public enum BinaryDelimited {
     #endif  // !os(WASI)
 }
 
-#if !os(WASI)
+#if !os(WASI) && BinaryDelimitedStreams
 // TODO: This should go away when encoding/decoding are more stream based
 // as that should provide a more direct way to do this. This is basically
 // a rewrite of BinaryDecoder.decodeVarint().

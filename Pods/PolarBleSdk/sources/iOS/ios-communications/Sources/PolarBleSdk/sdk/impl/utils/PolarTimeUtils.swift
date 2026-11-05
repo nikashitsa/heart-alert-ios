@@ -6,6 +6,9 @@ import Foundation
 internal class PolarTimeUtils {
     private static let nanoToMillisMultiplier: Int = 1000000
     private static let secondsToMinutesMultiplier: Int = 60
+    private static let hoursTomillisMultiplier: Int = Int(60*60*1E3)
+    private static let minutesTomillisMultiplier: Int = Int(60*1E3)
+    private static let secondsTomillisMultiplier: Int = Int(1E3)
     
     static func dateToPbPftpSetLocalTime(time: Date, zone: TimeZone) -> Protocol_PbPFtpSetLocalTimeParams? {
         guard let dateTimeBuilder = pbDateTimeBuilder(time, zone) else {
@@ -169,6 +172,60 @@ internal class PolarTimeUtils {
         return date
     }
 
+    static func pbDateToDateUTC(pbDate: PbDate?) throws -> Date {
+        guard let year = pbDate?.year,
+              let month = pbDate?.month,
+              let day = pbDate?.day else {
+            BleLogger.error("pbDateToDateUTC failed, pbDate is missing parameters")
+            throw PolarErrors.dateTimeFormatFailed(description: "pbDateToDateUTC failed, pbDate is missing parameters")
+        }
+
+        var dateComponents = DateComponents()
+        dateComponents.year = Int(year)
+        dateComponents.month = Int(month)
+        dateComponents.day = Int(day)
+
+        var utcCalendar = Calendar(identifier: .gregorian)
+        utcCalendar.timeZone = TimeZone(identifier: "UTC")!
+        guard let date = utcCalendar.date(from: dateComponents) else {
+            BleLogger.error("pbDateToDateUTC failed, cannot create date from dateComponents")
+            throw PolarErrors.dateTimeFormatFailed(description: "pbDateToDateUTC failed, cannot create date from dateComponents")
+        }
+        return date
+    }
+
+    static func pbDateToDateComponents(pbDate: PbDate?) throws -> DateComponents {
+        guard let year = pbDate?.year,
+              let month = pbDate?.month,
+              let day = pbDate?.day else {
+            BleLogger.error("pbDateToDateComponents failed, pbDate is missing parameters")
+            throw PolarErrors.dateTimeFormatFailed(description: "pbDateToDateComponents failed, pbDate is missing parameters")
+        }
+
+        var dateComponents = DateComponents()
+        dateComponents.year = Int(year)
+        dateComponents.month = Int(month)
+        dateComponents.day = Int(day)
+        
+        return dateComponents
+    }
+    
+    static func pbTimeToDateComponents(pbTime: PbTime?) throws -> DateComponents {
+        guard let hour = pbTime?.hour,
+              let minute = pbTime?.minute,
+              let second = pbTime?.seconds else {
+            BleLogger.error("pbDateToDateComponents failed, pbTime is missing parameters")
+            throw PolarErrors.dateTimeFormatFailed(description: "pbDateToDateComponents failed, pbTime is missing parameters")
+        }
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = Int(hour)
+        dateComponents.minute = Int(minute)
+        dateComponents.second = Int(second)
+
+        return dateComponents
+    }
+
     static func pbDateToUTCDate(pbDate: PbDate?) throws -> Date {
         guard let year = pbDate?.year,
               let month = pbDate?.month,
@@ -208,21 +265,66 @@ internal class PolarTimeUtils {
         
         return proto
     }
+    
+    static func pbDateProto3ToDate(pbDate: PbDateProto3?) throws -> Date {
+        
+        guard let year = pbDate?.year,
+              let month = pbDate?.month,
+              let day = pbDate?.day else {
+            
+            BleLogger.error("pbDateProto3ToDate failed, pbDate is missing parameters")
+            throw PolarErrors.dateTimeFormatFailed(description: "pbDate failed, pbDate is missing parameters")
+        }
+
+        var dateComponents = DateComponents()
+        dateComponents.year = Int(year)
+        dateComponents.month = Int(month)
+        dateComponents.day = Int(day)
+
+        let userCalendar = Calendar(identifier: .gregorian)
+        guard let date = userCalendar.date(from: dateComponents) else {
+            BleLogger.error("pbDateProto3ToDate failed, cannot create date from dateComponents")
+            throw PolarErrors.dateTimeFormatFailed(description: "pbDateProto3ToDate failed, cannot create date from dateComponents")
+        }
+        return date
+    }
+
+    static func pbDurationToMillis(pbDuration: PbDuration) -> Int {
+        return hoursToMillis(hours: Int(pbDuration.hours)) + minutesToMillis(minutes: Int(pbDuration.minutes)) + secondsToMillis(seconds: Int(pbDuration.seconds)) + Int(pbDuration.millis)
+    }
 
     static func pbTimeToTimeString(_ pbTime: PbTime) -> String {
         return String(format: "%02d:%02d:%02d.%02d", pbTime.hour, pbTime.minute, pbTime.seconds, pbTime.millis)
     }
+    
+    static var utcCalendar: Calendar = {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        return cal
+    }()
 
     private static func millisToNanos(milliseconds: Int) -> Int {
         return milliseconds * nanoToMillisMultiplier
     }
-    
+
     private static func secondsToMinutes(seconds: Int) -> Int {
         return Int(round(Double(seconds) / Double(secondsToMinutesMultiplier)))
     }
 
     private static func minutesToSeconds(minutes: Int) -> Int {
         return minutes * secondsToMinutesMultiplier
+    }
+
+    private static func hoursToMillis(hours: Int) -> Int {
+        return hours * hoursTomillisMultiplier
+    }
+
+    private static func minutesToMillis(minutes: Int) -> Int {
+        return minutes * minutesTomillisMultiplier
+    }
+
+    private static func secondsToMillis(seconds: Int) -> Int {
+        return seconds * secondsTomillisMultiplier
     }
 
     private static func timeZoneFromMinutes(_ minutes: Int) throws -> TimeZone {

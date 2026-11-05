@@ -55,7 +55,11 @@
 // These wrappers have no meaningful use within a map or a oneof since
 // individual entries of a map or fields of a oneof can already detect presence.
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 // 'import SwiftProtobuf' suppressed, this proto file is meant to be bundled in the runtime.
 
 // If the compiler emits an error on this type, it is because this file
@@ -63,7 +67,7 @@ import Foundation
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: ProtobufAPIVersionCheck {
   struct _2: ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -74,7 +78,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: ProtobufAPIVersionCheck 
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_DoubleValue: Sendable {
+public nonisolated struct Google_Protobuf_DoubleValue: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -93,7 +97,7 @@ public struct Google_Protobuf_DoubleValue: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_FloatValue: Sendable {
+public nonisolated struct Google_Protobuf_FloatValue: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -112,7 +116,7 @@ public struct Google_Protobuf_FloatValue: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_Int64Value: Sendable {
+public nonisolated struct Google_Protobuf_Int64Value: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -131,7 +135,7 @@ public struct Google_Protobuf_Int64Value: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_UInt64Value: Sendable {
+public nonisolated struct Google_Protobuf_UInt64Value: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -150,7 +154,7 @@ public struct Google_Protobuf_UInt64Value: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_Int32Value: Sendable {
+public nonisolated struct Google_Protobuf_Int32Value: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -169,7 +173,7 @@ public struct Google_Protobuf_Int32Value: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_UInt32Value: Sendable {
+public nonisolated struct Google_Protobuf_UInt32Value: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -188,7 +192,7 @@ public struct Google_Protobuf_UInt32Value: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_BoolValue: Sendable {
+public nonisolated struct Google_Protobuf_BoolValue: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -207,7 +211,7 @@ public struct Google_Protobuf_BoolValue: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_StringValue: Sendable {
+public nonisolated struct Google_Protobuf_StringValue: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -226,7 +230,7 @@ public struct Google_Protobuf_StringValue: Sendable {
 ///
 /// Not recommended for use in new APIs, but still useful for legacy APIs and
 /// has no plan to be removed.
-public struct Google_Protobuf_BytesValue: @unchecked Sendable {
+public nonisolated struct Google_Protobuf_BytesValue: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -241,13 +245,11 @@ public struct Google_Protobuf_BytesValue: @unchecked Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "google.protobuf"
+fileprivate nonisolated let _protobuf_package = "google.protobuf"
 
-extension Google_Protobuf_DoubleValue: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_DoubleValue: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DoubleValue"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -275,11 +277,9 @@ extension Google_Protobuf_DoubleValue: Message, _MessageImplementationBase, _Pro
   }
 }
 
-extension Google_Protobuf_FloatValue: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_FloatValue: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FloatValue"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -307,11 +307,9 @@ extension Google_Protobuf_FloatValue: Message, _MessageImplementationBase, _Prot
   }
 }
 
-extension Google_Protobuf_Int64Value: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_Int64Value: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Int64Value"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -339,11 +337,9 @@ extension Google_Protobuf_Int64Value: Message, _MessageImplementationBase, _Prot
   }
 }
 
-extension Google_Protobuf_UInt64Value: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_UInt64Value: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UInt64Value"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -371,11 +367,9 @@ extension Google_Protobuf_UInt64Value: Message, _MessageImplementationBase, _Pro
   }
 }
 
-extension Google_Protobuf_Int32Value: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_Int32Value: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Int32Value"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -403,11 +397,9 @@ extension Google_Protobuf_Int32Value: Message, _MessageImplementationBase, _Prot
   }
 }
 
-extension Google_Protobuf_UInt32Value: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_UInt32Value: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UInt32Value"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -435,11 +427,9 @@ extension Google_Protobuf_UInt32Value: Message, _MessageImplementationBase, _Pro
   }
 }
 
-extension Google_Protobuf_BoolValue: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_BoolValue: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BoolValue"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -467,11 +457,9 @@ extension Google_Protobuf_BoolValue: Message, _MessageImplementationBase, _Proto
   }
 }
 
-extension Google_Protobuf_StringValue: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_StringValue: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".StringValue"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -499,11 +487,9 @@ extension Google_Protobuf_StringValue: Message, _MessageImplementationBase, _Pro
   }
 }
 
-extension Google_Protobuf_BytesValue: Message, _MessageImplementationBase, _ProtoNameProviding {
+nonisolated extension Google_Protobuf_BytesValue: Message, _MessageImplementationBase, _ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BytesValue"
-  public static let _protobuf_nameMap: _NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = _NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

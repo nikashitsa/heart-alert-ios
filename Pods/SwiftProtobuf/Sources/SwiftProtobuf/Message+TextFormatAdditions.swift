@@ -8,11 +8,15 @@
 //
 // -----------------------------------------------------------------------------
 ///
-/// Extensions to `Message` to support text format encoding/decoding.
+/// Extensions to ``Message`` to support text format encoding/decoding.
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 /// Text format encoding and decoding methods for messages.
 extension Message {

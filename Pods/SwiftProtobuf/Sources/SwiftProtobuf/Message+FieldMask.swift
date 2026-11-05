@@ -12,7 +12,28 @@
 ///
 // -----------------------------------------------------------------------------
 
+extension Google_Protobuf_FieldMask {
+
+    /// Defines available options for merging two messages.
+    public struct MergeOptions {
+
+        public init() {}
+
+        /// The default merging behavior will append entries from the source
+        /// repeated field to the destination repeated field. If you only want
+        /// to keep the entries from the source repeated field, set this flag
+        /// to true.
+        public var replaceRepeatedFields = false
+    }
+}
+
+#if FieldMaskUtilities
+
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 extension Message {
 
@@ -45,21 +66,6 @@ extension Message {
     }
 }
 
-extension Google_Protobuf_FieldMask {
-
-    /// Defines available options for merging two messages.
-    public struct MergeOptions {
-
-        public init() {}
-
-        /// The default merging behavior will append entries from the source
-        /// repeated field to the destination repeated field. If you only want
-        /// to keep the entries from the source repeated field, set this flag
-        /// to true.
-        public var replaceRepeatedFields = false
-    }
-}
-
 extension Message {
 
     /// Merges fields specified in a FieldMask into another message.
@@ -67,6 +73,7 @@ extension Message {
     /// - Parameters:
     ///   - source: Message that should be merged to the original one.
     ///   - fieldMask: FieldMask specifies which fields should be merged.
+    ///   - mergeOption: Options that customize how the fields are merged.
     public mutating func merge(
         from source: Self,
         fieldMask: Google_Protobuf_FieldMask,
@@ -131,3 +138,5 @@ extension Message {
         self.unknownFields = message.unknownFields
     }
 }
+
+#endif

@@ -13,10 +13,21 @@
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 private let minTimestampSeconds: Int64 = -62_135_596_800  // 0001-01-01T00:00:00Z
 private let maxTimestampSeconds: Int64 = 253_402_300_799  // 9999-12-31T23:59:59Z
+// From timestamp.proto:
+//     Non-negative fractions of a second at nanosecond resolution. Negative
+//     second values with fractions must still have non-negative nanos values
+//     that count forward in time. Must be from 0 to 999,999,999
+//     inclusive.
+private let minTimestampNanos: Int32 = 0
+private let maxTimestampNanos: Int32 = 999_999_999
 
 // TODO: Add convenience methods to interoperate with standard
 // date/time classes:  an initializer that accepts Unix timestamp as
@@ -76,9 +87,13 @@ private func parseTimestamp(s: String) throws -> (Int64, Int32) {
         throw JSONDecodingError.malformedTimestamp
     }
 
+    let isleap = (year % 400 == 0) || ((year % 100 != 0) && (year % 4 == 0))
+
     // Day: 2 digits followed by 'T'
     let mday = try fromAscii2(value[8], value[9])
-    if value[10] != letterT || mday < Int(1) || mday > Int(31) {
+    let mdayMax: [Int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    let maxDays = (month == 2 && isleap) ? 29 : mdayMax[month - 1]
+    if value[10] != letterT || mday < Int(1) || mday > maxDays {
         throw JSONDecodingError.malformedTimestamp
     }
 
@@ -96,7 +111,7 @@ private func parseTimestamp(s: String) throws -> (Int64, Int32) {
 
     // Second: 2 digits (following char is checked below)
     let second = try fromAscii2(value[17], value[18])
-    if second > Int(61) {
+    if second > Int(59) {
         throw JSONDecodingError.malformedTimestamp
     }
 
@@ -109,7 +124,6 @@ private func parseTimestamp(s: String) throws -> (Int64, Int32) {
     // Day of year
     let mdayStart: [Int] = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
     var yday = Int64(mdayStart[month - 1])
-    let isleap = (year % 400 == 0) || ((year % 100 != 0) && (year % 4 == 0))
     if isleap && (month > 2) {
         yday += 1
     }
@@ -139,10 +153,24 @@ private func parseTimestamp(s: String) throws -> (Int64, Int32) {
     if value[pos] == period {  // "." begins fractional seconds
         pos += 1
         var digitValue = 100_000_000
+        var fractionalDigits = 0
         while pos < value.count && value[pos] >= zero && value[pos] <= nine {
+            fractionalDigits += 1
+            // Protobuf encodes sub-second time as nanoseconds, so the fraction
+            // is limited to 9 digits. Reject as soon as a tenth digit appears
+            // so we fail fast, and so the Int32 accumulation below cannot
+            // overflow on pathological input.
+            if fractionalDigits > 9 {
+                throw JSONDecodingError.malformedTimestamp
+            }
             nanos += Int32(digitValue * (value[pos] - zero))
             digitValue /= 10
             pos += 1
+        }
+        // Protobuf JSON also requires at least one digit after the decimal
+        // point. The reference parser rejects an empty fraction.
+        if fractionalDigits < 1 {
+            throw JSONDecodingError.malformedTimestamp
         }
     }
 
@@ -185,8 +213,10 @@ private func parseTimestamp(s: String) throws -> (Int64, Int32) {
 }
 
 private func formatTimestamp(seconds: Int64, nanos: Int32) -> String? {
-    let (seconds, nanos) = normalizeForTimestamp(seconds: seconds, nanos: nanos)
-    guard seconds >= minTimestampSeconds && seconds <= maxTimestampSeconds else {
+    guard
+        (seconds >= minTimestampSeconds && seconds <= maxTimestampSeconds)
+            && (nanos >= minTimestampNanos && nanos <= maxTimestampNanos)
+    else {
         return nil
     }
 
@@ -201,7 +231,7 @@ private func formatTimestamp(seconds: Int64, nanos: Int32) -> String? {
 }
 
 extension Google_Protobuf_Timestamp {
-    /// Creates a new `Google_Protobuf_Timestamp` equal to the given number of
+    /// Creates a new ``Google_Protobuf_Timestamp`` equal to the given number of
     /// seconds and nanoseconds.
     ///
     /// - Parameter seconds: The number of seconds.
@@ -229,7 +259,8 @@ extension Google_Protobuf_Timestamp: _CustomJSONCodable {
 }
 
 extension Google_Protobuf_Timestamp {
-    /// Creates a new `Google_Protobuf_Timestamp` initialized relative to 00:00:00
+    #if !REMOVE_DEPRECATED_APIS
+    /// Creates a new ``Google_Protobuf_Timestamp`` initialized relative to 00:00:00
     /// UTC on 1 January 1970 by a given number of seconds.
     ///
     /// - Parameter timeIntervalSince1970: The `TimeInterval`, interpreted as
@@ -238,8 +269,9 @@ extension Google_Protobuf_Timestamp {
     public init(timeIntervalSince1970: TimeInterval) {
         self.init(roundingTimeIntervalSince1970: timeIntervalSince1970, rule: .toNearestOrAwayFromZero)
     }
+    #endif  // !REMOVE_DEPRECATED_APIS
 
-    /// Creates a new `Google_Protobuf_Timestamp` initialized relative to 00:00:00
+    /// Creates a new ``Google_Protobuf_Timestamp`` initialized relative to 00:00:00
     /// UTC on 1 January 1970 by a given number of seconds, rounded to the nearest
     /// nanosecond according to the given rounding rule.
     ///
@@ -253,11 +285,13 @@ extension Google_Protobuf_Timestamp {
     ) {
         let sd = Int64(timeIntervalSince1970)
         let nd = ((timeIntervalSince1970 - Double(sd)) * TimeInterval(nanosPerSecond)).rounded(rule)
+        // Normalize is here incase things round to a full second worth of nanos.
         let (s, n) = normalizeForTimestamp(seconds: sd, nanos: Int32(nd))
         self.init(seconds: s, nanos: n)
     }
 
-    /// Creates a new `Google_Protobuf_Timestamp` initialized relative to 00:00:00
+    #if !REMOVE_DEPRECATED_APIS
+    /// Creates a new ``Google_Protobuf_Timestamp`` initialized relative to 00:00:00
     /// UTC on 1 January 2001 by a given number of seconds.
     ///
     /// - Parameter timeIntervalSinceReferenceDate: The `TimeInterval`,
@@ -269,8 +303,9 @@ extension Google_Protobuf_Timestamp {
             rule: .toNearestOrAwayFromZero
         )
     }
+    #endif  // !REMOVE_DEPRECATED_APIS
 
-    /// Creates a new `Google_Protobuf_Timestamp` initialized relative to 00:00:00
+    /// Creates a new ``Google_Protobuf_Timestamp`` initialized relative to 00:00:00
     /// UTC on 1 January 2001 by a given number of seconds, rounded to the nearest
     /// nanosecond according to the given rounding rule.
     ///
@@ -288,6 +323,8 @@ extension Google_Protobuf_Timestamp {
         // The addition of timeIntervalBetween1970And... is deliberately delayed
         // until the input is separated into an integer part and a fraction
         // part, so that we don't unnecessarily lose precision.
+        //
+        // Normalize is here incase things round to a full second worth of nanos.
         let (s, n) = normalizeForTimestamp(
             seconds: sd + Int64(Date.timeIntervalBetween1970AndReferenceDate),
             nanos: Int32(nd)
@@ -295,7 +332,7 @@ extension Google_Protobuf_Timestamp {
         self.init(seconds: s, nanos: n)
     }
 
-    /// Creates a new `Google_Protobuf_Timestamp` initialized to the same time as
+    /// Creates a new ``Google_Protobuf_Timestamp`` initialized to the same time as
     /// the given `Date`.
     ///
     /// - Parameter date: The `Date` with which to initialize the timestamp.
@@ -339,7 +376,6 @@ private func normalizeForTimestamp(
 ) -> (seconds: Int64, nanos: Int32) {
     // The Timestamp spec says that nanos must be in the range [0, 999999999),
     // as in actual modular arithmetic.
-
     let s = seconds + Int64(div(nanos, nanosPerSecond))
     let n = mod(nanos, nanosPerSecond)
     return (seconds: s, nanos: n)

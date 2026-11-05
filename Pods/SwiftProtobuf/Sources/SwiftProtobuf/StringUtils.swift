@@ -18,7 +18,11 @@
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 // Note: Once our minimum support version is at least Swift 5.3, we should
 // probably recast the following to use String(unsafeUninitializedCapacity:)
@@ -101,4 +105,15 @@ internal func utf8ToString(bytes: UnsafeRawPointer, count: Int) -> String? {
     // This initializer is fast but does not reject broken
     // UTF-8 (which is why we validate the UTF-8 above).
     return String(decoding: codeUnits, as: sourceEncoding)
+}
+
+extension Unicode.Scalar {
+    /// Assuming the given scalar is ASCII, this is the uppercased equivalent (unchanged if it is
+    /// not a lowercase alphabetic character).
+    var uppercasedAssumingASCII: Unicode.Scalar {
+        guard "a" <= self && self <= "z" else {
+            return self
+        }
+        return Self(value & 0x5f)!
+    }
 }

@@ -14,7 +14,11 @@
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 /// Contains any unknown fields in a decoded message; that is, fields that were
 /// sent on the wire but were not recognized by the generated message
@@ -29,7 +33,7 @@ public struct UnknownStorage: Equatable, Sendable {
 
     public init() {}
 
-    internal mutating func append(protobufData: Data) {
+    package mutating func append(protobufData: Data) {
         data.append(protobufData)
     }
 

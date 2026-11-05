@@ -1,61 +1,93 @@
-# SDK for Polar sensors and watches
+# Polar BLE SDK for sensors and watches
 
-This is the official repository of Polar's software development kit. With this SDK you are able to develop your own Android and iOS applications for sensors and watches made by Polar.
+Official SDK for Polar sensors and watches on **Android** and **iOS**. Build apps that connect via Bluetooth LE and stream real-time heart rate, ECG, accelerometer, PPG, and more from Polar devices.
 
-The SDK API uses ReactiveX. You can read more about ReactiveX from their website [reactivex](http://reactivex.io)
+---
 
-- [SDK for Polar sensors and watches](#sdk-for-polar-sensors-and-watches)
-  - [Supported products](#supported-products)
-  - [Project structure](#project-structure)
+## Contents
+
+- [Supported products](#supported-products)
+- [Documentation](#documentation)
+  - [API reference](#api-reference)
+- [Quickstart](#quickstart)
   - [Android getting started](#android-getting-started)
-    - [Installation](#installation)
-    - [Code example: Heart rate](#code-example-heart-rate)
-      - [Key things](#key-things)
   - [iOS getting started](#ios-getting-started)
-    - [Requirements](#requirements)
-    - [Dependencies](#dependencies)
-    - [Installation](#installation-1)
-      - [CocoaPods](#cocoapods)
-      - [Swift Package Manager](#swift-package-manager)
-      - [Carthage](#carthage)
-    - [Setup your application](#setup-your-application)
-    - [Code example: Heart rate](#code-example-heart-rate-1)
-      - [Key things](#key-things-1)
-  - [Migration guides](#migration-guides)
-  - [Collaboration](#collaboration)
-  - [License](#license)
-    - [Quick License Summary / Your rights to use the SDK](#quick-license-summary--your-rights-to-use-the-sdk)
-  - [Third-party code and licenses](#third-party-code-and-licenses)
+- [Examples and demos](#examples-and-demos)
+- [Migration guides](#migration-guides)
+- [Troubleshooting and known issues](#troubleshooting-and-known-issues)
+- [Collaboration](#collaboration)
+- [Versioning Policy](#sdk-versioning-policy)
+- [License](#license)
+- [Third-party code and licenses](#third-party-code-and-licenses)
 
+---
+
+### Project structure
+```
+├── sources/            # SDK source code (Android + iOS)
+├── examples/           # Example apps for Android and iOS utilizing most of the features from sdk
+├── demos/              # Contains Android ecg demo application
+├── documentation/      # SDK documentation and product guides
+├── technical_documentation/  # Technical specs and diagrams
+└── docs/               # Generated API documentation
+```
+---
 ## Supported products
 
-- [Polar 360](./documentation/products/Polar360.md)
-- [Polar H10](./documentation/products/PolarH10.md)
-- [Polar H9](./documentation/products/PolarH9.md)
-- [Polar Verity Sense](./documentation/products/PolarVeritySense.md)
-- [Polar OH1](./documentation/products/PolarOH1.md)
-- [Polar Ignite 3](./documentation/products/PolarIgnite3.md)
-- [Polar Vantage V3, Vantage M3 and Polar Grit X2 Pro](./documentation/products/PolarVantageV3andGritX2Pro.md)
-- [Polar Pacer and Polar Pacer Pro](./documentation/products/PolarPacerAndPacerPro.md)
+| Sensor/Watch | Documentation |
+|--------------|---------------|
+| Polar 360 / Polar Loop | [Polar360.md](./documentation/products/Polar360.md) |
+| Polar H10 | [PolarH10.md](./documentation/products/PolarH10.md) |
+| Polar H9 | [PolarH9.md](./documentation/products/PolarH9.md) |
+| Polar Verity Sense | [PolarVeritySense.md](./documentation/products/PolarVeritySense.md) |
+| Polar OH1 | [PolarOH1.md](./documentation/products/PolarOH1.md) |
+| Polar Ignite 3 | [PolarIgnite3.md](./documentation/products/PolarIgnite3.md) |
+| Polar Vantage V3, M3, Grit X2 Pro, Grit X2 | [PolarVantageV3andGritX2Pro.md](./documentation/products/PolarVantageV3andGritX2Pro.md) |
+| Polar Pacer / Pacer Pro | [PolarPacerAndPacerPro.md](./documentation/products/PolarPacerAndPacerPro.md) |
 
-## Project structure
-* [polar-sdk-ios](polar-sdk-ios/) contains source documentation for the iOS SDK source
-* [polar-sdk-android](polar-sdk-android/) contains source documentation for the Android SDK source
-* [demos](demos/) contains Android ecg demo application 
-* [examples](examples/) contains both android and ios example app utilizing most of the features from sdk 
-* [documentation](documentation/) contains documentation related to SDK
+For watch-specific guidance, see [Using SDK with Watches](./documentation/UsingSDKWithWatches.md).
 
-## Android getting started
-Detailed documentation: [Documentation](https://polarofficial.github.io/polar-ble-sdk/)
+---
+
+## Documentation
+
+### API reference
+- [Android API docs](https://polarofficial.github.io/polar-ble-sdk/polar-sdk-android/index.html)
+- [iOS API docs](https://polarofficial.github.io/polar-ble-sdk/polar-sdk-ios/index.html)
+
+### Guides
+| Topic | Link |
+|-------|------|
+| SDK Mode explained | [SdkModeExplained.md](./documentation/SdkModeExplained.md) |
+| Offline recording | [SdkOfflineRecordingExplained.md](./documentation/SdkOfflineRecordingExplained.md) |
+| Time system | [TimeSystemExplained.md](./documentation/TimeSystemExplained.md) |
+| First time use / device setup | [FirstTimeUse.md](./documentation/FirstTimeUse.md) |
+| Firmware updates | [FirmwareUpdate.md](./documentation/FirmwareUpdate.md) |
+| PPI data | [PPIData.md](./documentation/PPIData.md) |
+| Sync implementation | [SyncImplementationGuideline.md](./documentation/SyncImplementationGuideline.md) |
+
+### Technical documentation
+See the [technical_documentation](technical_documentation/) folder for detailed specifications (ECG, online/offline measurement formats).
+
+[↑ Back to contents](#contents)
+
+---
+
+# Quickstart
+
+Get up and running with the Polar BLE SDK.
+
+### Android getting started
+
 ### Installation
 
-1.  In `build.gradle` make sure the __minSdk__ is set to __24__ or higher.
+1.  In `build.gradle` make sure the __minSdk__ is set to __33__ or higher.
 ```gradle
 android {
     ...
     defaultConfig {
         ...
-        minSdk 24
+        minSdk 33
     }
 }
 ```
@@ -72,14 +104,13 @@ android {
 }
 ```
 
-3. Add the dependency to Polar BLE SDK library. Also you will need the dependencies to [RxJava](https://github.com/ReactiveX/RxJava) to use the Polar BLE SDK Library
+3. Add the Polar BLE SDK dependency to your app.
 ```gradle
 dependencies {
     implementation 'com.github.polarofficial:polar-ble-sdk:${sdk_version}'
-    implementation 'io.reactivex.rxjava3:rxjava:3.1.6'
-    implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'
 }
 ```
+
 
 4. Finally, to let the SDK use the bluetooth it needs [Bluetooth related permissions](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions). On your application `AndroidManifest.xml` following permissions need to be listed:
 
@@ -218,16 +249,68 @@ public override fun onDestroy() {
 }
 ```
 
-4.  Connect to a Polar device using  `api.connectToDevice(<DEVICE_ID>)` where <DEVICE_ID> is the deviceID printed to your sensor,  using  `api.autoConnectToDevice(-50, null, null).subscribe()`  to connect nearby device or  `api.searchForDevice()` to scan and then select the device
+4.  Connect to a Polar device using `api.connectToDevice(<DEVICE_ID>)` where `<DEVICE_ID>` is the deviceID printed to your sensor. To connect to a nearby device or use scan/stream APIs, launch a coroutine and collect the returned `Flow`s:
+```kt
+lifecycleScope.launch {
+    try {
+        api.autoConnectToDevice(-50, null, null)
+    } catch (e: Exception) {
+        Log.e("MyApp", "Auto connect failed", e)
+    }
+}
 
-## iOS getting started
-Detailed documentation: [Documentation](https://polarofficial.github.io/polar-ble-sdk/). Minimum iOS version is 14.
-### Requirements
-* Xcode 12.x
-* Swift 5.x
+val searchJob = lifecycleScope.launch {
+    api.searchForDevice()
+        .catch { error -> Log.e("MyApp", "Search failed", error) }
+        .collect { polarDeviceInfo ->
+            Log.d("MyApp", "FOUND: ${polarDeviceInfo.deviceId}")
+        }
+}
+// Cancel the scan when you no longer need it.
+searchJob.cancel()
+
+override fun bleSdkFeatureReady(identifier: String, feature: PolarBleApi.PolarBleSdkFeature) {
+    if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING) {
+        lifecycleScope.launch {
+            try {
+                if (PolarBleApi.PolarDeviceDataType.PPI in api.getAvailableOnlineStreamDataTypes(identifier)) {
+                    api.startPpiStreaming(identifier)
+                        .catch { error -> Log.e("MyApp", "PPI stream failed", error) }
+                        .collect { ppiData ->
+                            Log.d("MyApp", "PPI samples: ${ppiData.samples.size}")
+                        }
+                }
+            } catch (e: Exception) {
+                Log.e("MyApp", "Failed to query stream types", e)
+            }
+        }
+    }
+}
+```
+
+
+
+**Full example:** [examples/example-android](examples/example-android)
+
+[↑ Back to contents](#contents)
+
+
+---
+
+### iOS getting started
+
+**Requirements:**
+- iOS 14.0+
+- watchOS is listed in the package manifest but is not fully supported; see [issue #479](https://github.com/polarofficial/polar-ble-sdk/issues/479) for current status.
+- Xcode 13.2+ / Swift 5.5+ when using Swift Package Manager
+
 ### Dependencies
+*  [Swift Protobuf 1.6.0](https://github.com/apple/swift-protobuf) (SPM: `from: 1.6.0`; CocoaPods: `~> 1.0`)
+*  [Zip 2.1.2](https://github.com/marmelroy/Zip) (SPM: `from: 2.1.2`; CocoaPods: `~> 2.1.2`)
 *  [RxSwift 6.0](https://github.com/ReactiveX/RxSwift) or above
-*  [Swift Protobuf 1.18.0](https://github.com/apple/swift-protobuf) or above
+
+For SDK 8.x and newer, RxSwift is not required; the SDK uses Swift concurrency / async-await APIs
+
 ### Installation
 #### CocoaPods
 
@@ -239,8 +322,7 @@ If you use [CocoaPods](https://guides.cocoapods.org/using/using-cocoapods.html) 
 use_frameworks!
 
 target 'YOUR_TARGET_NAME' do
-    pod 'PolarBleSdk', '~> 5.0'
-
+    pod 'PolarBleSdk', '~> 8.3.0' # Update version to latest available SDK version
 end
 ```
 
@@ -249,21 +331,12 @@ Add PolarBleSdk as a dependency to your `Package.swift` manifest
 
 ```swift
 dependencies: [
-    .package(name: "PolarBleSdk", url: "https://github.com/polarofficial/polar-ble-sdk.git", .upToNextMajor(from: "5.0.0"))
+    .package(name: "PolarBleSdk", url: "https://github.com/polarofficial/polar-ble-sdk.git", .upToNextMajor(from: "8.3.0"))
 ]
 ```
-or alternatively use [XCode package manager](https://developer.apple.com/documentation/swift_packages/adding_package_dependencies_to_your_app) to add Swift package to your project. 
+or alternatively use [XCode package manager](https://developer.apple.com/documentation/swift_packages/adding_package_dependencies_to_your_app) to add Swift package to your project.
 
-#### Carthage
-If you use [Cathage](https://github.com/Carthage/Carthage) to manage your dependencies, add PolarBleSdk to your `Cartfile`
-
-```
-github "polarofficial/polar-ble-sdk" ~> 5.0
-```
-
-```bash
-$ carthage update --use-xcframeworks
-```
+> **Note:** Carthage is not supported.
 
 ### Setup your application
 * In your project target settings enable __Background Modes__, add  __Uses Bluetooth LE accessories__
@@ -279,7 +352,6 @@ This is not required if you are using automatic connection.
 1. Import needed packages.
 ```swift
 import PolarBleSdk
-import RxSwift
 ```
 
 2. Load the default api implementation and implement desired protocols.
@@ -289,22 +361,24 @@ class MyController: UIViewController,
                     PolarBleApiObserver,
                     PolarBleApiPowerStateObserver,
                     PolarBleApiDeviceInfoObserver,
-                    PolarBleApiDeviceFeaturesObserver,
-                    PolarBleApiDeviceHrObserver {
-    // NOTICE only FEATURE_HR is enabled, to enable more features like battery info
-    // e.g. PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, features: Features.hr.rawValue | 
-    // Features.batteryStatus.rawValue)
-    // batteryLevelReceived callback is invoked after connection                   
-    var api = PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, features: Features.hr.rawValue)
+                    PolarBleApiDeviceFeaturesObserver {
+    // NOTICE only FEATURE_HR is enabled, to enable more features add them to the Set
+    // e.g. [.feature_hr, .feature_battery_info]
+    var api = PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, 
+                                                          features: [.feature_hr])
+    var hrStreamTask: Task<Void, Never>?
     var deviceId = "0A3BA92B" // TODO replace this with your device id
 
     override func viewDidLoad() {
         super.viewDidLoad()
         api.observer = self
-        api.deviceHrObserver = self
         api.powerStateObserver = self
         api.deviceFeaturesObserver = self
         api.deviceInfoObserver = self
+    }
+
+    deinit {
+        hrStreamTask?.cancel()
     }
 
     func deviceConnecting(_ polarDeviceInfo: PolarDeviceInfo) {
@@ -315,7 +389,7 @@ class MyController: UIViewController,
         print("DEVICE CONNECTED: \(polarDeviceInfo)")
     }
     
-    func deviceDisconnected(_ polarDeviceInfo: PolarDeviceInfo) {
+    func deviceDisconnected(_ polarDeviceInfo: PolarDeviceInfo, pairingError: Bool) {
         print("DISCONNECTED: \(polarDeviceInfo)")
     }
     
@@ -327,21 +401,22 @@ class MyController: UIViewController,
         print("dis info: \(uuid.uuidString) value: \(value)")
     }
     
-    func hrValueReceived(_ identifier: String, data: PolarHrData) {
-        print("HR notification: \(data.hr) rrs: \(data.rrs)")
-    }
-        
-    func hrFeatureReady(_ identifier: String) {
-        print("HR READY")
-    }
-    
-    func ftpFeatureReady(_ identifier: String) {
-        print("FTP ready")
-    }
-    
-    func streamingFeaturesReady(_ identifier: String, streamingFeatures: Set<DeviceStreamingFeature>) {
-        for feature in streamingFeatures {
-            print("Feature \(feature) is ready.")
+    func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdkFeature) {
+        print("Feature \(feature) is ready.")
+        if feature == .feature_hr {
+            // Start HR streaming when feature is ready
+            hrStreamTask?.cancel()
+            hrStreamTask = Task {
+                do {
+                    for try await hrData in api.startHrStreaming(identifier) {
+                        for sample in hrData.samples {
+                            print("HR: \(sample.hr) rrsMs: \(sample.rrsMs)")
+                        }
+                    }
+                } catch {
+                    print("HR stream failed: \(error)")
+                }
+            }
         }
     }
     
@@ -356,13 +431,64 @@ class MyController: UIViewController,
 }
 ```
 
-3. Connect to a Polar device using  `api.connectToDevice(id)` ,  `api.startAutoConnectToDevice(_ rssi: Int, service: CBUUID?, polarDeviceType: String?)` to connect nearby device or  `api.searchForDevice()` to scan and select the device
+3. Connect to a Polar device using `try api.connectToDevice(deviceId)` for a known device id, `Task { try await api.startAutoConnectToDevice(-55, service: nil, polarDeviceType: nil) }` to auto-connect to a nearby device, or `Task { for try await device in api.searchForDevice() { /* inspect and select a device */ } }` to scan and select the device
+
+**Full example:** [examples/example-ios](examples/example-ios)
+
+[↑ Back to contents](#contents)
+
+---
+
+## Examples and demos
+
+| Folder | Description |
+|--------|-------------|
+| [examples/example-android](examples/example-android) | Full-featured Android app demonstrating all SDK capabilities |
+| [examples/example-ios](examples/example-ios) | Full-featured iOS app demonstrating all SDK capabilities |
+| [demos/Android-Demos](demos/Android-Demos) | Android ECG + HR demo application |
+
+[↑ Back to contents](#contents)
+
+---
 
 ## Migration guides
-- [Polar BLE SDK 5.0.0 Migration Guide](documentation/MigrationGuide5.0.0.md)
+- [Polar BLE SDK 5.0.0 Migration Guide](./documentation/MigrationGuide5.0.0.md) – Breaking changes from 4.x to 5.x
+
+[↑ Back to contents](#contents)
+
+---
+
+## Troubleshooting and known issues
+
+See [Known Issues](./documentation/KnownIssues.md) for device-specific issues and workarounds.
+
+Common issues:
+- **Connection drops on H10:** Keep the sensor attached to the strap during data transfer. See [KnownIssues.md](./documentation/KnownIssues.md#polar-h10).
+- **Incorrect PPG sample rate on Verity Sense:** Fixed in firmware 2.1.0. See [KnownIssues.md](./documentation/KnownIssues.md#polar-verity-sense).
+
+[↑ Back to contents](#contents)
+
+---
 
 ## Collaboration
-If you wish to collaborate with Polar commercially, [click here](https://www.polar.com/en/business/developers)
+
+For commercial collaboration with Polar, visit [polar.com/en/business/developers](https://www.polar.com/en/business/developers).
+
+[↑ Back to contents](#contents)
+
+---
+
+## SDK Versioning Policy
+
+[Polar BLE SDK Versioning Policy](SDK-VERSIONING-POLICY.md) has been prepared to help users of SDK published in this repository to keep up with its development. It outlines how Polar SDK team handles SDK versioning, OS platform support, and dependencies according to well-defined and widely accepted practices for functional, secure, and useful software toolkits for application developers.
+
+If you use or plan to use SDK in your iOS or Android apps, also make sure to get familiar with the versioning policy. It  helps you to plan how to keep your app up-to-date in terms of SDK features, bug fixes, and platform support. 
+
+We encourage you to update your app with latest SDK code as soon as it becomes available, and work together with us on any issues that you may have with the SDK and its evolution. 
+
+[↑ Back to contents](#contents)
+
+---
 
 ## License
 
@@ -374,7 +500,12 @@ allowed to use the SDK for the development of software for your
 private as well as for commercial use for as long as you use the SDK
 in compliance with the license terms.
 
-By exploiting the SDK, you indicate your acceptance of [License](Polar_SDK_License.txt).
+By exploiting the SDK, you indicate your acceptance of the [License](Polar_SDK_License.txt).
+
+[↑ Back to contents](#contents)
+
+---
 
 ## Third-party code and licenses
-Third-party code and licenses used in Polar BLE SDK see license listing [ThirdPartySoftwareListing](ThirdPartySoftwareListing.txt)
+
+Third-party code and licenses used in Polar BLE SDK: [ThirdPartySoftwareListing.txt](ThirdPartySoftwareListing.txt)

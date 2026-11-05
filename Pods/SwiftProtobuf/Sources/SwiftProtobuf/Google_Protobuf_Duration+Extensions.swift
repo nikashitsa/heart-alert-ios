@@ -14,10 +14,16 @@
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 private let minDurationSeconds: Int64 = -maxDurationSeconds
 private let maxDurationSeconds: Int64 = 315_576_000_000
+private let minDurationNanos: Int32 = -maxDurationNanos
+private let maxDurationNanos: Int32 = 999_999_999
 
 private func parseDuration(text: String) throws -> (Int64, Int32) {
     var digits = [Character]()
@@ -55,14 +61,16 @@ private func parseDuration(text: String) throws -> (Int64, Int32) {
             digitCount = 0
         case "s":
             if let _ = seconds {
-                // Seconds already set, digits holds nanos
+                // Seconds already set, digits holds nanos. The fraction must
+                // have between 1 and 9 digits; matches the protobuf grammar
+                // and the reference JSON parser, which reject an empty
+                // fraction or more than nanosecond precision.
+                if digitCount < 1 || digitCount > 9 {
+                    throw JSONDecodingError.malformedDuration
+                }
                 while digitCount < 9 {
                     digits.append(Character("0"))
                     digitCount += 1
-                }
-                while digitCount > 9 {
-                    digits.removeLast()
-                    digitCount -= 1
                 }
                 let digitString = String(digits)
                 if let rawNanos = Int32(digitString) {
@@ -99,8 +107,17 @@ private func parseDuration(text: String) throws -> (Int64, Int32) {
 }
 
 private func formatDuration(seconds: Int64, nanos: Int32) -> String? {
-    let (seconds, nanos) = normalizeForDuration(seconds: seconds, nanos: nanos)
-    guard seconds >= minDurationSeconds && seconds <= maxDurationSeconds else {
+    // Upstream's json file unparse.cc:WriteDuration() for these checks for reference.
+
+    // Range check...
+    guard
+        (seconds >= minDurationSeconds && seconds <= maxDurationSeconds)
+            && (nanos >= minDurationNanos && nanos <= maxDurationNanos)
+    else {
+        return nil
+    }
+    // Either seconds or nanos has to be zero otherwise the signs must match.
+    guard (seconds == 0) || (nanos == 0) || ((seconds < 0) == (nanos < 0)) else {
         return nil
     }
     let nanosString = nanosToString(nanos: nanos)  // Includes leading '.' if needed
@@ -111,7 +128,7 @@ private func formatDuration(seconds: Int64, nanos: Int32) -> String? {
 }
 
 extension Google_Protobuf_Duration {
-    /// Creates a new `Google_Protobuf_Duration` equal to the given number of
+    /// Creates a new ``Google_Protobuf_Duration`` equal to the given number of
     /// seconds and nanoseconds.
     ///
     /// - Parameter seconds: The number of seconds.
@@ -140,7 +157,7 @@ extension Google_Protobuf_Duration: _CustomJSONCodable {
 extension Google_Protobuf_Duration: ExpressibleByFloatLiteral {
     public typealias FloatLiteralType = Double
 
-    /// Creates a new `Google_Protobuf_Duration` from a floating point literal
+    /// Creates a new ``Google_Protobuf_Duration`` from a floating point literal
     /// that is interpreted as a duration in seconds, rounded to the nearest
     /// nanosecond.
     public init(floatLiteral value: Double) {
@@ -149,7 +166,8 @@ extension Google_Protobuf_Duration: ExpressibleByFloatLiteral {
 }
 
 extension Google_Protobuf_Duration {
-    /// Creates a new `Google_Protobuf_Duration` that is equal to the given
+    #if !REMOVE_DEPRECATED_APIS
+    /// Creates a new ``Google_Protobuf_Duration`` that is equal to the given
     /// `TimeInterval` (measured in seconds), rounded to the nearest nanosecond.
     ///
     /// - Parameter timeInterval: The `TimeInterval`.
@@ -157,8 +175,9 @@ extension Google_Protobuf_Duration {
     public init(timeInterval: TimeInterval) {
         self.init(rounding: timeInterval, rule: .toNearestOrAwayFromZero)
     }
+    #endif  // !REMOVE_DEPRECATED_APIS
 
-    /// Creates a new `Google_Protobuf_Duration` that is equal to the given
+    /// Creates a new ``Google_Protobuf_Duration`` that is equal to the given
     /// `TimeInterval` (measured in seconds), rounded to the nearest nanosecond
     /// according to the given rounding rule.
     ///
@@ -171,6 +190,7 @@ extension Google_Protobuf_Duration {
     ) {
         let sd = Int64(timeInterval)
         let nd = ((timeInterval - Double(sd)) * TimeInterval(nanosPerSecond)).rounded(rule)
+        // Normalize is here incase things round up to a full second worth of nanos.
         let (s, n) = normalizeForDuration(seconds: sd, nanos: Int32(nd))
         self.init(seconds: s, nanos: n)
     }
@@ -183,7 +203,7 @@ extension Google_Protobuf_Duration {
 
 @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
 extension Google_Protobuf_Duration {
-    /// Creates a new `Google_Protobuf_Duration` by rounding a `Duration` to
+    /// Creates a new ``Google_Protobuf_Duration`` by rounding a `Duration` to
     /// the nearest nanosecond according to the given rounding rule.
     ///
     /// - Parameters:
@@ -198,6 +218,7 @@ extension Google_Protobuf_Duration {
         let fracNanos =
             (Double(attos % attosPerNanosecond) / Double(attosPerNanosecond)).rounded(rule)
         let nanos = Int32(attos / attosPerNanosecond) + Int32(fracNanos)
+        // Normalize is here incase things round up to a full second worth of nanos.
         let (s, n) = normalizeForDuration(seconds: secs, nanos: nanos)
         self.init(seconds: s, nanos: n)
     }
@@ -207,12 +228,12 @@ extension Google_Protobuf_Duration {
 extension Duration {
     /// Creates a new `Duration` that is equal to the given duration.
     ///
-    /// Swift `Duration` has a strictly higher precision than `Google_Protobuf_Duration`
+    /// Swift `Duration` has a strictly higher precision than ``Google_Protobuf_Duration``
     /// (attoseconds vs. nanoseconds, respectively), so this conversion is always
     /// value-preserving.
     ///
     /// - Parameters:
-    ///   - duration: The `Google_Protobuf_Duration`.
+    ///   - duration: The ``Google_Protobuf_Duration``.
     public init(_ duration: Google_Protobuf_Duration) {
         self.init(
             secondsComponent: duration.seconds,
@@ -251,6 +272,9 @@ private func normalizeForDuration(
 public prefix func - (
     operand: Google_Protobuf_Duration
 ) -> Google_Protobuf_Duration {
+    // This gets normalized (thus allowing an otherwise non-logical input) so it matches what would
+    // happen if doing `Duration(0,0) - operand` because that has to normalize to handle roll
+    // over/under.
     let (s, n) = normalizeForDuration(
         seconds: -operand.seconds,
         nanos: -operand.nanos

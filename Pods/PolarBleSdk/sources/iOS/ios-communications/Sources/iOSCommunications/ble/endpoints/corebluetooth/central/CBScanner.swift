@@ -1,7 +1,6 @@
-
 import Foundation
 import CoreBluetooth
-import RxSwift
+import Combine
 
 class CBScanner {
     
@@ -47,56 +46,61 @@ class CBScanner {
     
     let central: CBCentralManager
     var state = ScannerState.idle
-    var scanObservers = AtomicType(initialValue: Set<RxObserver<BleDeviceSession>>())
-    var scanDisposable: Disposable?
+    let scanSubject = PassthroughSubject<BleDeviceSession, Never>()
+    private var clientCount = 0
+    var scanCancellable: AnyCancellable?
     var services: [CBUUID]?
     var adminStops = 0
     let sessions: AtomicList<CBDeviceSessionImpl>
-    let scheduler: SerialDispatchQueueScheduler
+    let queue: DispatchQueue
     var isScanning: Bool {
-        get {
-            return state == .scanning
-        }
+        return state == .scanning
     }
-    
-    init(_ central: CBCentralManager, queue: DispatchQueue, sessions: AtomicList<CBDeviceSessionImpl>){
+
+    init(_ central: CBCentralManager, queue: DispatchQueue, sessions: AtomicList<CBDeviceSessionImpl>) {
         self.central = central
         self.sessions = sessions
-        self.scheduler = SerialDispatchQueueScheduler.init(queue: queue, internalSerialQueueName: "CBScannerQueue")
+        self.queue = queue
     }
-    
-    func setServices(_ services : [CBUUID]?){
-        self.commandState(ScanAction.adminStopScan)
-        self.services = services
-        self.commandState(ScanAction.adminStartScan)
+
+    func setServices(_ services: [CBUUID]?) {
+        queue.async {
+            self.commandState(ScanAction.adminStopScan)
+            self.services = services
+            self.commandState(ScanAction.adminStartScan)
+        }
     }
-    
-    func addClient(_ scanner: RxObserver<BleDeviceSession>){
-        scanObservers.accessItem { $0.insert(scanner) }
-        self.commandState(ScanAction.clientStartScan)
+
+    func addClient() {
+        queue.async {
+            self.clientCount += 1
+            self.commandState(ScanAction.clientStartScan)
+        }
     }
-    
-    func removeClient(_ scanner: RxObserver<BleDeviceSession>){
-        scanObservers.accessItem { $0.remove(scanner) }
-        self.commandState(ScanAction.clientRemoved)
+
+    func removeClient() {
+        queue.async {
+            self.clientCount -= 1
+            self.commandState(ScanAction.clientRemoved)
+        }
     }
-    
-    func stopScan(){
-        self.commandState(ScanAction.adminStopScan)
+
+    func stopScan() {
+        queue.async { self.commandState(ScanAction.adminStopScan) }
     }
-    
-    func startScan(){
-        self.commandState(ScanAction.adminStartScan)
+
+    func startScan() {
+        queue.async { self.commandState(ScanAction.adminStartScan) }
     }
-    
-    func powerOn(){
-        self.commandState(ScanAction.blePowerOn)
+
+    func powerOn() {
+        queue.async { self.commandState(ScanAction.blePowerOn) }
     }
-    
-    func powerOff(){
-        self.commandState(ScanAction.blePowerOff)
+
+    func powerOff() {
+        queue.async { self.commandState(ScanAction.blePowerOff) }
     }
-    
+
     private func commandState(_ action: ScanAction){
         BleLogger.trace("commandState state:" + state.description() + " action: " + action.description())
         switch (state){
@@ -129,11 +133,9 @@ class CBScanner {
     
     func scanningNeeded() -> Bool {
         let list = sessions.list()
-        var scanObserversCount: Int = 0
-        scanObservers.accessItem { scanObserversCount = $0.count }
         return list.first { (session: CBDeviceSessionImpl) -> Bool in
             return session.state == .sessionOpenPark
-        } != nil || scanObserversCount != 0
+        } != nil || clientCount != 0
     }
     
     private func scannerIdleState(_ action: ScanAction){
@@ -173,45 +175,50 @@ class CBScanner {
                 BleLogger.trace("Scanner waiting last admin to call start scan admins count: \(adminStops)")
             }
         case .adminStopScan:
-            adminStops = +1
+            // Admin stops nest. A PS-FTP operation raises its stop when its block starts
+            // executing but only releases it when its Rx subscription is disposed, so the
+            // pauses overlap: across sessions, and between consecutive operations on one
+            // session. Counting them keeps the radio paused until the last outstanding stop
+            // is released, instead of letting the first release resume mid-operation.
+            adminStops += 1
+            if adminStops > 1 {
+                // Only the nesting case is interesting; a plain stop is per-operation noise.
+                BleLogger.trace("Scanner nested admin stop, admins count: \(adminStops)")
+            }
         case .blePowerOff:
             changeState(.idle)
         case .clientStartScan: fallthrough
         case .clientRemoved: fallthrough
         case .blePowerOn:
-            // do nothing
+            // Scanning stays paused until the outstanding admin stops are released.
+            if scanningNeeded() {
+                BleLogger.trace("Scanner ignoring " + action.description() + " while admin stopped, admins count: \(adminStops)")
+            }
             break
         }
     }
     
-    private func scannerScanningState(_ action: ScanAction){
-        switch (action){
+    private func scannerScanningState(_ action: ScanAction) {
+        switch action {
         case .entry:
             BleLogger.trace("start scan services: \(String(describing: services))")
-            // start scanning
-            self.central.scanForPeripherals(withServices: services, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
-            scanDisposable = Observable<NSInteger>.interval(.seconds(10), scheduler: scheduler).subscribe{ e in
-                switch e {
-                case .completed:
-                    BleLogger.trace("Scan complete")
-                case .error(let error):
-                    NSLog("Scanning error: \(error))")
-                    BleLogger.error("Scanning error: \(error))")
-                case .next( _):
-                    NSLog("Scanning next:")
+            central.scanForPeripherals(withServices: services, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+            scanCancellable = Timer.publish(every: 10, on: .main, in: .default)
+                .autoconnect()
+                .receive(on: queue)
+                .sink { [weak self] _ in
+                    guard let self else { return }
+                    BleLogger.trace("Scanning next:")
                     self.central.stopScan()
-                    self.central.scanForPeripherals(withServices: self.services, options:   [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+                    self.central.scanForPeripherals(withServices: self.services, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
                 }
-            }
         case .exit:
-            // stop scanning
             if central.state == .poweredOn {
                 central.stopScan()
             }
-            scanDisposable?.dispose()
-            scanDisposable = nil
+            scanCancellable?.cancel()
+            scanCancellable = nil
         case .clientStartScan:
-            // do nothing
             break
         case .clientRemoved where !scanningNeeded():
             changeState(.idle)

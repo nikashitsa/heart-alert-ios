@@ -18,6 +18,7 @@ enum DemoDevice {
         address: address,
         rssi: -30,
         name: name,
-        connectable: true
+        connectable: true,
+        hasSAGRFCFileSystem: false
     ))
 }

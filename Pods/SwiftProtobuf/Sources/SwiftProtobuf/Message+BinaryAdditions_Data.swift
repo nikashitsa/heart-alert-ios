@@ -8,19 +8,24 @@
 //
 // -----------------------------------------------------------------------------
 ///
-/// Extensions to `Message` to provide binary coding and decoding using ``Foundation/Data``.
+/// Extensions to ``Message`` to provide binary coding and decoding using ``Foundation/Data``.
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 /// Binary encoding and decoding methods for messages.
 extension Message {
+    #if !REMOVE_DEPRECATED_APIS
     /// Creates a new message by decoding the given `Data` value
     /// containing a serialized message in Protocol Buffer binary format.
     ///
     /// - Parameters:
-    ///   - serializedData: The binary-encoded message `Data` to decode.
+    ///   - data: The binary-encoded message `Data` to decode.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
     ///     fields.
@@ -46,14 +51,14 @@ extension Message {
     /// containing a serialized message in Protocol Buffer binary format.
     ///
     /// - Parameters:
-    ///   - contiguousBytes: The binary-encoded message data to decode.
+    ///   - bytes: The binary-encoded message data to decode.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
     ///     fields.
     ///   - partial: If `false` (the default), this method will check
     ///     ``Message/isInitialized-6abgi`` after decoding to verify that all required
     ///     fields are present. If any are missing, this method throws
-    ///     ``SwiftProtobufError/BinaryDecoding/missingRequiredFields``.
+    ///     ``BinaryDecodingError/missingRequiredFields``.
     ///   - options: The ``BinaryDecodingOptions`` to use.
     /// - Throws: ``SwiftProtobufError`` if decoding fails.
     @inlinable
@@ -73,14 +78,14 @@ extension Message {
     /// containing a serialized message in Protocol Buffer binary format.
     ///
     /// - Parameters:
-    ///   - serializedBytes: The binary-encoded message data to decode.
+    ///   - bytes: The binary-encoded message data to decode.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
     ///     fields.
     ///   - partial: If `false` (the default), this method will check
     ///     ``Message/isInitialized-6abgi`` after decoding to verify that all required
     ///     fields are present. If any are missing, this method throws
-    ///     ``SwiftProtobufError/BinaryDecoding/missingRequiredFields``.
+    ///     ``BinaryDecodingError/missingRequiredFields``.
     ///   - options: The ``BinaryDecodingOptions`` to use.
     /// - Throws: ``SwiftProtobufError`` if decoding fails.
     @inlinable
@@ -110,14 +115,14 @@ extension Message {
     ///   occurred.
     ///
     /// - Parameters:
-    ///   - contiguousBytes: The binary-encoded message data to decode.
+    ///   - bytes: The binary-encoded message data to decode.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
     ///     fields.
     ///   - partial: If `false` (the default), this method will check
     ///     ``Message/isInitialized-6abgi`` after decoding to verify that all required
     ///     fields are present. If any are missing, this method throws
-    ///     ``SwiftProtobufError/BinaryDecoding/missingRequiredFields``.
+    ///     ``BinaryDecodingError/missingRequiredFields``.
     ///   - options: The ``BinaryDecodingOptions`` to use.
     /// - Throws: ``SwiftProtobufError`` if decoding fails.
     @inlinable
@@ -143,14 +148,14 @@ extension Message {
     ///   occurred.
     ///
     /// - Parameters:
-    ///   - serializedBytes: The binary-encoded message data to decode.
+    ///   - bytes: The binary-encoded message data to decode.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
     ///     fields.
     ///   - partial: If `false` (the default), this method will check
     ///     ``Message/isInitialized-6abgi`` after decoding to verify that all required
     ///     fields are present. If any are missing, this method throws
-    ///     ``SwiftProtobufError/BinaryDecoding/missingRequiredFields``.
+    ///     ``BinaryDecodingError/missingRequiredFields``.
     ///   - options: The ``BinaryDecodingOptions`` to use.
     /// - Throws: ``SwiftProtobufError`` if decoding fails.
     @inlinable
@@ -171,6 +176,7 @@ extension Message {
             try _merge(rawBuffer: body, extensions: extensions, partial: partial, options: options)
         }
     }
+    #endif  // !REMOVE_DEPRECATED_APIS
 
     /// Updates the message by decoding the given `Data` value
     /// containing a serialized message in Protocol Buffer binary format into the
@@ -181,7 +187,7 @@ extension Message {
     ///   occurred.
     ///
     /// - Parameters:
-    ///   - serializedData: The binary-encoded message data to decode.
+    ///   - data: The binary-encoded message data to decode.
     ///   - extensions: An ``ExtensionMap`` used to look up and decode any
     ///     extensions in this message or messages nested within this message's
     ///     fields.

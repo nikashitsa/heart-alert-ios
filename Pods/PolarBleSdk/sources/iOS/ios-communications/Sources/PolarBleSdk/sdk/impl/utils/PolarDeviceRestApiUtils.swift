@@ -1,42 +1,67 @@
 ///  Copyright © 2025 Polar. All rights reserved.
 
 import Foundation
-import RxSwift
+import Combine
 
 extension BlePsFtpClient {
-    
-    func receiveRestApiEventData(identifier: String) -> Observable<[Data]> {
-        let receiveEventData = self.waitNotification()
-            .share(replay: 1)
-            .filter { $0.id == Protocol_PbPFtpDevToHostNotification.restApiEvent.rawValue }
-            .compactMap { notification -> [Data]? in
-                guard let params = try? Protocol_PbPftpDHRestApiEvent(serializedData: notification.parameters as Data) else { return nil }
-                if params.hasUncompressed && params.uncompressed {
-                    return params.event
-                } else {
-                    return params.event.compactMap { data in
-                        guard let uncompressedData = data.inflated() else {
-                            BleLogger.trace_hex("Failed to decompress API event parameters, data: ", data: data)
-                            return data
+
+    func receiveRestApiEventData(identifier: String) -> AsyncThrowingStream<[Data], Error> {
+        // Register the notification listener synchronously at creation time so callers can
+        // guarantee the subscriber exists before sending a subscribe command.
+        let notifications = self.waitNotification()
+        return AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    for try await notification in notifications {
+                        guard notification.id == Protocol_PbPFtpDevToHostNotification.restApiEvent.rawValue else { continue }
+                        guard let params = try? Protocol_PbPftpDHRestApiEvent(serializedBytes: notification.parameters as Data) else { continue }
+                        let events: [Data]
+                        if params.hasUncompressed && params.uncompressed {
+                            events = params.event
+                        } else {
+                            events = params.event.compactMap { data in
+                                guard let uncompressedData = data.inflated() else {
+                                    BleLogger.trace_hex("Failed to decompress API event parameters, data: ", data: data)
+                                    return data
+                                }
+                                return uncompressedData
+                            }
                         }
-                        return uncompressedData
+                        continuation.yield(events)
                     }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
             }
-        return receiveEventData
+            // Propagate stream termination (consumer gone / Task cancelled) to the inner
+            // Task so it stops consuming waitNotification() and the serial
+            // waitNotificationOperationQueue is freed for the next caller.
+            continuation.onTermination = { _ in task.cancel() }
+        }
     }
-    
-    func receiveRestApiEvents<T: Decodable>(identifier: String) -> Observable<[T]> {
-        return receiveRestApiEventData(identifier: identifier)
-            .compactMap {
-                $0.compactMap { data in
-                    BleLogger.trace("Received REST API event, JSON: \(String(data: data, encoding: .utf8) ?? "<binary>"))")
-                    guard let decoded: T = try? JSONDecoder().decode(T.self, from: data ) else {
-                        BleLogger.trace("Failed to decode \(T.self) from REST API event data: \(String(data: data, encoding: .utf8) ?? "<binary>")")
-                        return nil
+
+    func receiveRestApiEvents<T: Decodable>(identifier: String) -> AsyncThrowingStream<[T], Error> {
+        // Create the data stream synchronously so the underlying waitNotification()
+        // subscriber is registered as soon as this stream is created.
+        let dataStream = self.receiveRestApiEventData(identifier: identifier)
+        return AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    for try await eventDataList in dataStream {
+                        let decoded = eventDataList.compactMap { data -> T? in
+                            BleLogger.trace("Received REST API event, JSON: \(String(data: data, encoding: .utf8) ?? "<binary>")")
+                            return try? JSONDecoder().decode(T.self, from: data)
+                        }
+                        continuation.yield(decoded)
                     }
-                    return decoded
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
+            }
+            // Same cancellation propagation as receiveRestApiEventData.
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 }

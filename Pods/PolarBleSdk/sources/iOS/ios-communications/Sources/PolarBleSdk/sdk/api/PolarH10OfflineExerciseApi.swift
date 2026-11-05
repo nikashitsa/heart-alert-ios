@@ -1,7 +1,6 @@
 //  Copyright © 2023 Polar. All rights reserved.
 
 import Foundation
-import RxSwift
 
 ///  Recoding intervals for H10 recording start
 public enum RecordingInterval: Int {
@@ -23,67 +22,74 @@ public enum SampleType: Int {
 /// With H10 Exercise recording the H10 and phone don't need to be connected all the time, as H10 exercise recording
 /// continues in Polar device even the BLE disconnects.
 ///
-/// Requires features `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
+/// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
 ///
 /// Note, API is working only with Polar H10 device
 ///
 public protocol PolarH10OfflineExerciseApi {
     /// Request start recording. Supported only by Polar H10. Requires `polarFileTransfer` feature.
     ///
+    /// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
+    ///
     /// - Parameters:
     ///   - identifier: Polar device id or UUID
     ///   - exerciseId: unique identifier for for exercise entry length from 1-64 bytes
     ///   - interval: recording interval to be used. Has no effect if `sampleType` is `SampleType.rr`
     ///   - sampleType: sample type to be used.
-    /// - Returns: Completable stream
-    ///   - success: recording started
-    ///   - onError: see `PolarErrors` for possible errors invoked
-    func startRecording(_ identifier: String, exerciseId: String, interval: RecordingInterval, sampleType: SampleType) -> Completable
+    /// - Throws: `PolarErrors` for possible errors invoked
+    func startRecording(_ identifier: String, exerciseId: String, interval: RecordingInterval, sampleType: SampleType) async throws
     
     /// Request stop for current recording. Supported only by Polar H10. Requires `polarFileTransfer` feature.
     ///
+    /// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
+    ///
     /// - Parameters:
     ///   - identifier: Polar device id or UUID
-    /// - Returns: Completable stream
-    ///   - success: recording stopped
-    ///   - onError: see `PolarErrors` for possible errors invoked
-    func stopRecording(_ identifier: String) -> Completable
+    /// - Throws: `PolarErrors` for possible errors invoked
+    func stopRecording(_ identifier: String) async throws
     
     /// Request current recording status. Supported only by Polar H10. Requires `polarFileTransfer` feature.
     ///
+    /// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
+    ///
     /// - Parameters:
     ///   - identifier: Polar device id
-    /// - Returns: Single stream
-    ///   - success: see `PolarRecordingStatus`
-    ///   - onError: see `PolarErrors` for possible errors invoked
-    func requestRecordingStatus(_ identifier: String) -> Single<PolarRecordingStatus>
+    /// - Returns: `PolarRecordingStatus` with the current recording status
+    /// - Throws: `PolarErrors` for possible errors invoked
+    func requestRecordingStatus(_ identifier: String) async throws -> PolarRecordingStatus
     
-    /// Api for fetching stored exercises list from Polar H10 device. Requires `polarFileTransfer` feature. This API is working for Polar OH1 and Polar Verity Sense devices too, however in those devices recording of exercise requires that sensor is registered to Polar Flow account.
+    /// List exercises stored in the Polar H10 device. This API is working for Polar OH1 and Polar Verity Sense devices too,
+    /// however in those devices recording of exercise requires that sensor is registered to Polar Flow account.
+    ///
+    /// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
     ///
     /// - Parameters:
     ///   - identifier: Polar device id or device address
-    /// - Returns: Observable stream
-    ///   - onNext: see `PolarExerciseEntry`
-    ///   - onError: see `PolarErrors` for possible errors invoked
-    func fetchStoredExerciseList(_ identifier: String) -> Observable<PolarExerciseEntry>
+    /// - Returns: `AsyncThrowingStream` emitting `PolarExerciseEntry` values, or throwing an error
+    func listExercises(_ identifier: String) -> AsyncThrowingStream<PolarExerciseEntry, Error>
+
+    /// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
+    @available(*, deprecated, renamed: "listExercises")
+    func fetchStoredExerciseList(_ identifier: String) -> AsyncThrowingStream<PolarExerciseEntry, Error>
     
     /// Api for fetching a single exercise from Polar H10 device. Requires `polarFileTransfer` feature. This API is working for Polar OH1 and Polar Verity Sense devices too, however in those devices recording of exercise requires that sensor is registered to Polar Flow account.
+    ///
+    /// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
     ///
     /// - Parameters:
     ///   - identifier: Polar device id or device address
     ///   - entry: single exercise entry to be fetched
-    /// - Returns: Single stream
-    ///   - success: invoked after exercise data has been fetched from the device. see `PolarExerciseEntry`
-    ///   - onError: see `PolarErrors` for possible errors invoked
-    func fetchExercise(_ identifier: String, entry: PolarExerciseEntry) -> Single<PolarExerciseData>
+    /// - Returns: `PolarExerciseData` fetched from the device
+    /// - Throws: `PolarErrors` for possible errors invoked
+    func fetchExercise(_ identifier: String, entry: PolarExerciseEntry) async throws -> PolarExerciseData
     
     /// Api for removing single exercise from Polar H10 device. Requires `polarFileTransfer` feature. This API is working for Polar OH1 and Polar Verity Sense devices too, however in those devices recording of exercise requires that sensor is registered to Polar Flow account.
+    ///
+    /// - Requires SDK feature(s): `PolarBleSdkFeature.feature_polar_h10_exercise_recording`
     ///
     /// - Parameters:
     ///   - identifier: Polar device id or device address
     ///   - entry: single exercise entry to be removed
-    /// - Returns: Completable stream
-    ///   - complete: entry successfully removed
-    ///   - onError: see `PolarErrors` for possible errors invoked
-    func removeExercise(_ identifier: String, entry: PolarExerciseEntry) ->Completable
+    /// - Throws: `PolarErrors` for possible errors invoked
+    func removeExercise(_ identifier: String, entry: PolarExerciseEntry) async throws
 }

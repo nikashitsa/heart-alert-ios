@@ -8,11 +8,15 @@
 //
 // -----------------------------------------------------------------------------
 ///
-/// Extensions to `Message` to support JSON encoding/decoding  using ``Foundation/Data``.
+/// Extensions to ``Message`` to support JSON encoding/decoding  using ``Foundation/Data``.
 ///
 // -----------------------------------------------------------------------------
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 /// JSON encoding and decoding methods for messages.
 extension Message {

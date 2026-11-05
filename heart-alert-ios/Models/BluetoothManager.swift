@@ -1,6 +1,5 @@
 import Foundation
 import PolarBleSdk
-import RxSwift
 import CoreBluetooth
 
 class BluetoothManager: ObservableObject {
@@ -21,9 +20,8 @@ class BluetoothManager: ObservableObject {
     @Published var hrFeature: HrFeature = HrFeature()
     @Published var batteryStatusFeature: BatteryStatusFeature = BatteryStatusFeature()
     
-    private var broadcastDisposable: Disposable?
-    private var autoConnectDisposable: Disposable?
-    private var onlineStreamingDisposables: [PolarDeviceDataType: Disposable?] = [:]
+    private var autoConnectTask: Task<Void, Never>? = nil
+    private var onlineStreamingTasks: [PolarDeviceDataType: Task<Void, Never>] = [:]
     
     private var searchDevicesTask: Task<Void, Never>? = nil
 
@@ -133,16 +131,15 @@ class BluetoothManager: ObservableObject {
     }
     
     func autoConnect() {
-        autoConnectDisposable?.dispose()
-        autoConnectDisposable = api.startAutoConnectToDevice(-55, service: nil, polarDeviceType: nil)
-            .subscribe{ e in
-                switch e {
-                case .completed:
-                    NSLog("auto connect search complete")
-                case .error(let err):
-                    NSLog("auto connect failed: \(err)")
-                }
+        autoConnectTask?.cancel()
+        autoConnectTask = Task { [api] in
+            do {
+                try await api.startAutoConnectToDevice(-55, service: nil, polarDeviceType: nil)
+                NSLog("auto connect search complete")
+            } catch {
+                NSLog("auto connect failed: \(error)")
             }
+        }
     }
     
     func startDevicesSearch() {
@@ -176,7 +173,7 @@ class BluetoothManager: ObservableObject {
     
     private func searchDevicesAsync() async {
         do {
-            for try await value in api.searchForDevice().values {
+            for try await value in api.searchForDevice() {
                 Task { @MainActor in
                     self.foundDevices.append(DeviceInfo(from: value))
                 }
@@ -192,7 +189,8 @@ class BluetoothManager: ObservableObject {
             demoHrTask?.cancel()
             demoHrTask = nil
         }
-        onlineStreamingDisposables[feature]??.dispose()
+        onlineStreamingTasks[feature]?.cancel()
+        onlineStreamingTasks[feature] = nil
     }
 
     func hrStreamStart(_ onBeat: @escaping (UInt8) -> Void) {
@@ -200,18 +198,21 @@ class BluetoothManager: ObservableObject {
             return demoHrStart(onBeat)
         }
         if case .connected(let deviceId) = deviceConnectionState {
-            onlineStreamingDisposables[.hr] = api.startHrStreaming(deviceId)
-                .do(onDispose: {})
-                .subscribe{ e in
-                    switch e {
-                    case .next(let data):
-                        onBeat(data[0].hr)
-                    case .error(let err):
-                        NSLog("Hr stream failed: \(err)")
-                    case .completed:
-                        NSLog("Hr stream completed")
+            onlineStreamingTasks[.hr]?.cancel()
+            // The SDK no longer delivers on the queue passed to polarImplementation (8.x yields
+            // from its own Tasks), so the main-actor Task is what keeps onBeat on the main thread.
+            onlineStreamingTasks[.hr] = Task { @MainActor [api] in
+                do {
+                    for try await data in api.startHrStreaming(deviceId) {
+                        guard let sample = data.first else { continue }
+                        onBeat(sample.hr)
                     }
+                    NSLog("Hr stream completed")
+                } catch is CancellationError {
+                } catch {
+                    NSLog("Hr stream failed: \(error)")
                 }
+            }
         } else {
             NSLog("Device is not connected \(deviceConnectionState)")
         }
@@ -219,7 +220,7 @@ class BluetoothManager: ObservableObject {
 
     /// A triangle wave that always crosses both of the user's limits, so every alert fires
     /// without the reviewer touching anything. Delivered on the main actor to match the real
-    /// stream, which the SDK dispatches on DispatchQueue.main.
+    /// stream, which hrStreamStart consumes on the main actor.
     private func demoHrStart(_ onBeat: @escaping (UInt8) -> Void) {
         // bpmReadout()'s .onAppear re-fires whenever the connection state blips, so this has
         // to be idempotent or the sweeps stack up.
@@ -336,5 +337,8 @@ extension BluetoothManager : PolarBleApiDeviceInfoObserver {
     }
     
     func disInformationReceived(_ identifier: String, uuid: CBUUID, value: String) {
+    }
+
+    func batteryPowerSourcesStateReceived(_ identifier: String, powerSourcesState: PolarBleSdk.BleBasClient.PowerSourcesState) {
     }
 }

@@ -12,7 +12,13 @@
 ///
 // -----------------------------------------------------------------------------
 
+#if FieldMaskUtilities
+
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 /// Describes errors can occure during decoding a proto by path.
 public enum PathDecodingError: Error {
@@ -150,6 +156,14 @@ struct PathDecoder<T: Message>: Decoder {
         _ value: inout M?
     ) throws {
         if nextPath.isEmpty {
+            // A singular message field named directly by the mask. When the
+            // source has no value for it, leave the destination untouched
+            // rather than clearing it. This matches the default merge
+            // behavior of the reference implementations, where an unset
+            // singular message field in the source is skipped.
+            guard self.value != nil else {
+                return
+            }
             try setValue(&value, defaultValue: nil)
             return
         }
@@ -441,3 +455,5 @@ extension Message {
         try decodeMessage(decoder: &decoder)
     }
 }
+
+#endif
